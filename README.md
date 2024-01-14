@@ -1,7 +1,5 @@
 # StageZeroDocumentation:
 
-This program is a complex audio processing and visualization application built using Python, PyQt5, and other libraries. It allows users to load, visualize, and manipulate audio files. The program is structured using the Model-View-Controller (MVC) design pattern.
-
 Dependencies
 
     - Python
@@ -11,6 +9,14 @@ Dependencies
     - pyqtgraph
     - vlc
     - threading
+
+    here are the pip commands you'll need to use:
+        pip install 
+            librosa
+            Pyqtgraph
+            Pyqt5
+            Pyqt5 - tools
+            python-vlc
 
 Modules
 
