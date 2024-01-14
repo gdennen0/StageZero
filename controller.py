@@ -68,6 +68,7 @@ class SongSelectController:
         self.main_controller = main_controller  # Assigning main controller reference
         self.view = main_controller.view  # Assigning view reference
         self.model = main_controller.model  # Assigning model reference
+        self.selected_song = None
         self.generate_dropdown_items()  # Generating the dropdown items
         self.connect_signals()  # Connecting the UI signals to slots in this controller
 
@@ -97,8 +98,11 @@ class SongSelectController:
         selected_song = self.view.main_window.song_select_menu.song_selector.itemText(
             index
         )  # Getting the selected songs name from the song_selector dropdown menu given the song_selector index
-        print(f"Selected song: {selected_song} index: {index}")  # Printing the selected song and index
-        self.main_controller.song_controller.load_song(selected_song)  # Loading the selected song with the song_controller
+        if selected_song == self.model.loaded_song.name:
+            return
+        else:
+            print(f"Selected song: {selected_song} index: {index}")  # Printing the selected song and index
+            self.main_controller.song_controller.load_song(selected_song)  # Loading the selected song with the song_controller
 
     def update_dropdown(self):
         # Clear the dropdown
@@ -335,6 +339,8 @@ class SongController:
         # reset the audio playback
         self.main_controller.audio_playback_controller.stop()
         self.main_controller.audio_playback_controller.reset()
+        # reload the song select dropdown menu
+        self.main_controller.song_select_controller.update_dropdown()
 
 
 class StackController:
@@ -565,24 +571,30 @@ class LayerController:
             print("No signals connected to the plot.")
 
 class PlotClickHandler:
+    # This class handles the clicks on the plot
     def __init__(self, main_controller):
         self.main_controller = main_controller
         self.model = main_controller.model
 
     def handle_click(self, scene_pos, plot_pos):
+        # This function handles the click based on the current playback mode
         playback_mode = self.main_controller.playback_mode_controller.get_current_mode()
 
         if playback_mode == "Record":
+            # If the playback mode is "Record", handle the click accordingly
             self.handle_record_click(scene_pos, plot_pos)
         # Add more elif conditions here for other playback modes
 
         if playback_mode == "Edit":
+            # If the playback mode is "Edit", handle the click accordingly
             self.handle_edit_click(scene_pos, plot_pos)
 
         if playback_mode == "Play":
+            # If the playback mode is "Play", do nothing
             print(f"Playback mode: Play selected, doing nothing")
 
     def handle_record_click(self, scene_pos, plot_pos):
+        # This function handles the click when the playback mode is "Record"
         loaded_stack = self.model.stack.loaded_stack
         matched_layer_index = math.floor(plot_pos.y())
         matched_layer_name = (
@@ -607,6 +619,7 @@ class PlotClickHandler:
         print(f"end handle_plot_click")
 
     def handle_edit_click(self, scene_pos, plot_pos):
+        # This function handles the click when the playback mode is "Edit"
         loaded_stack = self.model.stack.loaded_stack
         matched_layer_index = math.floor(plot_pos.y())
         matched_frame = self.match_click_to_frame(scene_pos, plot_pos)
@@ -627,6 +640,7 @@ class PlotClickHandler:
         self.main_controller.event_controller.edit_event(event_object)
 
     def match_click_to_frame(self, scene_pos, plot_pos):
+        # This function matches the click to a frame
         print(f"Matching click raw x: {scene_pos} / plot pos x {plot_pos}")
         frame_number = int(round(plot_pos.x()))
         print(f"--> Matched to frame: {frame_number}")
@@ -634,6 +648,7 @@ class PlotClickHandler:
 
 
 class EventController:
+    # This class controls the events
     def __init__(self, main_controller):
         self.main_controller = main_controller
         self.stack = main_controller.model.stack
@@ -641,14 +656,17 @@ class EventController:
         self.view = main_controller.view
 
     def clear_event_plot(self, layer_name):
+        # This function clears the event plot
         widget = self.main_controller.layer_controller.get_widget_by_name(layer_name)
         widget.event_plot.clear()
 
     def add_event_to_plot(self, layer_name, frame_number):
+        # This function adds an event to the plot
         print(f"layer: {layer_name}, adding event at frame {frame_number}")
         self.main_controller.layer_controller.replot_layer(layer_name)
 
     def edit_event(self, event_object):
+        # This function edits an event
         self.editor = EventEditorWidget(event_object)
         self.editor.exec_()
 
@@ -659,6 +677,7 @@ class EventController:
 
 
 class TimeUpdateThread(QThread):
+    # This class updates the time in a separate thread
     # Define a signal that will be emitted every time the label needs to be updated
     time_updated = pyqtSignal(int)
 
@@ -675,6 +694,7 @@ class TimeUpdateThread(QThread):
         self.time_per_frame_seconds = constants.PROJECT_FPS / 1000  # time per frame in seconds
 
     def run(self):
+        # This function runs the thread
         while True:
             with self.condition:
                 while self.state != self.RUNNING:
@@ -687,6 +707,7 @@ class TimeUpdateThread(QThread):
             time.sleep(self.time_per_frame_seconds)
 
     def start_clock(self):
+        # This function starts the clock
         with self.condition:
             if self.state == self.STOPPED:
                 print(f"starting clock")
@@ -696,6 +717,7 @@ class TimeUpdateThread(QThread):
                 self.start()  # Begins execution of the thread
 
     def pause_clock(self):
+        # This function pauses the clock
         with self.condition:
             if self.state == self.RUNNING:
                 print(f"paused clock")
@@ -704,6 +726,7 @@ class TimeUpdateThread(QThread):
                 self.state = self.PAUSED
 
     def resume_clock(self):
+        # This function resumes the clock
         with self.condition:
             if self.state == self.PAUSED:
                 print(f"resuming clock")
@@ -713,6 +736,7 @@ class TimeUpdateThread(QThread):
                 self.condition.notify_all()
 
     def reset_clock(self):
+        # This function resets the clock
         with self.condition:
             if self.state == self.PAUSED:
                 print(f"resetting clock")
@@ -734,6 +758,7 @@ class TimeUpdateThread(QThread):
                 self.start_time = None
 
     def stop_clock(self):
+        # This function stops the clock
         if self.state == self.RUNNING:
             self.state = self.STOPPED
 
