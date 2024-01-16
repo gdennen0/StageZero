@@ -10,7 +10,12 @@ from PyQt5.QtCore import (
     QThread,
 )
 
+from PyQt5.QtWidgets import (
+    QApplication,
+)
+
 import constants
+import tools
 from view import DialogWindow, EventEditorWidget
 
 # =========================================================================================================================================
@@ -33,10 +38,12 @@ class MainController:
         self.event_controller = EventController(self)  # Creating an instance of EventController
         self.audio_playback_controller = AudioPlaybackController(self)  # Creating an instance of AudioPlaybackController
         self.playback_mode_controller = PlaybackModeController(self)  # Creating an instance of PlaybackModeController
+        self.main_menu_controller = MainMenuController(self)
+        self.bpm_tool_controller = BpmToolController(self)
 
     def initialize_app(self):
         # Open the main window
-        self.view.launch_window.open()  # Opening the launch window
+        self.view.open_launch_window()  # Opening the launch window
         # Connect the launch windows new project button click signal to connect to project controller new project method
 
 
@@ -56,12 +63,24 @@ class ProjectController:
         project_name = DialogWindow.input_text("Input Text", "Project Name")  # Getting the project name from the user
         self.model.project_name = project_name  # Setting the project name in the model
 
-        self.view.main_window.open(project_name)  # Opening the main window with the project name
-        self.view.launch_window.close()  # Closing the launch window
+        self.view.open_main_window()  # Opening the main window with the project name
 
     def load_project(self):
         # functions to load the project file
         print(f"Begin Loading Project")
+
+class MainMenuController:
+    def __init__(self, main_controller):
+        self.view = main_controller.view
+        self.initialize_connections()
+
+    def initialize_connections(self):
+        self.view.main_menu.exit_action.triggered.connect(QApplication.instance().quit)
+        self.view.main_menu.tools_action.triggered.connect(self.open_tools_window)
+
+    def open_tools_window(self):
+        print(f"Opening tools window")
+        self.view.tools_window.open()
 
 class SongSelectController:
     def __init__(self, main_controller):
@@ -765,3 +784,28 @@ class TimeUpdateThread(QThread):
         if self.state == self.PAUSED:
             self.state = self.STOPPED
 
+class BpmToolController:
+    def __init__(self, main_controller):
+        self.main_controller = main_controller
+        self.stack = main_controller.model.stack
+        self.model = main_controller.model
+        self.view = main_controller.view
+        self.init_connections()
+
+    def init_connections(self):
+        self.view.tools_window.bpm.count_button.clicked.connect(self.estimate_bpm)
+    
+    def estimate_bpm(self):
+        song_object = self.model.loaded_song
+        bpm = tools.estimate_bpm(song_object)
+
+        self.update_time_label(bpm)
+
+    def update_time_label(self, bpm):
+        # Update the time label
+        bpm_tool_widget = self.view.tools_window.bpm
+
+        bpm_label_string = f"BPM: {bpm}"
+        print(bpm_label_string)
+
+        bpm_tool_widget.bpm_label.setText(bpm_label_string)

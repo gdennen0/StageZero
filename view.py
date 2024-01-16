@@ -8,6 +8,9 @@ from PyQt5.QtCore import (
     Qt,  # For Qt related operations
 )
 from PyQt5.QtWidgets import (
+    QMainWindow,
+    QMenuBar,
+    QAction,
     QWidget,  # Base class for all user interface objects
     QLabel,  # For displaying text or images
     QFileDialog,  # Dialog for users to select files or directories
@@ -22,6 +25,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,  # One-line text editor
     QColorDialog,  # Dialog widget for specifying colors
     QMessageBox,  # Modal dialog for informing the user or for asking the user a question and receiving an answer
+    QStackedWidget
 )
 
 
@@ -30,11 +34,29 @@ from PyQt5.QtWidgets import (
 # =========================================================================================================================================
 
 
-class MainView:  # Main view class
+class MainView(QMainWindow):  # Main view class
     def __init__(self):
+        super().__init__()
         self.launch_window = LaunchWindow()  # Initialize launch window
-        self.main_window = MainWindow()  # Initialize main window
+        self.main_window = MainWidget()  # Initialize main window
+        self.tools_window = ToolsWindow()
+        self.main_menu = MainMenu()
+        self.init_ui()
 
+    def init_ui(self):
+        # Set the application title in the menu bar
+        self.setWindowTitle('StageZeroDev')
+        # Set the custom menu bar
+        self.setMenuBar(self.main_menu)
+
+    def open_main_window(self):
+        # Set the main window as the central widget
+        self.setCentralWidget(self.main_window)
+        self.show()
+
+    def open_launch_window(self):
+        self.setCentralWidget(self.launch_window)
+        self.show()
 
 class LaunchWindow(QWidget):  # Class for the launch window
     def __init__(self):
@@ -60,7 +82,7 @@ class LaunchWindow(QWidget):  # Class for the launch window
         super().close()
 
 
-class MainWindow(QWidget):  # Class for the main window
+class MainWidget(QWidget):  # Class for the main window
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()  # Initialize the main window
@@ -95,6 +117,89 @@ class MainWindow(QWidget):  # Class for the main window
         self.layout.addWidget(self.layer_control)  # Add the layer_control to the layout
         self.layout.addWidget(self.stack)  # Add the stack to the layout
 
+
+class MainMenu(QMenuBar):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.init_menu_bar()
+
+    def init_menu_bar(self):
+        # File Menu Dropdown
+        self.file_menu = self.addMenu('&File')
+
+        self.save_action = QAction('&Save', self)
+        self.exit_action = QAction('&Exit', self)
+        
+        self.save_action.setShortcut('Ctrl+S')
+        self.exit_action.setShortcut('Ctrl+Q')
+
+        self.file_menu.addAction(self.save_action)
+        self.file_menu.addAction(self.exit_action)
+
+        # View Menu Dropdown
+        self.view_menu = self.addMenu('&View')
+        
+        self.tools_action = QAction('&Tool Window', self)
+        self.view_menu.addAction(self.tools_action)
+
+
+class ToolsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Tools')
+        self.initializeUI()
+
+    def initializeUI(self):
+        # Main layout for the Tools window
+        self.layout = QVBoxLayout(self)
+
+        # Dropdown menu to select a tool
+        self.tool_selector = QComboBox(self)
+        self.tool_selector.addItems(["BPM Counter", "Tool 2", "Tool 3"])  # Add tool names here
+        self.tool_selector.currentIndexChanged.connect(self.toolSelected)
+        self.layout.addWidget(self.tool_selector)
+
+        # Stacked widget to hold different tool widgets
+        self.tools_stack = QStackedWidget(self)
+        self.layout.addWidget(self.tools_stack)
+
+        # Initialize tool widgets and add them to the stack
+        self.initializeTools()
+
+    def initializeTools(self):
+        # Tool widgets are initialized and added to the stack here
+        # Example tool widgets
+        self.bpm = BpmToolWidget()
+        self.tool2_widget = QWidget()
+        self.tool3_widget = QWidget()
+
+        # Add tool widgets to the stack
+        self.tools_stack.addWidget(self.bpm)
+        self.tools_stack.addWidget(self.tool2_widget)
+        self.tools_stack.addWidget(self.tool3_widget)
+
+    def toolSelected(self, index):
+        # Change the current widget in the stack based on the selected tool
+        self.tools_stack.setCurrentIndex(index)
+
+    def open(self):
+        # Show the Tools window
+        self.show()
+
+
+class BpmToolWidget(QWidget):
+    def __init__(self):
+        super().__init__()  # Call the constructor of the parent class
+        self.initialize()
+
+    def initialize(self):
+        self.layout = QVBoxLayout(self)    
+
+        self.count_button = QPushButton("Count", self)
+        self.bpm_label = QLabel("BPM", self)
+
+        self.layout.addWidget(self.count_button)
+        self.layout.addWidget(self.bpm_label)
 
 class AudioPlaybackCommandWidget(QWidget):  # Widget for controlling audio playback
     def __init__(self):
