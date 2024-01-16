@@ -291,6 +291,16 @@ class SongOverviewController:
             self.update_v_line_position
         )
 
+    def paint_beat_lines(self, beats):
+        for beat in beats:
+            song_overview_widget = self.view.main_window.song_overview
+            song_overview_widget.paint_beat_v_line(beat)
+
+    def remove_beat_lines(self):
+        song_overview_widget = self.view.main_window.song_overview
+        song_overview_widget.remove_beat_v_lines()
+
+
     def update_v_line_position(self, frame_number):
         # Update the position of the vertical line
         # print(f"update_v_line_pos")
@@ -794,18 +804,30 @@ class BpmToolController:
 
     def init_connections(self):
         self.view.tools_window.bpm.count_button.clicked.connect(self.estimate_bpm)
+        self.view.tools_window.bpm.paint_to_song_overview_button.clicked.connect(self.add_beats_to_song_overview)
+        self.view.tools_window.bpm.remove_from_song_overview_button.clicked.connect(self.remove_beats_from_song_overview)
     
     def estimate_bpm(self):
         song_object = self.model.loaded_song
-        bpm = tools.estimate_bpm(song_object)
+        tempo, beats = tools.estimate_bpm(song_object)
+        # tempo is returned as a float
+        # beats is returned as an np.ndarray
 
-        self.update_time_label(bpm)
+        self.update_time_label(int(tempo))
 
     def update_time_label(self, bpm):
         # Update the time label
         bpm_tool_widget = self.view.tools_window.bpm
 
-        bpm_label_string = f"BPM: {bpm}"
+        bpm_label_string = f"Tempo: {bpm}"
         print(bpm_label_string)
 
         bpm_tool_widget.bpm_label.setText(bpm_label_string)
+
+    def add_beats_to_song_overview(self):
+        song_object = self.model.loaded_song
+        _, beats = tools.estimate_bpm(song_object)
+        self.main_controller.song_overview_controller.paint_beat_lines(beats)
+
+    def remove_beats_from_song_overview(self):
+        self.main_controller.song_overview_controller.remove_beat_lines()

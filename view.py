@@ -196,9 +196,13 @@ class BpmToolWidget(QWidget):
         self.layout = QVBoxLayout(self)    
 
         self.count_button = QPushButton("Count", self)
+        self.paint_to_song_overview_button = QPushButton("Paint to SongOverview", self)
+        self.remove_from_song_overview_button = QPushButton("Remove BPM from SongOverview", self)
         self.bpm_label = QLabel("BPM", self)
 
         self.layout.addWidget(self.count_button)
+        self.layout.addWidget(self.paint_to_song_overview_button)
+        self.layout.addWidget(self.remove_from_song_overview_button)
         self.layout.addWidget(self.bpm_label)
 
 class AudioPlaybackCommandWidget(QWidget):  # Widget for controlling audio playback
@@ -438,6 +442,19 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
         line_specs = mkPen(color="w", width=2)  # Define the specifications for the line
         self.v_line = InfiniteLine(angle=90, movable=True, pen=line_specs)  # Create an infinite line
         self.song_plot.addItem(self.v_line)  # Add the line to the song plot
+    
+    def paint_beat_v_line(self, frame_number):
+        line_specs = mkPen(color="b", width=1)  # Define the specifications for the line
+        beat_line = InfiniteLine(angle=90, movable=False, pen=line_specs)  # Create an infinite line for beat
+        beat_line.setPos(frame_number)  # Set the position of the line at specific tick number
+        beat_line.beat = True  # Mark this line as a beat line
+        self.song_plot.addItem(beat_line)  # Add the beat line to the song plot
+   
+    def remove_beat_v_lines(self):
+        for item in self.song_plot.items():
+            if isinstance(item, InfiniteLine) and getattr(item, 'beat', False):
+                self.song_plot.removeItem(item)  # Remove the beat line from the song plot
+
 
     def plot_events(self, ticks, song_data):
         self.song_plot.setLimits(  # Set the limits for the song plot
