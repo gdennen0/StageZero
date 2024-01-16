@@ -360,10 +360,10 @@ class LayerWidget(QWidget):  # Widget for a layer
         self.custom_axis.setLayers(layer_names)  # Set the layers for the custom axis
         self.layer_plot.update()  # Update the plot widget
 
-    def init_v_line(self):  # Initialize the vertical line
+    def init_playhead(self):  # Initialize the vertical line
         line_specs = mkPen(color="w", width=2)  # Specifications for the line
-        self.v_line = InfiniteLine(angle=90, movable=True, pen=line_specs)  # Create the line
-        self.layer_plot.addItem(self.v_line)  # Add the line to the plot widget
+        self.playhead = InfiniteLine(angle=90, movable=True, pen=line_specs)  # Create the line
+        self.layer_plot.addItem(self.playhead)  # Add the line to the plot widget
 
 
 class CustomAxis(AxisItem):  # Custom axis class
@@ -438,19 +438,19 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
         self.layout.addWidget(self.label)  # Add the label to the layout
         self.layout.addWidget(self.song_plot)  # Add the song plot to the layout
 
-    def init_v_line(self):
+    def init_playhead(self):
         line_specs = mkPen(color="w", width=2)  # Define the specifications for the line
-        self.v_line = InfiniteLine(angle=90, movable=True, pen=line_specs)  # Create an infinite line
-        self.song_plot.addItem(self.v_line)  # Add the line to the song plot
+        self.playhead = InfiniteLine(angle=90, movable=True, pen=line_specs)  # Create an infinite line
+        self.song_plot.addItem(self.playhead)  # Add the line to the song plot
     
-    def paint_beat_v_line(self, frame_number):
+    def paint_beat_line(self, frame_number):
         line_specs = mkPen(color="b", width=1)  # Define the specifications for the line
         beat_line = InfiniteLine(angle=90, movable=False, pen=line_specs)  # Create an infinite line for beat
         beat_line.setPos(frame_number)  # Set the position of the line at specific tick number
         beat_line.beat = True  # Mark this line as a beat line
         self.song_plot.addItem(beat_line)  # Add the beat line to the song plot
    
-    def remove_beat_v_lines(self):
+    def remove_beat_lines(self):
         for item in self.song_plot.items():
             if isinstance(item, InfiniteLine) and getattr(item, 'beat', False):
                 self.song_plot.removeItem(item)  # Remove the beat line from the song plot

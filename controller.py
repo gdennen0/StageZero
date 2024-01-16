@@ -283,28 +283,27 @@ class SongOverviewController:
 
         return frame_numbers
 
-    def init_v_line(self):
+    def init_playhead(self):
         # Initialize the vertical line
         song_overview_widget = self.view.main_window.song_overview
-        song_overview_widget.init_v_line()
+        song_overview_widget.init_playhead()
         self.main_controller.audio_playback_controller.time_update_thread.time_updated.connect(
-            self.update_v_line_position
+            self.update_playhead_position
         )
 
     def paint_beat_lines(self, beats):
         for beat in beats:
             song_overview_widget = self.view.main_window.song_overview
-            song_overview_widget.paint_beat_v_line(beat)
+            song_overview_widget.paint_beat_line(beat)
 
     def remove_beat_lines(self):
         song_overview_widget = self.view.main_window.song_overview
-        song_overview_widget.remove_beat_v_lines()
+        song_overview_widget.remove_beat_lines()
 
 
-    def update_v_line_position(self, frame_number):
+    def update_playhead_position(self, frame_number):
         # Update the position of the vertical line
-        # print(f"update_v_line_pos")
-        self.view.main_window.song_overview.v_line.setPos(float(frame_number))
+        self.view.main_window.song_overview.playhead.setPos(float(frame_number))
 
     def calculate_frame_quantity(self, length_ms, fps):
         # Calculate the frame quantity and round up to the nearest whole frame
@@ -321,7 +320,7 @@ class SongOverviewController:
         ticks = self.generate_ticks()
         song_data = self.model.song.objects[self.model.song.loaded_song].song_data
         self.song_overview_widget.update_plot(ticks, song_data)
-        self.init_v_line()
+        self.init_playhead()
 
 class SongController:
     def __init__(self, main_controller):
@@ -433,7 +432,7 @@ class LayerController:
         layer_plot.plot(x_ticks, y_values, pen=None)
         layer_plot.setXLink(song_overview_plot)
 
-        self.init_v_line()
+        self.init_playhead()
         self.set_layer_plot_limits(0, frame_qty, 0, num_layers)
         self.connect_layer_plot_signals(layer_plot)
 
@@ -559,18 +558,18 @@ class LayerController:
         print(f"# of frames for {(length_ms / 1000)}seconds @ {fps}fps is {frame_qty}")
         return frame_qty
 
-    def init_v_line(self):
+    def init_playhead(self):
         # Initialize the vertical line in the layer widget
         layer_widget = self.view.main_window.stack.layer_widget
-        layer_widget.init_v_line()
+        layer_widget.init_playhead()
         self.main_controller.audio_playback_controller.time_update_thread.time_updated.connect(
-            self.update_v_line_position
+            self.update_playhead_position
         )
 
-    def update_v_line_position(self, frame_number):
+    def update_playhead_position(self, frame_number):
         # Update the position of the vertical line
-        v_line = self.view.main_window.stack.layer_widget.v_line
-        v_line.setPos(float(frame_number))
+        playhead = self.view.main_window.stack.layer_widget.playhead
+        playhead.setPos(float(frame_number))
 
     def tally_events(event_data):
         # Count the number of events in the event data
