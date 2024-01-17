@@ -40,6 +40,7 @@ class MainView(QMainWindow):  # Main view class
         self.launch_window = LaunchWindow()  # Initialize launch window
         self.main_window = MainWidget()  # Initialize main window
         self.tools_window = ToolsWindow()
+        self.graphs_window = GraphsWindow()
         self.main_menu = MainMenu()
         self.init_ui()
 
@@ -139,8 +140,11 @@ class MainMenu(QMenuBar):
         # View Menu Dropdown
         self.view_menu = self.addMenu('&View')
         
-        self.tools_action = QAction('&Tool Window', self)
+        self.tools_action = QAction('&Tools', self)
+        self.graphs_action = QAction('&Plots', self)
+
         self.view_menu.addAction(self.tools_action)
+        self.view_menu.addAction(self.graphs_action)
 
 
 class ToolsWindow(QWidget):
@@ -204,6 +208,74 @@ class BpmToolWidget(QWidget):
         self.layout.addWidget(self.paint_to_song_overview_button)
         self.layout.addWidget(self.remove_from_song_overview_button)
         self.layout.addWidget(self.bpm_label)
+
+
+class GraphsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Graphs')
+        self.initializeUI()
+
+    def initializeUI(self):
+        # Main layout for the Tools window
+        self.layout = QVBoxLayout(self)
+
+        # Dropdown menu to select a tool
+        self.graph_selector = QComboBox(self)
+        self.graph_selector.addItems(["Mel Spectrogram", "Graph 2", "Graph 3"])  # Add tool names here
+        self.graph_selector.currentIndexChanged.connect(self.toolSelected)
+        self.layout.addWidget(self.graph_selector)
+
+        # Stacked widget to hold different tool widgets
+        self.graph_stack = QStackedWidget(self)
+        self.layout.addWidget(self.graph_stack)
+
+        # Initialize tool widgets and add them to the stack
+        self.initialize_graphs()
+
+    def initialize_graphs(self):
+        # Tool widgets are initialized and added to the stack here
+        # Example tool widgets
+        self.mel_spectrogram = mel_spectrogram_widget()
+        self.graph2_widget = QWidget()
+        self.graph3_widget = QWidget()
+
+        # Add tool widgets to the stack
+        self.graph_stack.addWidget(self.mel_spectrogram)
+        self.graph_stack.addWidget(self.graph2_widget)
+        self.graph_stack.addWidget(self.graph3_widget)
+
+    def toolSelected(self, index):
+        # Change the current widget in the stack based on the selected tool
+        self.graph_stack.setCurrentIndex(index)
+
+    def open(self):
+        # Show the Tools window
+        self.show()
+
+class mel_spectrogram_widget(QWidget):
+    def __init__(self):
+        super().__init__()  # Call the constructor of the parent class
+        self.initialize()
+
+    def initialize(self):
+        self.layout = QVBoxLayout(self)    
+
+        # Assuming self.spectrogram_plot is a pyqtgraph.PlotWidget or similar
+        self.spectrogram_plot = pg.PlotWidget(self)
+        self.spectrogram_image = pg.ImageItem(axisOrder='row-major')  # Create an ImageItem
+        self.spectrogram_plot.addItem(self.spectrogram_image)  # Add ImageItem to the PlotWidget
+        self.layout.addWidget(self.spectrogram_plot)
+
+    def plot_spectrogram(self, spectrogram_data):
+        """
+        Plot or update the spectrogram data on the spectrogram plot.
+
+        :param spectrogram_data: A 2D numpy array representing the spectrogram data.
+        """
+        self.spectrogram_image.setImage(spectrogram_data.T, autoLevels=True)  # Transpose the data for correct orientation
+
+
 
 class AudioPlaybackCommandWidget(QWidget):  # Widget for controlling audio playback
     def __init__(self):

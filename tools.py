@@ -15,3 +15,10 @@ def estimate_bpm(song_object):
 
     print(f"[TOOLS][estimate_bpm] song name: {song_name}, sample rate {sample_rate}, tempo {tempo}")
     return tempo, beats
+
+def mel_spectrogram(song_object):
+    song_name = song_object.name
+    song_path = song_object.path
+    song_data, sample_rate = librosa.load(song_path)
+
+    melspectrogram = librosa.feature.melspectrogram(song_data, sample_rate)

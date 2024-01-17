@@ -77,10 +77,16 @@ class MainMenuController:
     def initialize_connections(self):
         self.view.main_menu.exit_action.triggered.connect(QApplication.instance().quit)
         self.view.main_menu.tools_action.triggered.connect(self.open_tools_window)
+        self.view.main_menu.graphs_action.triggered.connect(self.open_graphs_window)
 
     def open_tools_window(self):
         print(f"Opening tools window")
         self.view.tools_window.open()
+
+    def open_graphs_window(self):
+        print(f"Opening graphs window")
+        self.view.graphs_window.open()
+        self.view.graphs_window.mel_spectrogram.plot_spe
 
 class SongSelectController:
     def __init__(self, main_controller):
@@ -830,3 +836,5 @@ class BpmToolController:
 
     def remove_beats_from_song_overview(self):
         self.main_controller.song_overview_controller.remove_beat_lines()
+
+
