@@ -21,8 +21,9 @@ from PyQt5.QtWidgets import (
     QStackedWidget
 )
 
+from .STFTLinearSpectrogramWidget import STFTLinearSpectrogramWidget
+from .LogFrequencyAxisWidget import LogFrequencyAxisWidget
 from .MelSpectrogramWidget import MelSpectrogramWidget
-
 
 class GraphsWindow(QWidget):
     def __init__(self):
@@ -36,31 +37,35 @@ class GraphsWindow(QWidget):
 
         # Dropdown menu to select a tool
         self.graph_selector = QComboBox(self)
-        self.graph_selector.addItems(["Mel Spectrogram", "Graph 2", "Graph 3"])  # Add tool names here
-        self.graph_selector.currentIndexChanged.connect(self.toolSelected)
+        self.graph_selector.addItems([
+            "stft_linear_spectrogram", 
+            "log_frequency_axis",
+            "mel_spectrogram",
+            ]
+        )  
         self.layout.addWidget(self.graph_selector)
 
         # Stacked widget to hold different tool widgets
         self.graph_stack = QStackedWidget(self)
         self.layout.addWidget(self.graph_stack)
 
-        # Initialize tool widgets and add them to the stack
         self.initialize_graphs()
 
     def initialize_graphs(self):
         # Tool widgets are initialized and added to the stack here
         # Example tool widgets
+        self.stft_linear_spectrogram = STFTLinearSpectrogramWidget()
+        self.log_frequency_axis = LogFrequencyAxisWidget()
         self.mel_spectrogram = MelSpectrogramWidget()
-        self.graph2_widget = QWidget()
-        self.graph3_widget = QWidget()
 
         # Add tool widgets to the stack
+        self.graph_stack.addWidget(self.stft_linear_spectrogram)
+        self.graph_stack.addWidget(self.log_frequency_axis)
         self.graph_stack.addWidget(self.mel_spectrogram)
-        self.graph_stack.addWidget(self.graph2_widget)
-        self.graph_stack.addWidget(self.graph3_widget)
 
-    def toolSelected(self, index):
+    def open_graph(self, index):
         # Change the current widget in the stack based on the selected tool
+
         self.graph_stack.setCurrentIndex(index)
 
     def open(self):

@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import (
 )
 
 from .BPMToolWidget import BpmToolWidget
+from .OnsetDetectionWidget import OnsetDetectionWidget
 
 class ToolsWindow(QWidget):
     def __init__(self):
@@ -36,7 +37,7 @@ class ToolsWindow(QWidget):
 
         # Dropdown menu to select a tool
         self.tool_selector = QComboBox(self)
-        self.tool_selector.addItems(["BPM Counter", "Tool 2", "Tool 3"])  # Add tool names here
+        self.tool_selector.addItems(["BPM Counter", "Onset Detection", "Tool 3"])  # Add tool names here
         self.tool_selector.currentIndexChanged.connect(self.toolSelected)
         self.layout.addWidget(self.tool_selector)
 
@@ -51,12 +52,12 @@ class ToolsWindow(QWidget):
         # Tool widgets are initialized and added to the stack here
         # Example tool widgets
         self.bpm = BpmToolWidget()
-        self.tool2_widget = QWidget()
+        self.onset = OnsetDetectionWidget()
         self.tool3_widget = QWidget()
 
         # Add tool widgets to the stack
         self.tools_stack.addWidget(self.bpm)
-        self.tools_stack.addWidget(self.tool2_widget)
+        self.tools_stack.addWidget(self.onset)
         self.tools_stack.addWidget(self.tool3_widget)
 
     def toolSelected(self, index):

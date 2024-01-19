@@ -26,6 +26,7 @@ class SongItem:
         self.name = name  # The name of the song
         self.path = path  # The path to the song file
         self.song_data, self.sample_rate = self.load_song_data(path)  # Load the song data and sample rate
+        self.original_sample_rate = self.get_original_sample_rate(path)
         self.length_ms = self.calculate_length_ms()  # Calculate the length of the song in milliseconds
         self.frame_qty = self.calculate_frame_qty()  # Calculate the quantity of frames
 
@@ -42,3 +43,6 @@ class SongItem:
         frame_qty = round(self.length_ms / 1000 * constants.PROJECT_FPS)  # Calculate the quantity of frames
         return frame_qty
 
+    def get_original_sample_rate(self, path):
+        _, sr = librosa.load(path)
+        return sr

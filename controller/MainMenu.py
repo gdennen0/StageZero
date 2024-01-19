@@ -30,4 +30,3 @@ class MainMenuController:
     def open_graphs_window(self):
         print(f"Opening graphs window")
         self.view.graphs_window.open()
-        self.view.graphs_window.mel_spectrogram.plot_spe

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-class MelSpectrogramWidget(QWidget):
+class LogFrequencyAxisWidget(QWidget):
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()

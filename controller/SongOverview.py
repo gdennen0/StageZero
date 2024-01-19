@@ -61,6 +61,17 @@ class SongOverviewController:
         song_overview_widget = self.view.main_window.song_overview
         song_overview_widget.remove_beat_lines()
 
+    def paint_onset_lines(self, onsets):
+        for onset in onsets:
+            song_overview_widget = self.view.main_window.song_overview
+            song_overview_widget.paint_beat_line(onset)
+
+    def remove_onset_lines(self):
+        song_overview_widget = self.view.main_window.song_overview
+        song_overview_widget.remove_beat_lines()
+
+
+
 
     def update_playhead_position(self, frame_number):
         # Update the position of the vertical line

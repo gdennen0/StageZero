@@ -10,9 +10,11 @@ from .LayerControlWidget import *
 from .MainMenu import *
 from .MainView import *
 from .MainWidget import *
-from .MelSpectrogramWidget import *
+from .STFTLinearSpectrogramWidget import *
 from .PlaybackModeWidget import *
 from .SongOverviewWidget import *
 from .SongSelectWidget import *
 from .StackWidget import *
 from .ToolsWindow import *
+from .LogFrequencyAxisWidget import *
+from .MelSpectrogramWidget import *

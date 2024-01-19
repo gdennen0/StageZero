@@ -28,7 +28,8 @@ from .Event import EventController
 from .PlaybackMode import PlaybackModeController
 from .AudioPlayback import AudioPlaybackController
 from .MainMenu import MainMenuController
-from .BPMTool import BpmToolController
+from .GraphWindow import GraphWindowController
+from .ToolWindowController import BpmToolController, OnsetDetectionToolController
 
 class MainController:
     def __init__(self, model, view):
@@ -47,6 +48,8 @@ class MainController:
         self.playback_mode_controller = PlaybackModeController(self)  # Creating an instance of PlaybackModeController
         self.main_menu_controller = MainMenuController(self)
         self.bpm_tool_controller = BpmToolController(self)
+        self.onset_detection_tool_controller = OnsetDetectionToolController(self)
+        self.graph_window_controller = GraphWindowController(self)
 
     def initialize_app(self):
         # Open the main window
