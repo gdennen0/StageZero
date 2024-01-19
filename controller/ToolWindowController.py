@@ -50,7 +50,9 @@ class OnsetDetectionToolController:
     def init_connections(self):
         self.view.tools_window.onset.paint_to_song_overview_button.clicked.connect(self.add_onsets_to_song_overview)
         self.view.tools_window.onset.remove_from_song_overview_button.clicked.connect(self.remove_onsets_from_song_overview)
-    
+        self.view.tools_window.onset.filter_type_dropdown.currentIndexChanged.connect(self.on_filter_type_selected)
+
+
     def add_onsets_to_song_overview(self):
         print(f"Adding Onsets to Song Overview")
         song_object = self.model.loaded_song
@@ -60,3 +62,28 @@ class OnsetDetectionToolController:
     def remove_onsets_from_song_overview(self):
         print(f"Removing Onsets from Song Overview")
         self.main_controller.song_overview_controller.remove_onset_lines()
+
+
+    def on_filter_type_selected(self, index):
+        filter_type = self.filter_type_dropdown.itemText(index)
+        print(f"Selected filter type: {filter_type}")
+        OnsetFilterController.add_filter(filter_type)
+
+
+class OnsetFilterController:
+    def __init__(self, main_controller):
+        self.main_controller = main_controller
+        self.view = main_controller.view
+
+    def add_filter(self, filter_type):
+        if filter_type == "hi_pass":
+            self.view.tools_window.onset.add_filter(filter_type)
+        self.view.tools_window.onset.onset_filter_widget.paint_to_song_overview_button.clicked.connect(self.add_onsets_to_song_overview)
+        self.view.tools_window.onset.remove_from_song_overview_button.clicked.connect(self.remove_onsets_from_song_overview)
+
+        if filter_type == "mid_pass":
+        if filter_type == "lo_pass":
+        else:
+            print(f"No filter type match to '{filter_type}'")
+
+        print("adding filter {filter_type}")

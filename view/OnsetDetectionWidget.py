@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,  # Box layout with a vertical direction
     QPushButton,  # Command button
 )
+from PyQt5.QtWidgets import QComboBox
+from .OnsetFilterWidget import OnsetFilterWidget
 
 class OnsetDetectionWidget(QWidget):
     def __init__(self):
@@ -18,3 +20,24 @@ class OnsetDetectionWidget(QWidget):
 
         self.layout.addWidget(self.paint_to_song_overview_button)
         self.layout.addWidget(self.remove_from_song_overview_button)
+        
+        self.filter_type_dropdown = QComboBox(self)
+        self.filter_type_dropdown.addItem("hi-pass")
+        self.filter_type_dropdown.addItem("lo-pass")
+        self.filter_type_dropdown.addItem("mid-pass")
+        
+        self.layout.addWidget(self.filter_type_dropdown)
+
+
+    def add_filter(self, filter_type):
+        # Initialize the dictionary to keep track of OnsetFilterWidget instances
+        if not hasattr(self, "onset_filter_widgets"):
+            self.onset_filter_widgets = {}
+        
+        # Create a new OnsetFilterWidget instance and add it to the dictionary
+        self.onset_filter_widgets[filter_type] = OnsetFilterWidget(self, filter_type)
+        
+        # Add the new OnsetFilterWidget instance to the layout
+        self.layout.addWidget(self.onset_filter_widgets[filter_type])
+
+    
