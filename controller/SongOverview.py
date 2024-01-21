@@ -61,14 +61,20 @@ class SongOverviewController:
         song_overview_widget = self.view.main_window.song_overview
         song_overview_widget.remove_beat_lines()
 
-    def paint_onset_lines(self, onsets):
-        for onset in onsets:
-            song_overview_widget = self.view.main_window.song_overview
-            song_overview_widget.paint_beat_line(onset)
-
-    def remove_onset_lines(self):
+    def paint_onset_lines(self, onsets, onset_type):
         song_overview_widget = self.view.main_window.song_overview
-        song_overview_widget.remove_beat_lines()
+
+        if onset_type == "all-pass":
+            for onset in onsets:
+                song_overview_widget.paint_onset_line(onset, "all-pass", 'r')
+        if onset_type == "lo-pass":
+            for onset in onsets:
+                song_overview_widget.paint_onset_line(onset, "lo-pass", 'g')
+
+
+    def remove_onset_lines(self, onset_type):
+        song_overview_widget = self.view.main_window.song_overview
+        song_overview_widget.remove_onset_lines(onset_type)
 
 
 

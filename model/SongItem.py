@@ -26,10 +26,10 @@ class SongItem:
         self.name = name  # The name of the song
         self.path = path  # The path to the song file
         self.song_data, self.sample_rate = self.load_song_data(path)  # Load the song data and sample rate
-        self.original_sample_rate = self.get_original_sample_rate(path)
+        self.original_song_data, self.original_sample_rate = self.get_original_song_data(path)
         self.length_ms = self.calculate_length_ms()  # Calculate the length of the song in milliseconds
         self.frame_qty = self.calculate_frame_qty()  # Calculate the quantity of frames
-
+        self.filter = {}
     @staticmethod
     def load_song_data(path):
         # ingest song data & sample rate
@@ -43,6 +43,20 @@ class SongItem:
         frame_qty = round(self.length_ms / 1000 * constants.PROJECT_FPS)  # Calculate the quantity of frames
         return frame_qty
 
-    def get_original_sample_rate(self, path):
-        _, sr = librosa.load(path)
-        return sr
+    def get_original_song_data(self, path):
+        song_data, sample_rate = librosa.load(path)
+        return song_data, sample_rate
+    
+    def add_filtered_data(self, filter_type, filtered_data, sample_rate):
+        self.filter[filter_type] = FilterItem(filtered_data, sample_rate)
+        print(f"Adding FilterItem {filter_type} ")
+
+    @property   
+    def filtered_song_data(self, filter_type):
+        if filter_type in self.filters:
+            return self.filters[filter_type].data 
+
+class FilterItem:
+    def __init__(self, filtered_data, sample_rate):
+        self.filtered_data = filtered_data
+        self.sample_rate = sample_rate

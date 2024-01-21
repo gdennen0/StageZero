@@ -70,3 +70,7 @@ class SongController:
         # reload the song select dropdown menu
         self.main_controller.song_select_controller.update_dropdown()
 
+    def add_filter_to_loaded_song(self, filter_type, filtered_data, sample_rate):
+        # (filter_type, filtered_data, sample_rate)
+        self.model.loaded_song.add_filtered_data(filter_type, filtered_data, sample_rate)
+

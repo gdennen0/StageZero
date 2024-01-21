@@ -10,6 +10,7 @@ from .OnsetFilterWidget import OnsetFilterWidget
 class OnsetDetectionWidget(QWidget):
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
+        self.onset_filter_widgets = {}
         self.initialize()
 
     def initialize(self):
@@ -29,15 +30,12 @@ class OnsetDetectionWidget(QWidget):
         self.layout.addWidget(self.filter_type_dropdown)
 
 
+
+
     def add_filter(self, filter_type):
-        # Initialize the dictionary to keep track of OnsetFilterWidget instances
-        if not hasattr(self, "onset_filter_widgets"):
-            self.onset_filter_widgets = {}
-        
         # Create a new OnsetFilterWidget instance and add it to the dictionary
-        self.onset_filter_widgets[filter_type] = OnsetFilterWidget(self, filter_type)
+        self.onset_filter_widgets[filter_type] = OnsetFilterWidget(filter_type)
         
         # Add the new OnsetFilterWidget instance to the layout
         self.layout.addWidget(self.onset_filter_widgets[filter_type])
 
-    

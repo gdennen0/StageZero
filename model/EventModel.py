@@ -20,9 +20,12 @@ from .EventItem import EventItem
 
 class EventModel:
     def __init__(self, name):
-        self.name = name  # The name of the event
         self.objects = {}  # Dictionary to store event objects
         self.plot_data_item = None  # The plot data item
-
-    def add(self, index):
-        self.objects[index] = EventItem()  # Add an event item to the dictionary
+        self.name = name
+        
+    def add(self, frame_number):
+        if frame_number in self.objects:
+            print(f"Data already exists for frame number {frame_number}, frame not added")
+            return
+        self.objects[frame_number] = EventItem()  # Add an event item to the dictionary

@@ -37,4 +37,22 @@ class MainModel:
         if self.song.loaded_song:
             return self.song.objects[self.song.loaded_song]
         else:
-            print(f"ERROR: No file loaded yet")  # Error message if no song is loaded
+            print(f"ERROR: No song loaded yet")  # Error message if no song is loaded
+
+    @property
+    def loaded_stack(self):
+        if self.stack.loaded_stack:
+            return self.stack.objects[self.stack.loaded_stack]
+        else:
+            print(f"ERROR: No stack loaded yet")  # Error message if no song is loaded
+
+    
+    def add_events_to_layer(self, layer_name, events):
+        # events should be a dictionary of frame numbers
+        layer_index = self.loaded_stack.get_layer_index(layer_name)
+        for event in events:
+            self.loaded_stack.layers[layer_index].add(event)
+       
+
+    # def add_new_layer(self, layer_name):
+    #     layer_index = self.stack.objects[self.loaded_stack].layers.

@@ -48,3 +48,6 @@ class MainView(QMainWindow):  # Main view class
     def open_launch_window(self):
         self.setCentralWidget(self.launch_window)
         self.show()
+
+    # def refresh_layer_plot(self, layer_name):
+    #     self.main_window.stack.layer_widget.
