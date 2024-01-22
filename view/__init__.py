@@ -18,3 +18,6 @@ from .StackWidget import *
 from .ToolsWindow import *
 from .LogFrequencyAxisWidget import *
 from .MelSpectrogramWidget import *
+from .LayerSelectPopup import *
+from .FilterEditorWindow import *
+from .FilterAudioWindow import *

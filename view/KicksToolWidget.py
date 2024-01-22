@@ -33,10 +33,3 @@ class KicksToolWidget(QWidget):
         # Just sets the label widget text
         self.event_count = event_count
         self.event_count_label.setText(f"{self.event_count} events found")
-
-    def open_layer_selection_popup(self, layer_names):
-        # Opens up a popup to select which layer. this will change to its own standard module eventually 
-        print("opening layer selection popup")
-        self.layer_selection_popup.addItems(layer_names)
-        self.layer_selection_popup.setWindowTitle('Select a Layer')
-        self.layer_selection_popup.show()

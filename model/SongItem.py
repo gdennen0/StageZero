@@ -47,9 +47,9 @@ class SongItem:
         song_data, sample_rate = librosa.load(path)
         return song_data, sample_rate
     
-    def add_filtered_data(self, filter_type, filtered_data, sample_rate):
-        self.filter[filter_type] = FilterItem(filtered_data, sample_rate)
-        print(f"Adding FilterItem {filter_type} ")
+    def add_filtered_data(self, filter_name, filtered_data):
+        self.filter[filter_name] = FilterItem(filtered_data)
+        print(f"Adding FilterItem {filter_name} ")
 
     @property   
     def filtered_song_data(self, filter_type):
@@ -57,6 +57,6 @@ class SongItem:
             return self.filters[filter_type].data 
 
 class FilterItem:
-    def __init__(self, filtered_data, sample_rate):
+    def __init__(self, filtered_data):
         self.filtered_data = filtered_data
-        self.sample_rate = sample_rate
+

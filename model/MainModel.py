@@ -52,6 +52,9 @@ class MainModel:
         layer_index = self.loaded_stack.get_layer_index(layer_name)
         for event in events:
             self.loaded_stack.layers[layer_index].add(event)
+
+    def add_filtered_data(self, filter_name, filtered_data):
+        self.loaded_song.add_filtered_data(filter_name, filtered_data)
        
 
     # def add_new_layer(self, layer_name):

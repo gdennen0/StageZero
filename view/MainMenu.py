@@ -42,7 +42,15 @@ class MainMenu(QMenuBar):
         self.view_menu = self.addMenu('&View')
         
         self.tools_action = QAction('&Tools', self)
-        self.graphs_action = QAction('&Plots', self)
+        self.graphs_action = QAction('&Graphs', self)
 
         self.view_menu.addAction(self.tools_action)
         self.view_menu.addAction(self.graphs_action)
+
+        # Filter Menu Dropdown
+        self.filter_menu = self.addMenu('&Filter')
+        self.edit_filters_action = QAction('&Edit Filters', self)
+        self.filter_audio_action = QAction('&Filter Audio', self)
+
+        self.filter_menu.addAction(self.edit_filters_action)
+        self.filter_menu.addAction(self.filter_audio_action)

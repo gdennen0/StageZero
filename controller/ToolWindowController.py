@@ -1,6 +1,7 @@
 import tools
 from functools import partial
 from analyze import AudioClassifier as ac
+from view.LayerSelectPopup import open_layer_selection_popup
 
 class BpmToolController:
     def __init__(self, main_controller):
@@ -115,37 +116,40 @@ class KicksToolController:
         self.model = main_controller.model
         self.view = main_controller.view
         self.events = None
+        self.selected_layer_name = None
         self.init_connections()
 
     def init_connections(self):
         self.view.tools_window.kick.process_kick_events_button.clicked.connect(self.process_kick_events)
         self.view.tools_window.kick.add_events_to_layer_button.clicked.connect(self.add_events_to_layer)
-        self.view.tools_window.kick.layer_selection_popup.itemSelectionChanged.connect(self.on_layer_selected)
-    # def add_events_to_layer(self, layer_index, events):
-
-    # Pass pass the song path to the Kick Tool CNN module
-
 
     # add the events to a new layer functionality
     def add_events_to_layer(self):
         print(f"Add Events to layer selected")
         if self.events is not None:
             layer_names = [layer.name for layer in self.model.loaded_stack.layers]
-            self.view.tools_window.kick.open_layer_selection_popup(layer_names)
-            # self.view.tools_window.kick.layer_selection_popup.itemClicked.connect(self.on_layer_selected)
+            # Store the popup as an attribute to keep the reference
+            self.layer_selection_popup = open_layer_selection_popup(layer_names)
+            self.layer_selection_popup.layer_list_widget.itemSelectionChanged.connect(self.on_layer_selected)
+            self.layer_selection_popup.accept_button.clicked.connect(self.on_add_to_layer_button_clicked)
+
+            # Show the dialog non-modally
+            self.layer_selection_popup.show()
 
 
     def on_layer_selected(self):
-        selected_items = self.view.tools_window.kick.layer_selection_popup.selectedItems()
+        selected_items = self.layer_selection_popup.layer_list_widget.selectedItems()
         if selected_items:
-            layer_name = selected_items[0].text()
-            self.model.add_events_to_layer(layer_name, self.events)
-            self.main_controller.layer_controller.reload_layer_plot()
-            print(f"Layer {layer_name} selected")
+            self.selected_layer_name = selected_items[0].text()
+            print(f"Layer {self.selected_layer_name} selected")
 
-    # def add_events_to_layer(self, layer_index, events):
-    #     layer_name = self.view.tools_window.kick.open_layer_selection_popup()
-    #     self.model.add_events_to_layer(layer_name, events)
+    def on_add_to_layer_button_clicked(self):
+        if self.selected_layer_name is None:
+            print(f"ERROR: Select a layer to add events too")
+            return
+        self.model.add_events_to_layer(self.selected_layer_name, self.events)
+        self.main_controller.layer_controller.reload_layer_plot()
+        self.layer_selection_popup.close()
 
     def process_kick_events(self):
         song_path = self.model.loaded_song.path

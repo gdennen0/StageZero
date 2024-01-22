@@ -30,8 +30,6 @@ class OnsetDetectionWidget(QWidget):
         self.layout.addWidget(self.filter_type_dropdown)
 
 
-
-
     def add_filter(self, filter_type):
         # Create a new OnsetFilterWidget instance and add it to the dictionary
         self.onset_filter_widgets[filter_type] = OnsetFilterWidget(filter_type)
