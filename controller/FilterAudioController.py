@@ -30,7 +30,7 @@ class FilterAudioController:
         selected_item = self.filter_audio_window.filter_list_widget.currentItem()
         if selected_item:
             file_name = selected_item.text()
-            filter_name = selected_item
+            filter_name = file_name.rsplit('.', 1)[0]
             with open(f'filters/{file_name}', 'r') as file:
                 properties = json.load(file)
             filter_type = properties.get('filter_type', '')
@@ -41,8 +41,7 @@ class FilterAudioController:
             # function to add filtered data to song
             self.model.add_filtered_data(filter_name, filtered_data)
             # function to refresh the list of filters on song
-            self.filter_audio_window.update_song_filtered_data(self.loaded_song.filter)
-
+            self.filter_audio_window.update_song_filtered_data(self.model.loaded_song.filter)
 
     def display_song_filters(self):
         self.filter_audio_window.update_song_filtered_data(self.loaded_song.filter)

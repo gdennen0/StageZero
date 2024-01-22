@@ -1,6 +1,7 @@
 import json
 import os
 from view.FilterEditorWindow import FilterEditorWindow
+from PyQt5.QtGui import QIntValidator
 
 class FilterEditorController:
     def __init__(self):
@@ -8,13 +9,44 @@ class FilterEditorController:
 
     def connect_signals(self):
         self.filter_editor_window.filter_list_widget.itemSelectionChanged.connect(self.load_filter_properties)
-        self.filter_editor_window.save_button.clicked.connect(lambda: (self.saveParametersToFile({
-            "filter_name": self.filter_editor_window.filter_name_input.text(),
-            "filter_type": self.filter_editor_window.filter_type_combo_box.currentText(),
-            "cutoff_frequency": self.filter_editor_window.cutoff_frequency_input.text(),
-            # Add more parameters as needed
-        }), self.filter_editor_window.update_filter_list()))
+        self.filter_editor_window.save_button.clicked.connect(self.save_filter)
         self.filter_editor_window.delete_button.clicked.connect(self.delete_filter)
+
+    def save_filter(self):
+        if self.validate_inputs():
+            params = {
+                "filter_name": self.filter_editor_window.filter_name_input.text(),
+                "filter_type": self.filter_editor_window.filter_type_combo_box.currentText(),
+                "cutoff_frequency": self.filter_editor_window.cutoff_frequency_input.text(),
+                # Add more parameters as needed
+            }
+            self.saveParametersToFile(params)
+            self.filter_editor_window.update_filter_list()
+
+    def validate_inputs(self):
+        try:
+            filter_name_input = self.filter_editor_window.filter_name_input.text()
+            if not filter_name_input.isalnum():
+                raise ValueError("Filter name must only contain alphanumeric characters.")
+
+            cutoff_frequency_input = self.filter_editor_window.cutoff_frequency_input.text()
+            if not cutoff_frequency_input.isdigit() and not cutoff_frequency_input.replace('.', '', 1).isdigit():
+                raise ValueError("Cutoff frequency must be a number.")
+
+            cutoff_frequency = float(cutoff_frequency_input)
+            if not 20 <= cutoff_frequency <= 20000:
+                raise ValueError("The input frequency must be between 20Hz and 20kHz.")
+
+            return True
+        except ValueError as e:
+            from PyQt5.QtWidgets import QMessageBox
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Warning)
+            error_dialog.setText("Invalid Input")
+            error_dialog.setInformativeText(str(e))
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+            return False
 
     def load_filter_properties(self):
         file_name = self.filter_editor_window.filter_list_widget.currentItem().text()

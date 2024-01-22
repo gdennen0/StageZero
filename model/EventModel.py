@@ -25,6 +25,7 @@ class EventModel:
         self.name = name
         
     def add(self, frame_number):
+        # adds an instance of EventItem to self.objects
         if frame_number in self.objects:
             print(f"Data already exists for frame number {frame_number}, frame not added")
             return

@@ -38,7 +38,7 @@ class FilterEditorWindow(QDialog):
         properties_layout.addWidget(self.filter_type_combo_box)
 
         # Frequency cutoff label and input
-        filter_cutoff_frequency_label = QLabel("Cutoff Frequency")
+        filter_cutoff_frequency_label = QLabel("Cutoff Frequency (Hz)")
         self.cutoff_frequency_input = QLineEdit()
         properties_layout.addWidget(filter_cutoff_frequency_label)
         properties_layout.addWidget(self.cutoff_frequency_input)

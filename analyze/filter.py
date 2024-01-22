@@ -13,6 +13,7 @@ def apply_filter(filter_type, cutoff, song_data, sample_rate):
             raise ValueError("Cutoff frequencies must be between 0 and half the sample rate")
     else:
         normalized_cutoff = cutoff / (0.5 * sample_rate)
+        print(f"normalized cutoff is {normalized_cutoff} the cutoff is {cutoff}, the sample rate is {sample_rate}")
         if not 0 < normalized_cutoff < 1:
             raise ValueError("Cutoff frequency must be between 0 and half the sample rate")
 
