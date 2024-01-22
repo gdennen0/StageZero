@@ -32,6 +32,7 @@ class ProjectController:
         self.model.project_name = project_name  # Setting the project name in the model
 
         self.view.open_main_window()  # Opening the main window with the project name
+        self.view.close_launch_window()
 
     def load_project(self):
         # functions to load the project file

@@ -69,6 +69,8 @@ class LayerController:
         # Add a new layer to the stack
         if self.model.stack.objects != None:
             layer_name = DialogWindow.input_text("Enter Layer Name", "Layer Name")
+            while len(layer_name) > 20:
+                layer_name = DialogWindow.input_text("Name too long. Enter up to 20 characters", "Layer Name")
             self.add_model_layer(layer_name)
             self.add_plot_layer(layer_name)
 
@@ -85,7 +87,7 @@ class LayerController:
 
     def add_plot_layer(self, layer_name):
         # Add a new layer to the plot
-        stack = self.model.stack.objects[self.model.loaded_song.name]
+        stack = self.model.loaded_stack
         layer_plot = self.view.main_window.stack.layer_widget.layer_plot
         self.refresh_plot_data_item(layer_name)
         layer_plot_item = stack.layers[stack.get_layer_index(layer_name)].plot_data_item
@@ -111,7 +113,7 @@ class LayerController:
 
     def update_layer_names(self):
         # Update the names of the layers
-        loaded_stack = self.model.stack.objects[self.model.stack.loaded_stack]
+        loaded_stack = self.model.loaded_stack
         layer_names = [
             layer.name
             for layer in loaded_stack.layers

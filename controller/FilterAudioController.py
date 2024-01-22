@@ -2,10 +2,12 @@ import json
 
 from analyze import filter
 from view.FilterAudioWindow import FilterAudioWindow
-
+from tools import create_frames_array
 class FilterAudioController:
     def __init__(self, main_controller):
         self.model = main_controller.model
+        self.main = main_controller
+        self.view = main_controller.view
         self.filter_audio_window = FilterAudioWindow()
         self.loaded_song = main_controller.model.loaded_song
         self.filter_objects = None
@@ -13,6 +15,8 @@ class FilterAudioController:
     def connect_signals(self):
         self.filter_audio_window.filter_list_widget.itemSelectionChanged.connect(self.display_filter_properties)
         self.filter_audio_window.apply_filter_to_song.clicked.connect(self.apply_filter_to_audio)
+        self.filter_audio_window.preview_filtered_data.clicked.connect(self.preview_filtered_data)
+
 
     def display_filter_properties(self):
         selected_item = self.filter_audio_window.filter_list_widget.currentItem()
@@ -46,6 +50,17 @@ class FilterAudioController:
     def display_song_filters(self):
         self.filter_audio_window.update_song_filtered_data(self.loaded_song.filter)
 
+    def preview_filtered_data(self):
+        print(f"previewing filtered data")
+        selected_item = self.filter_audio_window.song_filtered_data_list_widget.currentItem()
+        if selected_item:
+            filtered_data_name = selected_item.text()
+            filtered_data = self.model.loaded_song.filter[filtered_data_name].filtered_data
+            axis_data = self.main.song_overview_controller.generate_ticks()
+            self.view.song_data_preview_window.open(filtered_data, axis_data)
+
+
+    
     def open(self):
         self.filter_audio_window.show()
         self.connect_signals()

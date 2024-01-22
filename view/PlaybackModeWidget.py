@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,  # Box layout with a horizontal direction
     QComboBox,  # Drop down selection box
 )
+from PyQt5.QtCore import Qt
 
 class PlaybackModeWidget(QWidget):  # Widget for selecting the playback mode
     def __init__(self):
@@ -35,11 +36,18 @@ class PlaybackModeWidget(QWidget):  # Widget for selecting the playback mode
 
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
-        self.layout.setContentsMargins(1, 1, 1, 1)  # Set half as much padding
+        # self.layout.setContentsMargins(1, 1, 1, 1)  # Set half as much padding
 
         self.label = QLabel("Playback Mode", self)  # Label for the playback mode
         self.playback_mode_selector = QComboBox(self)  # Combo box for selecting the playback mode
         self.playback_mode_selector.addItems(["Play", "Edit", "Record"])  # Add the playback modes to the combo box
 
+
+
+
+
+
         self.layout.addWidget(self.label)  # Add the label to the layout
+
         self.layout.addWidget(self.playback_mode_selector)  # Add the playback mode selector to the layout
+        self.layout.addStretch(1)

@@ -43,10 +43,12 @@ class StackWidget(QWidget):  # Widget for displaying the stack of layers
 
         # Add label at the top
         self.label = QLabel("Layers")  # Label for the layers
-        self.layout.addWidget(self.label)  # Add the label to the layout
+        # self.layout.addWidget(self.label)  # Add the label to the layout
 
         # Creating a scroll area
         self.scroll_area = QScrollArea(self)  # Scroll area for the layers
+        self.scroll_area.setFrameStyle(QScrollArea.NoFrame)  # Remove the border
+
         # self.scroll_area.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.scroll_area.setWidgetResizable(True)  # Make the widget resizable
         self.layout.addWidget(self.scroll_area)  # Add the scroll area to the layout

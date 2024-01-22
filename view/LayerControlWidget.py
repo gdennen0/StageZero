@@ -25,7 +25,7 @@ class LayerControlWidget(QWidget):  # Widget for controlling layers
 
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
-        self.layout.setContentsMargins(1, 0.5, 0.5, 1)  # Set half as much padding
+        # self.layout.setContentsMargins(1, 0.5, 0.5, 1)  # Set half as much padding
 
         self.label = QLabel(f"Layer Controls")  # Label for the layer controls
         self.layout.addWidget(self.label)  # Add the label to the layout

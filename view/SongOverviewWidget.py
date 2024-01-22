@@ -43,8 +43,16 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
 
         self.song_plot.showGrid(x=True, y=False, alpha=1)  # Show the grid for the song plot
 
-        self.layout.addWidget(self.label)  # Add the label to the layout
+        y_axis = self.song_plot.getAxis("left")  # Get the y-axis
+        y_axis.setWidth(100)
+        y_axis.setTicks([])  # Set the ticks for the y-axis
+        
+        x_axis = self.song_plot.getAxis("bottom")  # Get the y-axis
+        x_axis.setTicks([])  # Set the ticks for the y-axis
+
+        # self.layout.addWidget(self.label)  # Add the label to the layout
         self.layout.addWidget(self.song_plot)  # Add the song plot to the layout
+
 
     def init_playhead(self):
         line_specs = mkPen(color="w", width=2)  # Define the specifications for the line
@@ -91,6 +99,22 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
 
         y_axis = self.song_plot.getAxis("left")  # Get the y-axis
         y_axis.setTicks([])  # Set the ticks for the y-axis
+        self.offset_y_axis_ticks()  # Call the method to format the Y-axis ticks
+
+    def offset_y_axis_ticks(self):
+        # Define a function to format the tick labels
+        def tick_spacing(tick_values, scale, spacing=10):
+            formatted_ticks = []
+            for value in tick_values:
+                formatted_value = "".center(10, " ")  # Ensure 10 empty space characters
+                formatted_ticks.append((value, formatted_value))
+            return formatted_ticks
+
+        y_axis = self.song_plot.getAxis("left")  # Get the y-axis
+        y_axis.setWidth(100)
+        y_axis.setTicks([tick_spacing(range(-10, 11), 1)])  # Apply the custom tick formatting
+
+
 
     def update_plot(self, ticks, song_data):
         # logic to update plot

@@ -21,3 +21,4 @@ from .MelSpectrogramWidget import *
 from .LayerSelectPopup import *
 from .FilterEditorWindow import *
 from .FilterAudioWindow import *
+from .SongDataPreviewWindow import *

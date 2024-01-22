@@ -15,32 +15,48 @@ class FilterAudioWindow(QDialog):
         main_layout = QHBoxLayout(self)
 
         # List of filter files
+        filter_list_layout = QVBoxLayout(self)
         self.filter_list_widget = QListWidget()
         self.filter_list_widget.itemSelectionChanged.connect(self.display_filter_properties)
-        main_layout.addWidget(self.filter_list_widget)
+        self.filter_label = QLabel("Filter Presets")
+        filter_list_layout.addWidget(self.filter_label)
+        filter_list_layout.addWidget(self.filter_list_widget)
+        main_layout.addLayout(filter_list_layout)
 
         # Right side layout for displaying properties
         properties_layout = QVBoxLayout()
-        main_layout.addLayout(properties_layout) 
-
         # Filter name label
         self.filter_name_label = QLabel("Filter Name")
         properties_layout.addWidget(self.filter_name_label)
-
         # Filter Type label
         self.filter_type_label = QLabel("Filter Type")
         properties_layout.addWidget(self.filter_type_label)
-
         # Frequency cutoff label
         self.filter_cutoff_frequency_label = QLabel("Cutoff Frequency")
         properties_layout.addWidget(self.filter_cutoff_frequency_label)
+        # Add properties layout to main_layout
+        main_layout.addLayout(properties_layout)
 
+
+        song_filtered_data_layout = QVBoxLayout(self)
         # New column for displaying song filtered data
+        self.song_filtered_label = QLabel("Loaded Song's filtered data")
+        song_filtered_data_layout.addWidget(self.song_filtered_label)
         self.song_filtered_data_list_widget = QListWidget()
-        main_layout.addWidget(self.song_filtered_data_list_widget)
+        song_filtered_data_layout.addWidget(self.song_filtered_data_list_widget)
+        # add to main layout
+        main_layout.addLayout(song_filtered_data_layout)
 
+
+        data_application_layout = QVBoxLayout()
         self.apply_filter_to_song = QPushButton('Apply filter to song')
-        main_layout.addWidget(self.apply_filter_to_song)
+
+        self.preview_filtered_data = QPushButton('Preview filtered data')
+        data_application_layout.addWidget(self.apply_filter_to_song)
+        data_application_layout.addWidget(self.preview_filtered_data)
+        
+        #Add to data application layout to main layout
+        main_layout.addLayout(data_application_layout)
 
         self.setLayout(main_layout)
         self.update_filter_list()  # Initial population of the list

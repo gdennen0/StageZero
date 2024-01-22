@@ -30,7 +30,7 @@ class AudioPlaybackCommandWidget(QWidget):  # Widget for controlling audio playb
 
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
-        self.layout.setContentsMargins(1, 1, 1, 1)  # Set half as much padding
+        # self.layout.setContentsMargins(1, 1, 1, 1)  # Set half as much padding
 
         self.play_button = QPushButton("Play", self)  # Button for playing the audio
         self.pause_button = QPushButton("Pause", self)  # Button for pausing the audio

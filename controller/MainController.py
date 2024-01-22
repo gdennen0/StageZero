@@ -18,17 +18,17 @@ This allows the other controllers to access the model and view through the MainC
 The MainController also has an initialize_app method, which opens the main window of the application and connects the new project button click signal to the project controller's new project method.
 """
 
-from .Project import ProjectController
-from .Song import SongController
-from .Stack import StackController
-from .Layer import LayerController
-from .SongOverview import SongOverviewController
-from .SongSelect import SongSelectController
-from .Event import EventController
-from .PlaybackMode import PlaybackModeController
-from .AudioPlayback import AudioPlaybackController
-from .MainMenu import MainMenuController
-from .GraphWindow import GraphWindowController
+from .ProjectController import ProjectController
+from .SongController import SongController
+from .StackController import StackController
+from .LayerController import LayerController
+from .SongOverviewController import SongOverviewController
+from .SongSelectController import SongSelectController
+from .EventController import EventController
+from .PlaybackModeController import PlaybackModeController
+from .AudioPlaybackController import AudioPlaybackController
+from .MainMenuController import MainMenuController
+from .GraphWindowController import GraphWindowController
 from .ToolWindowController import BpmToolController, OnsetDetectionToolController, KicksToolController
 from .FilterEditorController import FilterEditorController
 from .FilterAudioController import FilterAudioController

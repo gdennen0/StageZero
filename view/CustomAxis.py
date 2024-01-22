@@ -28,6 +28,11 @@ class CustomAxis(AxisItem):  # Custom axis class
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)  # Call the constructor of the parent class
         self.layers = []  # Initialize the layers
+        self.fixedWidth = 100  # Set a fixed width for the Y-axis
+
+    def width(self):
+        # Override the width method to return a fixed width
+        return self.fixedWidth
 
     def setLayers(self, layers):  # Set the layers
         self.layers = layers  # Set the layers
@@ -43,13 +48,24 @@ class CustomAxis(AxisItem):  # Custom axis class
         ticks.append((0.5, minor_ticks))  # Add the minor ticks to the ticks
         return ticks  # Return the ticks
 
-    def tickStrings(self, values, scale, spacing):  # Get the tick strings
-        strings = []  # Initialize the strings
-        for tick_value in values:  # For each tick value
-            index = int(tick_value)  # Get the index
-            if 0 <= index < len(self.layers) and tick_value % 1 == 0.5:  # If the index is valid and the tick value is a half integer
-                strings.append(self.layers[index])  # Add the layer name to the strings
-            else:  # Otherwise
-                strings.append("")  # Add an empty string to the strings
-        return strings  # Return the strings
+    def tickStrings(self, values, scale, spacing):
+        strings = []
+        for tick_value in values:
+            index = int(tick_value)
+            # This line checks if the index is within the range of the layers list and if the tick_value is a half-integer (e.g., 1.5, 2.5, etc.)
+            if 0 <= index < len(self.layers) and tick_value % 1 == 0.5:
+                layer_name = self.layers[index]  # Assigns the layer name from the layers list at the position of the index
+                # Check if the layer name exceeds 10 characters
+                if len(layer_name) > 10:
+                    print(f"layer name is more than 10, its  {len(layer_name)}")
+                    # Insert a newline character after every 10 characters and center each line
+                    layer_name = '\n'.join(layer_name[i:i+10] for i in range(0, len(layer_name), 10))
+                else:
+                    print(f"layer name is less than 10, its  {len(layer_name)}")
+                    # Center the layer name if it is less than or equal to 10 characters
+                    layer_name = layer_name.center(10, " ")
+                strings.append(layer_name)
+            else:
+                strings.append("")
+        return strings
 

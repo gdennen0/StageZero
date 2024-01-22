@@ -30,6 +30,7 @@ class SongItem:
         self.length_ms = self.calculate_length_ms()  # Calculate the length of the song in milliseconds
         self.frame_qty = self.calculate_frame_qty()  # Calculate the quantity of frames
         self.filter = {}
+        
     @staticmethod
     def load_song_data(path):
         # ingest song data & sample rate

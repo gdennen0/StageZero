@@ -36,5 +36,6 @@ class SongSelectWidget(QWidget):  # Widget for song selection
 
         # Place the child widgets within the SongSelectWidget layout
         self.layout.addWidget(self.label)  # Add the label to the layout
-        self.layout.addWidget(self.add_new_song)  # Add the add new song button to the layout
         self.layout.addWidget(self.song_selector)  # Add the song selector to the layout
+        self.layout.addWidget(self.add_new_song)  # Add the add new song button to the layout
+

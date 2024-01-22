@@ -1,6 +1,7 @@
 import librosa
 import soundfile as sf
 from view import DialogWindow
+import numpy as np
 
 from scipy.signal import butter, lfilter
     
@@ -52,5 +53,9 @@ def butter_lowpass(cutoff, sample_rate, order=5):
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
     return b, a
 
+
+def create_frames_array(frame_qty):  # create tick array
+        print(f"Creating {frame_qty} frame array")
+        return np.arange(frame_qty)
 
 

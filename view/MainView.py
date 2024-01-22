@@ -20,8 +20,10 @@ from .MainWidget import MainWidget
 from .ToolsWindow import ToolsWindow
 from .GraphsWindow import GraphsWindow
 from .MainMenu import MainMenu
+from .SongDataPreviewWindow import SongDataPreviewWindow
 
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QApplication
+
 
 
 class MainView(QMainWindow):  # Main view class
@@ -32,6 +34,7 @@ class MainView(QMainWindow):  # Main view class
         self.tools_window = ToolsWindow()
         self.graphs_window = GraphsWindow()
         self.main_menu = MainMenu()
+        self.song_data_preview_window = SongDataPreviewWindow()
         self.init_ui()
 
     def init_ui(self):
@@ -39,6 +42,8 @@ class MainView(QMainWindow):  # Main view class
         self.setWindowTitle('StageZeroDev')
         # Set the custom menu bar
         self.setMenuBar(self.main_menu)
+        screen_resolution = QApplication.desktop().screenGeometry()
+        self.resize(screen_resolution.width() / 2, screen_resolution.height() / 2)  # Set the window to half of the screen size
 
     def open_main_window(self):
         # Set the main window as the central widget
@@ -47,4 +52,7 @@ class MainView(QMainWindow):  # Main view class
 
     def open_launch_window(self):
         self.launch_window.show()
+
+    def close_launch_window(self):
+        self.launch_window.close()
 
