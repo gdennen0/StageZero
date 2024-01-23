@@ -27,10 +27,3 @@ class StackModel:
     # add a new stack
     def create_stack(self, stack_name):
         self.objects[stack_name] = LayerModel()  # Create a new layer model and add it to the dictionary
-
-    def get_loaded_stack(self):
-        # Returns the loaded stack
-        return self.loaded_stack
-
-    def set_frame_qty(self, stack_name, frame_qty):
-        self.objects[stack_name].frame_qty = frame_qty  # Set the quantity of frames for the stack

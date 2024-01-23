@@ -9,7 +9,7 @@ from .LaunchWindow import *
 from .LayerControlWidget import *
 from .MainMenu import *
 from .MainView import *
-from .MainWidget import *
+from .MainWindow import *
 from .STFTLinearSpectrogramWidget import *
 from .PlaybackModeWidget import *
 from .SongOverviewWidget import *
@@ -22,3 +22,4 @@ from .LayerSelectPopup import *
 from .FilterEditorWindow import *
 from .FilterAudioWindow import *
 from .SongDataPreviewWindow import *
+from .UI_COLORS import *

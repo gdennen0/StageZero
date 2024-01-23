@@ -23,11 +23,37 @@ from PyQt5.QtWidgets import (
     QComboBox,  # Drop down selection box
 )
 
+from .UI_COLORS import UIColors
+
+
 class SongSelectWidget(QWidget):  # Widget for song selection
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()  # Initialize the widget
+        self.initialize_ui_colors()
 
+    def initialize_ui_colors(self):
+        # Define UI elements and their properties
+        ui_elements = {
+            self.layout: {'background': True},
+            self.label: {'text': True},
+            self.add_new_song: {'button': True},
+            self.song_selector: {'dropdown': True},
+        }
+
+        # Apply colors to all UI elements
+        UIColors.initialize_ui_colors(ui_elements)
+
+        style_sheet = (
+            f"background-color: {UIColors.BACKGROUND_COLOR};"
+            f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
+            f"QPushButton {{ background-color: {UIColors.BUTTON_COLOR}; }}"
+            f"QWidget {{ background-color: {UIColors.WIDGET_COLOR}; }}"
+        )
+        
+        # Apply the concatenated style sheet
+        self.setStyleSheet(style_sheet)
+        
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
         self.label = QLabel(f"Select Song")  # Label for song selection

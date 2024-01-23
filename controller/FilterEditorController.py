@@ -6,7 +6,10 @@ from PyQt5.QtGui import QIntValidator
 class FilterEditorController:
     def __init__(self):
         self.filter_editor_window = FilterEditorWindow()
-
+    
+    def open(self):
+            self.filter_editor_window.show() 
+            self.connect_signals()
     def connect_signals(self):
         self.filter_editor_window.filter_list_widget.itemSelectionChanged.connect(self.load_filter_properties)
         self.filter_editor_window.save_button.clicked.connect(self.save_filter)
@@ -68,7 +71,3 @@ class FilterEditorController:
         file_name = params.get('filter_name', 'default_filter') + '.json'  # Default to 'default_filter.json' if no name is provided
         with open(f'filters/{file_name}', 'w') as file:
             json.dump(params, file)
-
-    def open(self):
-            self.filter_editor_window.show() 
-            self.connect_signals()

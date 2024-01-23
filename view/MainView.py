@@ -16,7 +16,7 @@ widget, respectively, and display them.
 """
 
 from .LaunchWindow import LaunchWindow
-from .MainWidget import MainWidget
+from .MainWindow import MainWindow
 from .ToolsWindow import ToolsWindow
 from .GraphsWindow import GraphsWindow
 from .MainMenu import MainMenu
@@ -30,28 +30,25 @@ class MainView(QMainWindow):  # Main view class
     def __init__(self):
         super().__init__()
         self.launch_window = LaunchWindow()  # Initialize launch window
-        self.main_window = MainWidget()  # Initialize main window
-        self.tools_window = ToolsWindow()
+        self.main_window = MainWindow()  # Initialize main window
+        self.tools_window = ToolsWindow() 
         self.graphs_window = GraphsWindow()
         self.main_menu = MainMenu()
-        self.song_data_preview_window = SongDataPreviewWindow()
         self.init_ui()
 
     def init_ui(self):
-        # Set the application title in the menu bar
-        self.setWindowTitle('StageZeroDev')
-        # Set the custom menu bar
-        self.setMenuBar(self.main_menu)
-        screen_resolution = QApplication.desktop().screenGeometry()
-        self.resize(screen_resolution.width() / 2, screen_resolution.height() / 2)  # Set the window to half of the screen size
-
+        self.setWindowTitle('StageZeroDev') # Set the application title in the menu bar
+        self.setMenuBar(self.main_menu)         # Set the custom menu bar
+        
     def open_main_window(self):
         # Set the main window as the central widget
-        self.setCentralWidget(self.main_window)
-        self.show()
+        self.main_window.open()
+        screen_resolution = QApplication.desktop().screenGeometry()
+        self.main_window.resize(screen_resolution.width() / 1.5, screen_resolution.height() / 2)  # Set the window to half of the screen size
+        self.main_window.move((screen_resolution.width() - self.main_window.width()) / 2, (screen_resolution.height() - self.main_window.height()) / 2)  # Center the window
 
     def open_launch_window(self):
-        self.launch_window.show()
+        self.launch_window.open()
 
     def close_launch_window(self):
         self.launch_window.close()

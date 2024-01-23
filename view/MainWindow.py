@@ -35,22 +35,50 @@ from .AudioPlaybackCommandWidget import AudioPlaybackCommandWidget
 from .LayerControlWidget import LayerControlWidget
 from .StackWidget import StackWidget
 from .PlaybackModeWidget import PlaybackModeWidget
+from .UI_COLORS import UIColors
 
-class MainWidget(QWidget):  # Class for the main window
+
+class MainWindow(QWidget):  # Class for the main window
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()  # Initialize the main window
+        self.initialize_ui_colors()
 
-    def open(self, title):  # Open the main window with a given title
-        self.label = title  # Set the window title
-        self.setWindowTitle(self.label)  # Set the window title
+    def initialize_ui_colors(self):
+        # Define UI elements and their properties
+        ui_elements = {
+            self.song_select_menu: {'dropdown': True},
+            self.song_overview: {'widget': True},
+            self.layer_control: {'widget': True},
+            self.stack: {'widget': True},
+            self.playback_mode: {'widget': True},
+            self.audio_playback_command: {'widget': True},
+
+        }
+
+        # Apply colors to all UI elements
+        UIColors.initialize_ui_colors(ui_elements)
+
+        style_sheet = (
+            f"background-color: {UIColors.BACKGROUND_COLOR};"
+            f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
+            f"QPushButton {{ background-color: {UIColors.BUTTON_COLOR}; }}"
+            f"QWidget {{ background-color: {UIColors.WIDGET_COLOR}; }}"
+        )
+        
+        # Apply the concatenated style sheet
+        self.setStyleSheet(style_sheet)
+
+    def open(self):  # Open the main window with a given title
+        self.setWindowTitle('StageZero Dev')  # Set the window title
         self.show()  # Show the window
 
     def close(self):  # Close the main window
         self.close()  # Close the window
 
     def initialize(self):  # Initialize the main window
-        self.main_layout = QSplitter(Qt.Horizontal, self)  # Set the layout to vertical box layout
+        self.main_layout = QVBoxLayout()  # Set the layout to vertical box layout
+        self.main_layout.setSpacing(0)  # Set the spacing between widgets to 0
 
         self.song_select_menu = SongSelectWidget()  # Widget for song selection
         self.song_overview = SongOverviewWidget()  # Widget for displaying song overview
@@ -65,43 +93,17 @@ class MainWidget(QWidget):  # Class for the main window
         self.playback_layout.addWidget(self.audio_playback_command)  # Add the audio_playback_command to the playback_layou
         
         # main program layout
-        self.main_program_widget = QWidget()
         self.main_program_layout = QVBoxLayout()
-        self.main_program_widget.setLayout(self.main_program_layout)
         self.main_program_layout.addWidget(self.song_select_menu)  # Add the song_overview to the layout
         self.main_program_layout.addLayout(self.playback_layout)  # Add the playback_layout to the layout
         self.main_program_layout.addWidget(self.song_overview)  # Add the song_overview to the layout
         self.main_program_layout.addWidget(self.stack)  # Add the stack to the layout
         self.main_program_layout.addWidget(self.layer_control)  # Add the layer_control to the layout
-        self.main_layout.addWidget(self.main_program_widget)  # add to the main_layout
-
-        self.song_filtered_data_widget = QWidget()
-        self.song_filtered_data_layout = QVBoxLayout()
-        self.song_filtered_data_widget.setLayout(self.song_filtered_data_layout)
-        self.song_filtered_label = QLabel("Loaded Song's filtered data")
-        self.song_filtered_data_layout.addWidget(self.song_filtered_label)
-        self.song_filtered_data_list_widget = QListWidget()
-        self.song_filtered_data_layout.addWidget(self.song_filtered_data_list_widget)
+        self.main_layout.addLayout(self.main_program_layout)  # add to the main_layout
 
 
-        self.side_bar_widget = QWidget()
-        self.side_bar_layout = QVBoxLayout()
-        self.side_bar_widget.setLayout(self.side_bar_layout)
+                # Set the size policy for song_select_menu and song_overview
+        self.song_select_menu.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)  # Set the size policy for song_select_menu
+        self.song_overview.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)  # Set the size policy for song_overview
 
-        self.side_bar_layout.addLayout(self.song_filtered_data_layout)
-        # add to main layout
-        self.main_layout.addWidget(self.side_bar_widget)
-
-
-        self.splitter_handle = self.main_layout.handle(1)  # Get the handle at the split position
-        self.splitter_handle.setStyleSheet(
-            "QSplitterHandle {background-color: darkgray;}"  # Set the handle color to dark gray to act as a marker
-        )
-         
-        # Set the size policy for the main_program_widget to prevent it from collapsing
-        self.main_program_widget.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
-
-        # Set the size policy for the side_bar_widget to allow it to be collapsible
-        self.side_bar_widget.setSizePolicy(QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred))
-
-        self.main_layout.setSizes([1, 0])  # This will collapse the right side initially
+        self.setLayout(self.main_layout)  # Set the main_layout as the layout for the widget

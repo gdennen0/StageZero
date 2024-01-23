@@ -23,10 +23,34 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,  # Box layout with a horizontal direction
     QPushButton,  # Command button
 )
+from .UI_COLORS import UIColors
 class AudioPlaybackCommandWidget(QWidget):  # Widget for controlling audio playback
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()  # Initialize the widget
+        self.initialize_ui_colors()
+
+    def initialize_ui_colors(self):
+        # Define UI elements and their properties
+        ui_elements = {
+            self.play_button: {'button': True},
+            self.pause_button: {'button': True},
+            self.reset_button: {'button': True},
+            self.time_label: {'text': True},
+        }
+
+        # Apply colors to all UI elements
+        UIColors.initialize_ui_colors(ui_elements)
+
+        style_sheet = (
+            f"background-color: {UIColors.BACKGROUND_COLOR};"
+            f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
+            f"QPushButton {{ background-color: {UIColors.BUTTON_COLOR}; }}"
+            f"QWidget {{ background-color: {UIColors.WIDGET_COLOR}; }}"
+        )
+        
+        # Apply the concatenated style sheet
+        self.setStyleSheet(style_sheet)
 
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout

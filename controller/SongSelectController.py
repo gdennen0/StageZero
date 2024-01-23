@@ -26,6 +26,7 @@ class SongSelectController:
         self.view = main_controller.view  # Assigning view reference
         self.model = main_controller.model  # Assigning model reference
         self.selected_song = None
+        self.initialized = False
         self.generate_dropdown_items()  # Generating the dropdown items
         self.connect_signals()  # Connecting the UI signals to slots in this controller
 
@@ -38,15 +39,22 @@ class SongSelectController:
         )  # Connecting the add_new_song clicked signal to the add_song method in the song controller
 
     def generate_dropdown_items(self):
-        # Add the selected song to the dropdown menu
-        if self.model.loaded_song != None:  # Checking if a song is loaded, if its not loaded dont proceed
-            self.view.main_window.song_select_menu.song_selector.addItem(
-                self.model.song.loaded_song
-            )  # Adding the loaded song to the song_selector dropdown menu so it is at the top of the menu
-        # add the remaining songs to the dropdown menu
-        for song_name in self.model.song.objects:  # Iterating over the model song objects
-            if song_name != self.model.loaded_song.name:  # Checking if the song is not the loaded song because we already loaded that
-                self.view.main_window.song_select_menu.song_selector.addItem(song_name)  # Adding the song to the song_selector dropdown menu
+        # Ensure this method is only run once during initialization
+        if not self.initialized:
+            self.initialized = True
+            return
+
+        song_selector = self.view.main_window.song_select_menu.song_selector
+        loaded_song_name = self.model.loaded_song.name if self.model.loaded_song else None
+
+        # Add the loaded song to the dropdown menu if it exists
+        if loaded_song_name:
+            song_selector.addItem(loaded_song_name)
+
+        # Add the remaining songs to the dropdown menu
+        for song in self.model.song.objects:
+            if song != loaded_song_name:
+                song_selector.addItem(song.name)
 
     def on_song_selected(self, index):
         # Handle what happens when a song is selected

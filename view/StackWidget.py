@@ -30,12 +30,32 @@ from PyQt5.QtWidgets import (
 )
 
 from .LayerWidget import LayerWidget
-
+from .UI_COLORS import UIColors
 class StackWidget(QWidget):  # Widget for displaying the stack of layers
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()  # Initialize the widget
+        self.initialize_ui_colors()
 
+    def initialize_ui_colors(self):
+        # Define UI elements and their properties
+        ui_elements = {
+            self.stack_content: {'widget': True},
+
+        }
+
+        # Apply colors to all UI elements
+        UIColors.initialize_ui_colors(ui_elements)
+
+        style_sheet = (
+            f"background-color: {UIColors.BACKGROUND_COLOR};"
+            f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
+            f"QPushButton {{ background-color: {UIColors.BUTTON_COLOR}; }}"
+            f"QWidget {{ background-color: {UIColors.WIDGET_COLOR}; }}"
+        )
+        
+        # Apply the concatenated style sheet
+        self.setStyleSheet(style_sheet)
     def initialize(self):  # Initialize the widget
         self.layout = QVBoxLayout(self)  # Set the layout to vertical box layout
         self.layout.setContentsMargins(0, 0, 0, 0)  # Set the margins to zero

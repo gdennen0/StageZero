@@ -24,7 +24,6 @@ from .SongItem import SongItem
 class SongModel:
     # Manage Song Item Instances
     def __init__(self):
-        self.CLASS_TYPE = "MODEL"  # Class type
         self.objects = {}  # Dictionary to store song objects
         self.loaded_song = None  # The loaded song
 

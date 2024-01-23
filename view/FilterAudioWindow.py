@@ -12,10 +12,10 @@ class FilterAudioWindow(QDialog):
         self.initialize_window_elements()
 
     def initialize_window_elements(self):
-        main_layout = QHBoxLayout(self)
+        main_layout = QHBoxLayout()
 
         # List of filter files
-        filter_list_layout = QVBoxLayout(self)
+        filter_list_layout = QVBoxLayout()
         self.filter_list_widget = QListWidget()
         self.filter_list_widget.itemSelectionChanged.connect(self.display_filter_properties)
         self.filter_label = QLabel("Filter Presets")
@@ -38,7 +38,7 @@ class FilterAudioWindow(QDialog):
         main_layout.addLayout(properties_layout)
 
 
-        song_filtered_data_layout = QVBoxLayout(self)
+        song_filtered_data_layout = QVBoxLayout()
         # New column for displaying song filtered data
         self.song_filtered_label = QLabel("Loaded Song's filtered data")
         song_filtered_data_layout.addWidget(self.song_filtered_label)
