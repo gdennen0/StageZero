@@ -15,15 +15,15 @@ the custom menu bar. The open_main_window and open_launch_window methods are use
 widget, respectively, and display them.
 """
 
-from .LaunchWindow import LaunchWindow
-from .MainWindow import MainWindow
-from .ToolsWindow import ToolsWindow
-from .GraphsWindow import GraphsWindow
-from .MainMenu import MainMenu
-from .SongDataPreviewWindow import SongDataPreviewWindow
+from .window.LaunchWindow import LaunchWindow
+from .window.MainWindow import MainWindow
+from .window.ToolsWindow import ToolsWindow
+from .window.GraphsWindow import GraphsWindow
+from .menu.MainMenu import MainMenu
+from .window.SongDataPreviewWindow import SongDataPreviewWindow
+from .menu.MainMenu import MainMenu
 
 from PyQt5.QtWidgets import QMainWindow, QApplication
-
 
 
 class MainView(QMainWindow):  # Main view class
@@ -31,25 +31,29 @@ class MainView(QMainWindow):  # Main view class
         super().__init__()
         self.launch_window = LaunchWindow()  # Initialize launch window
         self.main_window = MainWindow()  # Initialize main window
-        self.tools_window = ToolsWindow() 
+        self.tools_window = ToolsWindow()
         self.graphs_window = GraphsWindow()
         self.main_menu = MainMenu()
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle('StageZeroDev') # Set the application title in the menu bar
-        self.setMenuBar(self.main_menu)         # Set the custom menu bar
-        
+        self.setWindowTitle("StageZeroDev")  # Set the application title in the menu bar
+        self.setMenuBar(self.main_menu)  # Set the custom menu bar
+
     def open_main_window(self):
         # Set the main window as the central widget
         self.main_window.open()
         screen_resolution = QApplication.desktop().screenGeometry()
-        self.main_window.resize(screen_resolution.width() / 1.5, screen_resolution.height() / 2)  # Set the window to half of the screen size
-        self.main_window.move((screen_resolution.width() - self.main_window.width()) / 2, (screen_resolution.height() - self.main_window.height()) / 2)  # Center the window
+        self.main_window.resize(
+            screen_resolution.width() / 1.5, screen_resolution.height() / 2
+        )  # Set the window to half of the screen size
+        self.main_window.move(
+            (screen_resolution.width() - self.main_window.width()) / 2,
+            (screen_resolution.height() - self.main_window.height()) / 2,
+        )  # Center the window
 
     def open_launch_window(self):
         self.launch_window.open()
 
     def close_launch_window(self):
         self.launch_window.close()
-

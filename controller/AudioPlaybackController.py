@@ -18,89 +18,53 @@ The update_time_label method updates the time label in the view with the current
 """
 
 
-from controller.TimeUpdateThread import TimeUpdateThread
-import vlc
+from .AudioPlaybackEngine import AudioPlaybackEngine
+
 
 class AudioPlaybackController:
-    STOPPED, RUNNING, PAUSED = range(3)  # Define states for the audio playback
-
     def __init__(self, main_controller):
-        self.model = main_controller.model  # Model reference
-        self.view = main_controller.view  # View reference
-        self.song_model = main_controller.model.song  # Song model reference
-        self.player = vlc.MediaPlayer()  # VLC media player instance
-        self.state = self.STOPPED  # Initial state is STOPPED
+        self.model = main_controller.model
+        self.main = main_controller
+        self.apc = main_controller.view.main_window.audio_playback_command
+        self.view = main_controller.view
+        self.audio_playback_engine = AudioPlaybackEngine()
         self.init_connections()  # Initialize connections
+        self.connect_playhead()
 
-        self.time_update_thread = TimeUpdateThread()  # Thread for updating time
-        self.time_update_thread.time_updated.connect(self.update_time_label)  # Connect the time update signal
-
-    def load_song(self):
-        # Load a song into the player
-        song_path = self.song_model.objects[self.model.loaded_song.name].path
-        self.player.set_media(vlc.Media(song_path))
+    def load_song(self, song_object):
+        self.audio_playback_engine.load_song(song_object)
 
     def play(self):
-        # Handle the play action
-        if self.state == self.STOPPED:
-            print(f"play button pressed")
-            self.player.play()
-            self.time_update_thread.start_clock()
-            self.state = self.RUNNING
-
-        if self.state == self.PAUSED:
-            print(f"resume function pressed")
-            self.state = self.RUNNING
-            self.player.play()
-            self.time_update_thread.resume_clock()
+        if self.model.loaded_song:
+            self.audio_playback_engine.play()
 
     def pause(self):
-        # Handle the pause action
-        if self.state == self.RUNNING:
-            print(f"pause button pressed")
-            self.state = self.PAUSED
-            self.player.pause()
-            self.time_update_thread.pause_clock()
+        if self.model.loaded_song:
+            self.audio_playback_engine.pause()
 
     def reset(self):
-        # Handle the reset action
-        if self.state == self.PAUSED:
-            self.time_update_thread.reset_clock()
-            self.player.stop()
-            print(f"reset button pressed")
-
-        elif self.state == self.RUNNING:
-            self.time_update_thread.reset_clock()
-            self.player.stop()
-            self.player.play()
-            print(f"reset button pressed")
-
-        elif self.state == self.STOPPED:
-            self.time_update_thread.stop_clock()
-            self.time_update_thread.reset_clock()
-            self.player.stop()
+        if self.model.loaded_song:
+            self.audio_playback_engine.reset()
 
     def stop(self):
-        # Handle the stop action
-        self.state = self.STOPPED
-        self.time_update_thread.stop_clock()
-
-    def get_playback_time(self):
-        return self.player.get_time()  # Returns playback time in milliseconds
+        if self.model.loaded_song:
+            self.audio_playback_engine.stop()
 
     def init_connections(self):
-        # Initialize connections for the play, pause, and reset buttons
-        apc = self.view.main_window.audio_playback_command      #set apc reference
         # connect the buttons
-        apc.play_button.clicked.connect(self.play)
-        apc.pause_button.clicked.connect(self.pause)
-        apc.reset_button.clicked.connect(self.reset)
+        self.apc.play_button.clicked.connect(self.play)
+        self.apc.pause_button.clicked.connect(self.pause)
+        self.apc.reset_button.clicked.connect(self.reset)
 
     def update_time_label(self, frame_number):
         # Update the time label
-        apc = self.view.main_window.audio_playback_command
-        
-        frame_label_string = f"Frame: {frame_number}/{self.model.loaded_song.frame_qty}"
+        frame_label_string = f"Frame: {frame_number}"
+        self.apc.time_label.setText(frame_label_string)
 
-        apc.time_label.setText(frame_label_string)
-
+    def connect_playhead(self):
+        self.audio_playback_engine.playback_clock_thread.time_updated.connect(
+            self.main.song_overview_controller.update_playhead_position
+        )
+        self.audio_playback_engine.playback_clock_thread.time_updated.connect(
+            self.update_time_label
+        )

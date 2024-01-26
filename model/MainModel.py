@@ -1,5 +1,3 @@
-
-
 """
 Module: MainModel
 
@@ -18,8 +16,9 @@ The project name can be updated later as required. The SongModel and StackModel 
 the song and stack data respectively.
 """
 
-from .SongModel import SongModel
-from .StackModel import StackModel
+from .song.SongModel import SongModel
+from .stack.StackModel import StackModel
+
 
 class MainModel:
     def __init__(self):
@@ -46,7 +45,13 @@ class MainModel:
         else:
             print(f"ERROR: No stack loaded yet")  # Error message if no song is loaded
 
-    
+    def get_song(self, song_name):
+        if song_name in self.song.objects:
+            return self.song.objects[song_name]
+        else:
+            print(f"ERROR: Song '{song_name}' not found")
+            return None
+
     def add_events_to_layer(self, layer_name, events):
         # events should be a dictionary of frame numbers
         layer_index = self.loaded_stack.get_layer_index(layer_name)
@@ -55,7 +60,6 @@ class MainModel:
 
     def add_filtered_data(self, filter_name, filtered_data):
         self.loaded_song.add_filtered_data(filter_name, filtered_data)
-       
 
     # def add_new_layer(self, layer_name):
     #     layer_index = self.stack.objects[self.loaded_stack].layers.

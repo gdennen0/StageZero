@@ -1,4 +1,3 @@
-
 """
 Module: SongController
 
@@ -19,8 +18,8 @@ loads the audio into the playback controller, resets the audio playback, and rel
 """
 
 
-
 from view import DialogWindow
+
 
 class SongController:
     def __init__(self, main_controller):
@@ -38,9 +37,7 @@ class SongController:
         )
         song_name = DialogWindow.input_text("Enter Song Name", "Song Name")
         song_object = self.model.song.build_song_object(file_path, song_name)
-        self.model.song.add_song_object_to_model(
-            song_object
-        )
+        self.model.song.add_song_object_to_model(song_object)
         self.main_controller.stack_controller.create_stack(song_name)
         if self.model.song.loaded_song == None:
             self.load_song(song_name)
@@ -48,6 +45,7 @@ class SongController:
             self.main_controller.song_select_controller.update_dropdown()
 
     def load_song(self, song_name):
+        song_object_to_be_loaded = self.model.get_song(song_name)
         # Load a song
         self.print("load_song", f"current selected song: {song_name}")
         # Change loaded_song to song_name
@@ -63,7 +61,9 @@ class SongController:
         # self.main_controller.layer_controller.init_plot(song_name)
         self.main_controller.layer_controller.reload_layer_plot()
         # Load the audio into the playback controller
-        self.main_controller.audio_playback_controller.load_song()
+        self.main_controller.audio_playback_controller.load_song(
+            song_object_to_be_loaded
+        )
         # reset the audio playback
         self.main_controller.audio_playback_controller.stop()
         self.main_controller.audio_playback_controller.reset()
@@ -72,5 +72,6 @@ class SongController:
 
     def add_filter_to_loaded_song(self, filter_type, filtered_data, sample_rate):
         # (filter_type, filtered_data, sample_rate)
-        self.model.loaded_song.add_filtered_data(filter_type, filtered_data, sample_rate)
-
+        self.model.loaded_song.add_filtered_data(
+            filter_type, filtered_data, sample_rate
+        )

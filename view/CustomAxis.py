@@ -1,4 +1,3 @@
-
 """
 Module: CustomAxis
 
@@ -24,6 +23,7 @@ import math  # For mathematical operations
 import numpy as np  # For array operations
 from pyqtgraph import AxisItem  # For customizing plots
 
+
 class CustomAxis(AxisItem):  # Custom axis class
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)  # Call the constructor of the parent class
@@ -41,10 +41,14 @@ class CustomAxis(AxisItem):  # Custom axis class
         minVal, maxVal = sorted((minVal, maxVal))  # Sort the minimum and maximum values
         ticks = []  # Initialize the ticks
         # Generate ticks at intervals of 1
-        major_ticks = np.arange(math.floor(minVal), math.ceil(maxVal) + 1)  # Generate the major ticks
+        major_ticks = np.arange(
+            math.floor(minVal), math.ceil(maxVal) + 1
+        )  # Generate the major ticks
         ticks.append((1.0, major_ticks))  # Add the major ticks to the ticks
         # Generate ticks at intervals of 0.5
-        minor_ticks = np.arange(math.floor(minVal * 2), math.ceil(maxVal * 2) + 1) / 2  # Generate the minor ticks
+        minor_ticks = (
+            np.arange(math.floor(minVal * 2), math.ceil(maxVal * 2) + 1) / 2
+        )  # Generate the minor ticks
         ticks.append((0.5, minor_ticks))  # Add the minor ticks to the ticks
         return ticks  # Return the ticks
 
@@ -54,12 +58,16 @@ class CustomAxis(AxisItem):  # Custom axis class
             index = int(tick_value)
             # This line checks if the index is within the range of the layers list and if the tick_value is a half-integer (e.g., 1.5, 2.5, etc.)
             if 0 <= index < len(self.layers) and tick_value % 1 == 0.5:
-                layer_name = self.layers[index]  # Assigns the layer name from the layers list at the position of the index
+                layer_name = self.layers[
+                    index
+                ]  # Assigns the layer name from the layers list at the position of the index
                 # Check if the layer name exceeds 10 characters
                 if len(layer_name) > 10:
                     print(f"layer name is more than 10, its  {len(layer_name)}")
                     # Insert a newline character after every 10 characters and center each line
-                    layer_name = '\n'.join(layer_name[i:i+10] for i in range(0, len(layer_name), 10))
+                    layer_name = "\n".join(
+                        layer_name[i : i + 10] for i in range(0, len(layer_name), 10)
+                    )
                 else:
                     print(f"layer name is less than 10, its  {len(layer_name)}")
                     # Center the layer name if it is less than or equal to 10 characters
@@ -68,4 +76,3 @@ class CustomAxis(AxisItem):  # Custom axis class
             else:
                 strings.append("")
         return strings
-

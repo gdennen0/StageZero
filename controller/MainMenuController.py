@@ -13,6 +13,7 @@ None. This module is used to control the main menu of the application and does n
 
 from PyQt5.QtWidgets import QApplication
 
+
 class MainMenuController:
     def __init__(self, main_controller):
         self.view = main_controller.view
@@ -20,11 +21,21 @@ class MainMenuController:
         self.initialize_connections()
 
     def initialize_connections(self):
-        self.view.main_menu.exit_action.triggered.connect(QApplication.instance().quit)
-        self.view.main_menu.tools_action.triggered.connect(self.open_tools_window)
-        self.view.main_menu.graphs_action.triggered.connect(self.open_graphs_window)
-        self.view.main_menu.edit_filters_action.triggered.connect(self.open_filter_editor)
-        self.view.main_menu.filter_audio_action.triggered.connect(self.open_filter_audio)
+        self.view.main_menu.file_menu.exit_action.triggered.connect(
+            QApplication.instance().quit
+        )
+        self.view.main_menu.view_menu.tools_action.triggered.connect(
+            self.open_tools_window
+        )
+        self.view.main_menu.view_menu.graphs_action.triggered.connect(
+            self.open_graphs_window
+        )
+        self.view.main_menu.filter_menu.edit_filters_action.triggered.connect(
+            self.open_filter_editor
+        )
+        self.view.main_menu.filter_menu.filter_audio_action.triggered.connect(
+            self.open_filter_audio
+        )
 
     def open_tools_window(self):
         print(f"Opening tools window")

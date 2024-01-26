@@ -16,6 +16,7 @@ from PyQt5.QtCore import Qt
 from view import DialogWindow
 from controller.PlotClickHandler import PlotClickHandler
 
+
 class LayerController:
     # This class manages the layers in the application.
     def __init__(self, main_controller):
@@ -35,19 +36,18 @@ class LayerController:
         # Initialize the plot for the given stack
         layer_plot = self.view.main_window.stack.layer_widget.layer_plot
         song_overview_plot = self.view.main_window.song_overview.song_plot
-        frame_qty = self.model.stack.objects[stack_name].frame_qty
 
-        x_ticks = np.arange(0, frame_qty, 1)
-        y_values = np.zeros(frame_qty)
+        x_axis = self.model.loaded_song.x_axis
+        y_values = np.zeros(self.model.loaded_song.frame_qty)
 
         num_layers = len(self.model.stack.objects[stack_name].layers)
 
         # Plot the layer plot and link it to the song_overview_plot
-        layer_plot.plot(x_ticks, y_values, pen=None)
+        layer_plot.plot(x_axis, y_values, pen=None)
         layer_plot.setXLink(song_overview_plot)
 
         self.init_playhead()
-        self.set_layer_plot_limits(0, frame_qty, 0, num_layers)
+        self.set_layer_plot_limits(0, self.model.loaded_song.frame_qty, 0, num_layers)
         self.connect_layer_plot_signals(layer_plot)
 
     def reload_layer_plot(self):
@@ -70,7 +70,9 @@ class LayerController:
         if self.model.stack.objects != None:
             layer_name = DialogWindow.input_text("Enter Layer Name", "Layer Name")
             while len(layer_name) > 20:
-                layer_name = DialogWindow.input_text("Name too long. Enter up to 20 characters", "Layer Name")
+                layer_name = DialogWindow.input_text(
+                    "Name too long. Enter up to 20 characters", "Layer Name"
+                )
             self.add_model_layer(layer_name)
             self.add_plot_layer(layer_name)
 
@@ -114,16 +116,13 @@ class LayerController:
     def update_layer_names(self):
         # Update the names of the layers
         loaded_stack = self.model.loaded_stack
-        layer_names = [
-            layer.name
-            for layer in loaded_stack.layers
-        ]
+        layer_names = [layer.name for layer in loaded_stack.layers]
         self.view.main_window.stack.layer_widget.update_layer_names(layer_names)
 
     def update_layer_plot_height(self):
         # Update the height of the layer plot
         layer_height = 50  # You can adjust this value as needed
-        offset = 18 # This encompasses the x axis height 
+        offset = 18  # This encompasses the x axis height
         num_layers = len(self.model.stack.objects[self.model.stack.loaded_stack].layers)
 
         total_height = num_layers * layer_height + offset
@@ -163,22 +162,20 @@ class LayerController:
         raw_data = stack.get_layer_raw_data(layer_name)
         layer_index = stack.get_layer_index(layer_name)
 
-        present_events_array = [(key, (layer_index + 0.5)) for key, value in raw_data.items() if value is not None]
+        present_events_array = [
+            (key, (layer_index + 0.5))
+            for key, value in raw_data.items()
+            if value is not None
+        ]
 
         plottable_data = np.array(present_events_array)
         return plottable_data
-
-    def calculate_frame_quantity(self, length_ms, fps):
-        # Calculate the number of frames for a given length and fps
-        frame_qty = math.ceil((length_ms / 1000) * fps)
-        print(f"# of frames for {(length_ms / 1000)}seconds @ {fps}fps is {frame_qty}")
-        return frame_qty
 
     def init_playhead(self):
         # Initialize the vertical line in the layer widget
         layer_widget = self.view.main_window.stack.layer_widget
         layer_widget.init_playhead()
-        self.main_controller.audio_playback_controller.time_update_thread.time_updated.connect(
+        self.main_controller.audio_playback_controller.audio_playback_engine.playback_clock_thread.time_updated.connect(
             self.update_playhead_position
         )
 
@@ -209,7 +206,9 @@ class LayerController:
         # Disconnect the plot click signal from the on_plot_click function
         try:
             layer_plot.scene().sigMouseClicked.disconnect(
-                lambda event, layer_plot=layer_plot: self.on_plot_click(event, layer_plot)
+                lambda event, layer_plot=layer_plot: self.on_plot_click(
+                    event, layer_plot
+                )
             )
         except TypeError:
             print("No signals connected to the plot.")

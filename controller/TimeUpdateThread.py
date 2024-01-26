@@ -1,4 +1,3 @@
-
 """
 Module: TimeUpdateThread
 
@@ -14,8 +13,6 @@ Returns:
 The TimeUpdateThread class has several methods to manage the time updates. The 'run' method runs the thread and emits a signal with the updated time.
 The 'start_clock' method starts the clock and begins the execution of the thread. The time updates are managed using a condition variable to synchronize the thread execution.
 """
-
-
 
 
 import time
@@ -42,7 +39,9 @@ class TimeUpdateThread(QThread):
         self.start_time = None
         self.pause_time = None
         self.condition = Condition()
-        self.time_per_frame_seconds = constants.PROJECT_FPS / 1000  # time per frame in seconds
+        self.time_per_frame_seconds = (
+            constants.PROJECT_FPS / 1000
+        )  # time per frame in seconds
 
     def run(self):
         # This function runs the thread
@@ -71,31 +70,33 @@ class TimeUpdateThread(QThread):
         # This function pauses the clock
         with self.condition:
             if self.state == self.RUNNING:
-                print(f"paused clock")
                 self.paused_time = time.perf_counter()
-                self.elapsed_time = self.paused_time - self.start_time
+                current_time = time.perf_counter()
+                self.elapsed_time += current_time - self.start_time
                 self.state = self.PAUSED
+                # print(
+                #     f"paused clock at {self.paused_time}, elapsed time is {self.elapsed_time}"
+                # )
 
     def resume_clock(self):
         # This function resumes the clock
         with self.condition:
-            if self.state == self.PAUSED:
-                print(f"resuming clock")
-                # get the elapsed time
+            if self.state == self.PAUSED:  # get the elapsed time
                 self.start_time = time.perf_counter()
                 self.state = self.RUNNING
                 self.condition.notify_all()
+                # print(f"resuming clock at start time {self.start_time}")
 
     def reset_clock(self):
         # This function resets the clock
         with self.condition:
             if self.state == self.PAUSED:
-                print(f"resetting clock")
+                # print(f"resetting clock")
                 self.elapsed_time = 0
                 self.start_time = None
 
             elif self.state == self.RUNNING:
-                print(f"resetting clock")
+                # print(f"resetting clock")
                 self.state = self.PAUSED
                 self.elapsed_time = 0
                 self.start_time = time.perf_counter()
@@ -103,7 +104,7 @@ class TimeUpdateThread(QThread):
                 self.condition.notify_all()
 
             elif self.state == self.STOPPED:
-                print(f"resetting clock")
+                # print(f"resetting clock")
                 self.state = self.STOPPED
                 self.elapsed_time = 0
                 self.start_time = None

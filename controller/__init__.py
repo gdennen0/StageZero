@@ -12,3 +12,6 @@ from .SongOverviewController import *
 from .SongSelectController import *
 from .StackController import *
 from .TimeUpdateThread import *
+from .FilterAudioController import *
+from .SongDataPreviewController import *
+from .AudioPlaybackEngine import *
