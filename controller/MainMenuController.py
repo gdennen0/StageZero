@@ -30,6 +30,11 @@ class MainMenuController:
         self.view.main_menu.view_menu.graphs_action.triggered.connect(
             self.open_graphs_window
         )
+
+        self.view.main_menu.view_menu.plugins_action.triggered.connect(
+            self.open_plugins_window
+        )
+
         self.view.main_menu.filter_menu.edit_filters_action.triggered.connect(
             self.open_filter_editor
         )
@@ -44,6 +49,10 @@ class MainMenuController:
     def open_graphs_window(self):
         print(f"Opening graphs window")
         self.view.graphs_window.open()
+
+    def open_plugins_window(self):
+        print(f"Opening plugins window")
+        self.view.plugins_window.open()
 
     def open_filter_editor(self):
         print(f"Opening filter editor")

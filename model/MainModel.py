@@ -18,6 +18,7 @@ the song and stack data respectively.
 
 from .song.SongModel import SongModel
 from .stack.StackModel import StackModel
+from .plugin import PluginModel
 
 
 class MainModel:
@@ -25,6 +26,7 @@ class MainModel:
         self.project_name = None  # The name of the project
         self.song = SongModel()  # The song model
         self.stack = StackModel()  # The stack model
+        self.plugin = PluginModel()
 
     def get_loaded_stack(self):
         # Returns the loaded stack

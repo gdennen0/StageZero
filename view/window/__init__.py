@@ -6,3 +6,4 @@ from .LaunchWindow import *
 from .MainWindow import *
 from .SongDataPreviewWindow import *
 from .ToolsWindow import *
+from .PluginWindow import *

@@ -17,6 +17,7 @@ This allows the other controllers to access the model and view through the MainC
 
 The MainController also has an initialize_app method, which opens the main window of the application and connects the new project button click signal to the project controller's new project method.
 """
+import os
 
 from .ProjectController import ProjectController
 from .SongController import SongController
@@ -29,9 +30,15 @@ from .PlaybackModeController import PlaybackModeController
 from .AudioPlaybackController import AudioPlaybackController
 from .MainMenuController import MainMenuController
 from .GraphWindowController import GraphWindowController
-from .ToolWindowController import BpmToolController, OnsetDetectionToolController, KicksToolController
+from .ToolWindowController import (
+    BpmToolController,
+    OnsetDetectionToolController,
+    KicksToolController,
+)
 from .FilterEditorController import FilterEditorController
 from .FilterAudioController import FilterAudioController
+from .PluginWindowController import PluginWindowController
+
 
 class MainController:
     def __init__(self, model, view):
@@ -39,15 +46,33 @@ class MainController:
         self.view = view  # Assigning the view
 
         # Centralize All of the controllers
-        self.project_controller = ProjectController(self)  # Creating an instance of ProjectController
-        self.song_controller = SongController(self)  # Creating an instance of SongController
-        self.stack_controller = StackController(self)  # Creating an instance of StackController
-        self.layer_controller = LayerController(self)  # Creating an instance of LayerController
-        self.song_overview_controller = SongOverviewController(self)  # Creating an instance of SongOverviewController
-        self.song_select_controller = SongSelectController(self)  # Creating an instance of SongSelectController
-        self.event_controller = EventController(self)  # Creating an instance of EventController
-        self.audio_playback_controller = AudioPlaybackController(self)  # Creating an instance of AudioPlaybackController
-        self.playback_mode_controller = PlaybackModeController(self)  # Creating an instance of PlaybackModeController
+        self.project_controller = ProjectController(
+            self
+        )  # Creating an instance of ProjectController
+        self.song_controller = SongController(
+            self
+        )  # Creating an instance of SongController
+        self.stack_controller = StackController(
+            self
+        )  # Creating an instance of StackController
+        self.layer_controller = LayerController(
+            self
+        )  # Creating an instance of LayerController
+        self.song_overview_controller = SongOverviewController(
+            self
+        )  # Creating an instance of SongOverviewController
+        self.song_select_controller = SongSelectController(
+            self
+        )  # Creating an instance of SongSelectController
+        self.event_controller = EventController(
+            self
+        )  # Creating an instance of EventController
+        self.audio_playback_controller = AudioPlaybackController(
+            self
+        )  # Creating an instance of AudioPlaybackController
+        self.playback_mode_controller = PlaybackModeController(
+            self
+        )  # Creating an instance of PlaybackModeController
         self.main_menu_controller = MainMenuController(self)
         self.bpm_tool_controller = BpmToolController(self)
         self.onset_detection_tool_controller = OnsetDetectionToolController(self)
@@ -55,8 +80,14 @@ class MainController:
         self.kicks_tool_controller = KicksToolController(self)
         self.filter_editor_controller = FilterEditorController()
         self.filter_audio_controller = FilterAudioController(self)
+        self.plugin_window_controller = PluginWindowController(self)
 
     def initialize_app(self):
         # Open the main window
         self.view.open_launch_window()  # Opening the launch window
+        self.model.plugin.load_plugins(self)
         # Connect the launch windows new project button click signal to connect to project controller new project method
+
+    def open_main_window(self):
+        self.view.open_main_window()  # Opening the main window with the project name
+        self.view.close_launch_window()

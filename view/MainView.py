@@ -22,6 +22,7 @@ from .window.GraphsWindow import GraphsWindow
 from .menu.MainMenu import MainMenu
 from .window.SongDataPreviewWindow import SongDataPreviewWindow
 from .menu.MainMenu import MainMenu
+from .window import PluginWindow
 
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
@@ -34,6 +35,7 @@ class MainView(QMainWindow):  # Main view class
         self.tools_window = ToolsWindow()
         self.graphs_window = GraphsWindow()
         self.main_menu = MainMenu()
+        self.plugins_window = PluginWindow()
         self.init_ui()
 
     def init_ui(self):
