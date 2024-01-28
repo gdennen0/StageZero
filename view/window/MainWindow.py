@@ -23,9 +23,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,  # Box layout with a vertical direction
     QHBoxLayout,
     QSizePolicy,  # Layout attribute describing horizontal and vertical resizing policy
-    QLabel,  # Provides a text or image display
-    QListWidget,  # Provides a list view that can display items from a model
-    QSplitter,  # Provides a splitter that lets the user control the size of child widgets
+    QMainWindow,
 )
 
 from ..widget.SongSelectWidget import SongSelectWidget
@@ -35,11 +33,11 @@ from ..widget.LayerControlWidget import LayerControlWidget
 from ..widget.StackWidget import StackWidget
 from ..widget.PlaybackModeWidget import PlaybackModeWidget
 from ..UI_COLORS import UIColors
-
-
-class MainWindow(QWidget):  # Class for the main window
-    def __init__(self):
+ 
+class MainWindow(QMainWindow):  # Class for the main window
+    def __init__(self, main_menu):
         super().__init__()  # Call the constructor of the parent class
+        self.setMenuBar(main_menu)  # Set the custom menu bar
         self.initialize()  # Initialize the main window
         self.initialize_ui_colors()
 
@@ -47,28 +45,46 @@ class MainWindow(QWidget):  # Class for the main window
         # Define UI elements and their properties
         ui_elements = {
             # self.song_select_menu: {"dropdown": True},
+            self.central_widget: {"widget": True},
             self.song_overview: {"widget": True},
             self.layer_control: {"widget": True},
             self.stack: {"widget": True},
             self.playback_mode: {"widget": True},
             self.audio_playback_command: {"widget": True},
+            self.menuBar(): {"main-menu": True},
         }
 
         # Apply colors to all UI elements
         UIColors.initialize_ui_colors(ui_elements)
 
-        style_sheet = (
-            f"background-color: {UIColors.BACKGROUND_COLOR};"
-            f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
-            f"QPushButton {{ "
-            f"background-color: {UIColors.BUTTON_COLOR}; "
-            f"color: {UIColors.BUTTON_TEXT_COLOR}; "  # Set the text color for buttons
-            f"}}"
-            f"QWidget {{ background-color: {UIColors.WIDGET_COLOR}; }}"
-        )
+        # style_sheet = (
+        #     f"background-color: {UIColors.BACKGROUND_COLOR};"
+        #     f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
+        #     f"QPushButton {{ "
+        #     f"background-color: {UIColors.BUTTON_COLOR}; "
+        #     f"color: {UIColors.BUTTON_TEXT_COLOR}; "  # Set the text color for buttons
+        #     f"}}"
+        #     f"QWidget {{ "
+        #     f"background-color: {UIColors.WIDGET_COLOR}; "
+        #     f"}}"
+        #     # f"QMenuBar {{ "
+        #     # f"background-color: {UIColors.MENU_BAR_COLOR}; "
+        #     # f"color: {UIColors.MENU_BAR_TEXT_COLOR}; "
+        #     # f"}}"
+        #     # f"QMenuBar::item {{ "
+        #     # f"background-color: {UIColors.MENU_BAR_ITEM_COLOR}; "
+        #     # f"color: {UIColors.MENU_BAR_ITEM_TEXT_COLOR}; "
+        #     # f"}} "
+        #     # f"QMenuBar::item:selected {{ "
+        #     # f"background-color: {UIColors.MENU_BAR_ITEM_SELECTED_COLOR}; "
+        #     # f"}} "
+        #     # f"QMenuBar::item:pressed {{ "
+        #     # f"background-color: {UIColors.MENU_BAR_ITEM_PRESSED_COLOR}; "
+        #     # f"}} "
+        # )
 
         # Apply the concatenated style sheet
-        self.setStyleSheet(style_sheet)
+        # self.setStyleSheet(style_sheet)
 
     def open(self):  # Open the main window with a given title
         self.setWindowTitle("StageZero Dev")  # Set the window title
@@ -78,7 +94,11 @@ class MainWindow(QWidget):  # Class for the main window
         self.close()  # Close the window
 
     def initialize(self):  # Initialize the main window
+        self.central_widget = QWidget()  # Create a central widget
+
         self.main_layout = QVBoxLayout()  # Set the layout to vertical box layout
+        self.central_widget.setLayout(self.main_layout)  # Set the main_layout as the layout for the central widget
+        self.setCentralWidget(self.central_widget)  # Set the central widget for the QMainWindow
         self.main_layout.setSpacing(0)  # Set the spacing between widgets to 0
 
         self.song_select_menu = SongSelectWidget()  # Widget for song selection

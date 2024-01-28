@@ -3,11 +3,12 @@ from PyQt5.QtWidgets import QWidget
 
 class UIColors:
     # Define color constants for UI elements
-    BACKGROUND_COLOR = "#121212"  # Black color code for background
+    BACKGROUND_COLOR = "#121212"
+    BLACK = "#000000"
     TEXT_COLOR = "#FFFFFF"
     BUTTON_COLOR = "#404040"
     BUTTON_TEXT_COLOR = "#FFFFFF"
-    WIDGET_COLOR = "#00000000"
+    WIDGET_COLOR = "#121212"
     DROPDOWN_COLOR = "#404040"
     DROPDOWN_TEXT_COLOR = "#FFFFFF"
     LIST_COLOR = "#282828"
@@ -16,6 +17,15 @@ class UIColors:
     INPUT_BOX_COLOR = "#404040"
     INPUT_BOX_TEXT_COLOR = "#FFFFFF"
     INPUT_BOX_BORDER_COLOR = "#404040"
+    LAYER_BACKGROUND = "#000000"
+    LAYER_COLOR = "#000000"
+    MENU_BAR_COLOR  = "#404040"
+    MENU_BAR_TEXT_COLOR = "#FFFFFF"
+    MENU_BAR_ITEM_COLOR = "#404040"
+    MENU_BAR_ITEM_TEXT_COLOR = "#404040"
+    MENU_BAR_ITEM_SELECTED_COLOR = "#282828"
+    MENU_BAR_ITEM_PRESSED_COLOR = "#282828"
+    MENU_BAR_ITEM_HOVER_COLOR = "#282828"
 
     @staticmethod
     def initialize_ui_colors(ui_elements):
@@ -49,5 +59,15 @@ class UIColors:
                     styles.append(
                         f"border: 1px solid {UIColors.INPUT_BOX_BORDER_COLOR};"
                     )
+                elif property == "layer-background":
+                    styles.append(f"background-color: {UIColors.LAYER_BACKGROUND};")
+                    styles.append(f"color: {UIColors.LAYER_COLOR};")
+                elif property == "main-menu":
+                    styles.append(f"background-color: {UIColors.MENU_BAR_COLOR};")
+                    styles.append(f"color: {UIColors.MENU_BAR_TEXT_COLOR};")
+                    styles.append(f"QMenuBar::item:hover {{ background-color: {UIColors.MENU_BAR_ITEM_HOVER_COLOR}; }}")
+                    styles.append(f"QMenuBar::item {{ background-color: {UIColors.MENU_BAR_ITEM_COLOR}; color: {UIColors.MENU_BAR_ITEM_TEXT_COLOR}; }}")
+                    styles.append(f"QMenuBar::item:selected {{ background-color: {UIColors.MENU_BAR_ITEM_SELECTED_COLOR}; }}")
+                    styles.append(f"QMenuBar::item:pressed {{ background-color: {UIColors.MENU_BAR_ITEM_PRESSED_COLOR}; }}")
 
             element.setStyleSheet(" ".join(styles))

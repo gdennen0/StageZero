@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,  # Box layout with a horizontal direction
     QComboBox,  # Drop down selection box
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QSizePolicy
 from ..UI_COLORS import UIColors
 
 
@@ -57,6 +57,10 @@ class PlaybackModeWidget(QWidget):  # Widget for selecting the playback mode
             f"QComboBox {{ "
             f"background-color: {UIColors.DROPDOWN_COLOR};"
             f"color: {UIColors.DROPDOWN_TEXT_COLOR}"
+            f"padding: 10px;"  # You can increase padding for a larger appearance
+            f"min-width: 150px;"  # Set a minimum width
+            f"min-height: 30px;"  # Set a minimum height
+            f"font-size: 16px;"
             f"}}"
         )
 
@@ -65,7 +69,8 @@ class PlaybackModeWidget(QWidget):  # Widget for selecting the playback mode
 
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
-        # self.layout.setContentsMargins(1, 1, 1, 1)  # Set half as much padding
+        self.layout.setContentsMargins(10, 10, 10, 10)  # Set half as much padding
+
 
         self.label = QLabel("Playback Mode", self)  # Label for the playback mode
         self.playback_mode_selector = QComboBox(

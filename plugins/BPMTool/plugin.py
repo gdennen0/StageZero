@@ -2,28 +2,31 @@ from PluginInterface import PluginInterface
 from .LocalController import LocalController
 from .LocalWindow import LocalWindow
 
+"""
+    All of the plugins outward facing methods should be built out here as this is the top layer of the local plugin
+"""
 
-class TestPlugin(PluginInterface):
-    def __init__(self, main_controller):
+PLUGIN_NAME = "BPMTool"
+
+class BPMTool(PluginInterface):
+    def __init__(self):
         super().__init__()
-        self.local_controller = LocalController(LocalWindow(), main_controller)
-        self.main_controller = main_controller
-        print(f"initializing TestPlugin")
+        self.local_controller = None
+        self.main_controller = None
 
     def execute(self):
         # Implement the method
         pass
 
-    def load(self):
+    def load(self, main_controller):
+        self.local_controller = LocalController(LocalWindow(), main_controller)
+        self.main_controller = main_controller
         print(f"TestPlugin Loaded")
 
-        # Implement the method
-        pass
-
     def unload(self):
-        # Implement the method
-        pass
+        self.local_controller = None
+        self.main_controller = None
 
     def open(self):
-        print(f"test plugin open")
+        print(f"Opening {PLUGIN_NAME}'s main window")
         self.local_controller.open()

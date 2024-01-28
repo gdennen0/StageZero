@@ -2,6 +2,7 @@ import importlib
 import os
 from PluginInterface import PluginInterface
 import sys
+import inspect  # Add this import at the top of your file
 
 
 class PluginModel:
@@ -9,12 +10,13 @@ class PluginModel:
         self.plugins = {}
 
     def load_plugins(self, main_controller):
-        self.loader = PluginLoader("plugins", main_controller)
+        self.loader = PluginLoader("plugins")
         self.loader.load_plugins()
         self.plugins = self.loader.plugins
 
         for plugin in self.plugins.values():
-            plugin.load()
+            plugin.load(main_controller)
+            print(f"loading plugin")
 
     def reload_plugins(self):
         self.unload_plugins()
@@ -33,10 +35,9 @@ class PluginModel:
 
 
 class PluginLoader:
-    def __init__(self, plugin_directory, main_controller):
+    def __init__(self, plugin_directory):
         self.plugins = {}
         self.plugin_directory = plugin_directory
-        self.main_controller = main_controller
 
     def load_plugins(self):
         # Add the plugin directory to the Python path
@@ -57,11 +58,13 @@ class PluginLoader:
                         module = importlib.import_module(full_module_name)
                         for attribute_name in dir(module):
                             attribute = getattr(module, attribute_name)
-                            if (
-                                issubclass(attribute, PluginInterface)
-                                and attribute is not PluginInterface
-                            ):
-                                # Initialize the plugin and store it with the folder name as the key
-                                self.plugins[item] = attribute(self.main_controller)
+                            if inspect.isclass(attribute):  # Check if the attribute is a class
+                                if (
+                                    issubclass(attribute, PluginInterface)
+                                    and attribute is not PluginInterface
+                                ):
+                                    # Initialize the plugin and store it with the folder name as the key
+                                    self.plugins[item] = attribute()
+                                    
                     except Exception as e:
                         print(f"Failed to load plugin {item}: {e}")

@@ -6,19 +6,28 @@ import numpy as np
 from scipy.signal import butter, lfilter
     
 def estimate_bpm(song_object):
-    # Load the song using the SongModel
-    song_name = song_object.name
-    song_path = song_object.path
-    song_data, sample_rate = librosa.load(song_path)
+    try:
+        if song_object is not None:
+            # Load the song using the SongModel
+            song_name = song_object.name
+            song_path = song_object.path
+            song_data, sample_rate = librosa.load(song_path)
 
-    desired_frame_rate = 30  # for example, 100 frames per second
-    hop_length = int(sample_rate / desired_frame_rate)
+            desired_frame_rate = 30  # for example, 100 frames per second
+            hop_length = int(sample_rate / desired_frame_rate)
 
-    # Use librosa to estimate the BPM
-    tempo, beats = librosa.beat.beat_track(y=song_data, sr=sample_rate, hop_length=hop_length)
+            # Use librosa to estimate the BPM
+            tempo, beats = librosa.beat.beat_track(y=song_data, sr=sample_rate, hop_length=hop_length)
 
-    print(f"[TOOLS][estimate_bpm] song name: {song_name}, sample rate {sample_rate}, tempo {tempo}")
-    return tempo, beats
+            print(f"[TOOLS][estimate_bpm] song name: {song_name}, sample rate {sample_rate}, tempo {tempo}")
+            return tempo, beats
+        else:
+            print(f"invalid song_object")
+            pass
+    except Exception as e:
+        print(f"An error occurred while estimating BPM: {e}")
+        return None
+
 
 def detect_onsets(song_object=None, song_data=None, sample_rate=None):
     if song_object is not None:
