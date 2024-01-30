@@ -45,7 +45,7 @@ class MainModel:
         if self.stack.loaded_stack:
             return self.stack.objects[self.stack.loaded_stack]
         else:
-            print(f"ERROR: No stack loaded yet")  # Error message if no song is loaded
+            print(f"ERROR: No stack loaded yet")  # Error message if no song is loaded]
 
     def get_song(self, song_name):
         if song_name in self.song.objects:
@@ -63,5 +63,3 @@ class MainModel:
     def add_filtered_data(self, filter_name, filtered_data):
         self.loaded_song.add_filtered_data(filter_name, filtered_data)
 
-    # def add_new_layer(self, layer_name):
-    #     layer_index = self.stack.objects[self.loaded_stack].layers.
