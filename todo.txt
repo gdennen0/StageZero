@@ -1,0 +1,24 @@
+# Project Todo
+
+# Bugs
+    - Line up the left side of the Song Overview Plot with the left side  of the Layer Plot 
+
+# Features
+    Event tools:
+        - Sequencer
+        - Envelope
+
+    Save Project
+    Load Project
+
+    Select multiple events layerPlot
+
+    move playhead while playback or pause
+    
+
+# QOL
+    - Improve click handling while selecting events in layer plot (make click area larger when in edit mode)
+
+# Error Hanlding
+    - Add error handling practically everywhere
+
