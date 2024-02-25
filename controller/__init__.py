@@ -1,5 +1,4 @@
 from .AudioPlaybackController import *
-from .BPMToolController import *
 from .EventController import *
 from .LayerController import *
 from .MainController import *

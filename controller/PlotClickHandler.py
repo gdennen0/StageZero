@@ -1,4 +1,3 @@
-
 """
 Module: PlotClickHandler
 
@@ -16,9 +15,6 @@ The handle_click method checks the current playback mode and calls the appropria
 For example, if the playback mode is "Record", it calls the handle_record_click method.
 """
 
-
-
-
 import math
 from view import DialogWindow
 
@@ -29,72 +25,64 @@ class PlotClickHandler:
         self.main_controller = main_controller
         self.model = main_controller.model
 
-    def handle_click(self, scene_pos, plot_pos):
+    def handle_click(self, scene_pos, plot_pos_raw):
         # This function handles the click based on the current playback mode
         playback_mode = self.main_controller.playback_mode_controller.get_current_mode()
 
         if playback_mode == "Record":
             # If the playback mode is "Record", handle the click accordingly
-            self.handle_record_click(scene_pos, plot_pos)
+            self.handle_record_click(scene_pos, plot_pos_raw)
         # Add more elif conditions here for other playback modes
 
         if playback_mode == "Edit":
             # If the playback mode is "Edit", handle the click accordingly
-            self.handle_edit_click(scene_pos, plot_pos)
+            self.handle_edit_click(scene_pos, plot_pos_raw)
 
         if playback_mode == "Play":
             # If the playback mode is "Play", do nothing
             print(f"Playback mode: Play selected, doing nothing")
 
-    def handle_record_click(self, scene_pos, plot_pos):
+    def handle_record_click(self, scene_pos, plot_pos_raw):
         # This function handles the click when the playback mode is "Record"
-        loaded_stack = self.model.stack.loaded_stack
-        matched_layer_index = math.floor(plot_pos.y())
-        matched_layer_name = (
-            self.model.stack.objects[loaded_stack].layers[matched_layer_index].name
-        )
+        matched_layer_index = math.floor(plot_pos_raw.y())
+        matched_layer_name = self.model.loaded_stack.layers[matched_layer_index].name
+        matched_frame = self.match_click_to_frame(scene_pos, plot_pos_raw)
 
-        matched_frame = self.match_click_to_frame(scene_pos, plot_pos)
-
-        print(f"Matched layer {matched_layer_index} matched frame: {matched_frame}")
+        print(f"User Click: {matched_layer_name} | frame: {matched_frame}")
         # Add the EventItem to the appropriate layer in the LayerModel
-        if matched_layer_index < len(self.model.stack.objects[loaded_stack].layers):
-            self.model.stack.objects[loaded_stack].layers[matched_layer_index].add(
-                matched_frame
-            )
+        if matched_layer_index < len(self.model.loaded_stack.layers):
+            self.model.loaded_stack.layers[matched_layer_index].add(matched_frame)
         else:
-            print("Layer doesn't exist at index")
+            print("ERROR: Layer doesn't exist at index")
 
-        self.main_controller.layer_controller.refresh_plot_data_item(matched_layer_name)
-        self.main_controller.layer_controller.refresh_plot_widget_layer(
+        # add event to appropritate PlotDataGroup
+        self.main_controller.layer_controller.refresh_plot_data_group(
             matched_layer_name
         )
-        print(f"end handle_plot_click")
 
-    def handle_edit_click(self, scene_pos, plot_pos):
+    def handle_edit_click(self, scene_pos, plot_pos_raw):
         # This function handles the click when the playback mode is "Edit"
-        loaded_stack = self.model.stack.loaded_stack
-        matched_layer_index = math.floor(plot_pos.y())
-        matched_frame = self.match_click_to_frame(scene_pos, plot_pos)
+        # matched_layer_index = math.floor(plot_pos_raw.y())
+        # matched_frame = self.match_click_to_frame(scene_pos, plot_pos_raw)
+        # matched_layer_name = self.model.loaded_stack.layers[matched_layer_index].name
 
-        print(f"Matched layer {matched_layer_index} matched frame: {matched_frame}")
-        try:
-            event_object = (
-                self.model.stack.objects[loaded_stack]
-                .layers[matched_layer_index]
-                .objects[matched_frame]
-            )
-        except KeyError:
-            DialogWindow.error(
-                f"Error: Event at frame {matched_frame} does not exist within {matched_layer_index}."
-            )
-            return
+        # print(f"User Click: {matched_layer_name} | frame: {matched_frame}")
+        # try:
+        #     event_object = self.model.loaded_stack.layers[matched_layer_index].objects[
+        #         matched_frame
+        #     ]
+        # except KeyError:
+        #     DialogWindow.error(
+        #         f"Error: Event at frame {matched_frame} does not exist within {matched_layer_index}."
+        #     )
+        #     return
 
-        self.main_controller.event_controller.edit_event(event_object)
+        # self.main_controller.event_controller.edit_event(event_object)
+        pass
 
     def match_click_to_frame(self, scene_pos, plot_pos):
         # This function matches the click to a frame
-        print(f"Matching click raw x: {scene_pos} / plot pos x {plot_pos}")
+        # print(f"Matching click raw x: {scene_pos} / plot pos x {plot_pos}")
         frame_number = int(round(plot_pos.x()))
-        print(f"--> Matched to frame: {frame_number}")
+        # print(f"--> Matched to frame: {frame_number}")
         return frame_number

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton
-from pyqtgraph import PlotWidget, AxisItem, InfiniteLine, mkPen
+from pyqtgraph import PlotWidget, AxisItem, InfiniteLine, mkPen, ScatterPlotItem
 
 
 class SongDataPreviewWindow(QWidget):
@@ -18,12 +18,12 @@ class SongDataPreviewWindow(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.plot_widget = PlotWidget()
-        self.layout.addWidget(self.plot_widget)
+        self.plot = PlotWidget()
+        self.layout.addWidget(self.plot)
 
     def open(self, song_data, axis_data):
-        self.plot_widget.plot(axis_data, song_data)
-        self.plot_widget.setLimits(  # Set the limits for the song plot
+        self.plot.plot(axis_data, song_data)
+        self.plot.setLimits(  # Set the limits for the song plot
             xMin=0,
             xMax=axis_data[-1],
             yMin=0,
@@ -49,8 +49,15 @@ class SongDataPreviewWindow(QWidget):
         self.playhead = InfiniteLine(
             angle=90, movable=True, pen=line_specs
         )  # Create an infinite line
-        self.plot_widget.addItem(self.playhead)  # Add the line to the song plot
+        self.plot.addItem(self.playhead)  # Add the line to the song plot
 
-    def closeEvent(self, event):
+    def add_event(self, event):
+        event_item = InfiniteLine(
+            angle=90, movable=False, pen=mkPen(color="w", width=2)
+        )
+        event_item.setPos(event)
+        self.plot.addItem(event_item)
+
+    def close(self, event):
         self.window_closed.emit()
         event.accept()

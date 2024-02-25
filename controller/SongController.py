@@ -17,8 +17,9 @@ When a song is loaded, it updates the loaded song and stack in the model, sets t
 loads the audio into the playback controller, resets the audio playback, and reloads the song select dropdown menu.
 """
 
-
 from view import DialogWindow
+import re
+from PopupManager import PopupManager
 
 
 class SongController:
@@ -27,48 +28,44 @@ class SongController:
         self.model = main_controller.model  # Model reference
         self.view = main_controller.view  # View reference
 
+    def initialize(self):
+        self.main_controller.audio_playback_controller.load_song(
+            self.model.loaded_song
+        )  # Load the song into audio playback
+
     def print(self, function_type, string):
         print(f"[CONTROLLER][{function_type}] | {string}")
 
     def add_song(self):
-        # Add a song
         file_path = DialogWindow.open_file(
             "Select Song", "", "Audio Files (*.mp3 *.wav);;All Files (*)"
         )
+        if not file_path:
+            PopupManager.show_error("Error", "No file selected. Please select a file.")
+            return
         song_name = DialogWindow.input_text("Enter Song Name", "Song Name")
+        if not re.match("^[a-zA-Z0-9_ -]+$", song_name):
+            PopupManager.show_error(
+                "Error",
+                "Invalid song name. Please use only letters, numbers, spaces, hyphens, and underscores.",
+            )
+            return
         song_object = self.model.song.build_song_object(file_path, song_name)
+        print(f"built song object with name {song_name}")
         self.model.song.add_song_object_to_model(song_object)
         self.main_controller.stack_controller.create_stack(song_name)
         if self.model.song.loaded_song == None:
             self.load_song(song_name)
         else:
-            self.main_controller.song_select_controller.update_dropdown()
+            self.main_controller.song_select_controller.refresh()
 
     def load_song(self, song_name):
-        song_object_to_be_loaded = self.model.get_song(song_name)
-        # Load a song
-        self.print("load_song", f"current selected song: {song_name}")
-        # Change loaded_song to song_name
         self.model.song.loaded_song = song_name
-        # Change loaded_stack to song_name
         self.model.stack.loaded_stack = song_name
-        # load the frame qty for the stack
-        self.main_controller.stack_controller.set_stack_frame_qty(song_name)
-        self.print("load_song", f"Updating song Plot")
-        # Update the Song Overview Plot
-        self.main_controller.song_overview_controller.update_plot()
-        # Reload all of the layer plots
-        # self.main_controller.layer_controller.init_plot(song_name)
-        self.main_controller.layer_controller.reload_layer_plot()
-        # Load the audio into the playback controller
-        self.main_controller.audio_playback_controller.load_song(
-            song_object_to_be_loaded
-        )
-        # reset the audio playback
-        self.main_controller.audio_playback_controller.stop()
-        self.main_controller.audio_playback_controller.reset()
-        # reload the song select dropdown menu
-        self.main_controller.song_select_controller.update_dropdown()
+        self.main_controller.song_overview_controller.refresh()
+        self.main_controller.layer_controller.refresh()
+        self.main_controller.audio_playback_controller.refresh()
+        self.main_controller.song_select_controller.refresh()
 
     def add_filter_to_loaded_song(self, filter_type, filtered_data, sample_rate):
         # (filter_type, filtered_data, sample_rate)

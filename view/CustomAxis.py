@@ -18,7 +18,6 @@ Returns:
     - An instance of the CustomAxis class.
 """
 
-
 import math  # For mathematical operations
 import numpy as np  # For array operations
 from pyqtgraph import AxisItem  # For customizing plots
@@ -63,13 +62,12 @@ class CustomAxis(AxisItem):  # Custom axis class
                 ]  # Assigns the layer name from the layers list at the position of the index
                 # Check if the layer name exceeds 10 characters
                 if len(layer_name) > 10:
-                    print(f"layer name is more than 10, its  {len(layer_name)}")
+                    print(f"WARNING: layer name is more than 10!  ({len(layer_name)})")
                     # Insert a newline character after every 10 characters and center each line
                     layer_name = "\n".join(
                         layer_name[i : i + 10] for i in range(0, len(layer_name), 10)
                     )
                 else:
-                    print(f"layer name is less than 10, its  {len(layer_name)}")
                     # Center the layer name if it is less than or equal to 10 characters
                     layer_name = layer_name.center(10, " ")
                 strings.append(layer_name)

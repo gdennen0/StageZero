@@ -29,7 +29,11 @@ class PluginWindowController:
         plugin_dir = os.path.join(os.getcwd(), "plugins")
         if not os.path.exists(plugin_dir):
             os.makedirs(plugin_dir)  # Create the plugins directory if it doesn't exist
-        plugins = os.listdir(plugin_dir)
+        plugins = [
+            plugin
+            for plugin in os.listdir(plugin_dir)
+            if not plugin.startswith(".") and plugin != "__pycache__"
+        ]  # Filter out hidden folders and __pycache__
 
         # Populate the QListWidget with plugin names
         for plugin in plugins:

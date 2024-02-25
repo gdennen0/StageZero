@@ -9,7 +9,3 @@ class PluginInterface(ABC):
     @abstractmethod
     def unload(self):
         pass
-
-    @abstractmethod
-    def execute(self):
-        pass

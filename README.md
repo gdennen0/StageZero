@@ -1,22 +1,8 @@
 # StageZeroDocumentation:
+02-12-24
+version = 1.0.0
+(MAJOR.MINOR.PATCH)
 
-Dependencies
-
-    - Python
-    - PyQt5
-    - librosa
-    - numpy
-    - pyqtgraph
-    - vlc
-    - threading
-
-    here are the pip commands you'll need to use:
-        pip install 
-            librosa
-            Pyqtgraph
-            Pyqt5
-            Pyqt5 - tools
-            python-vlc
 
 Modules
 
@@ -33,6 +19,13 @@ Modules
                 - LayerItem: Represents a layer with a name and an event. Holds an instance of EventModel.
                     - EventModel: Manages Event Item objects, and handles prep/storage of the plot data item.
                         - EventItem: Represents a single event with a name and color.
+
+        - PluginModel: Manages plugins ()
+            - Load Plugins
+
+        - PoolModel: Manages Pool objects
+            - Pools:
+                - Onset: (These pool objects contain an array of onset events)
 
     Views
         - MainView: The main view that holds the launch window and main window. Parent to all windows.      

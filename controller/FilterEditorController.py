@@ -2,6 +2,7 @@ import json
 import os
 from view.window.FilterEditorWindow import FilterEditorWindow
 from PyQt5.QtGui import QIntValidator
+import re
 
 
 class FilterEditorController:
@@ -33,10 +34,8 @@ class FilterEditorController:
     def validate_inputs(self):
         try:
             filter_name_input = self.filter_editor_window.filter_name_input.text()
-            if not filter_name_input.isalnum():
-                raise ValueError(
-                    "Filter name must only contain alphanumeric characters."
-                )
+            if not re.match("^[a-zA-Z0-9_-]+$", filter_name_input):
+                raise ValueError("Invalid Character")
 
             cutoff_frequency_input = (
                 self.filter_editor_window.cutoff_frequency_input.text()

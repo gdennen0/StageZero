@@ -17,9 +17,7 @@ Returns:
 The LayerModel class provides methods for creating new layers, getting the index of a layer given its name, getting the quantity of layers, and setting event data for a layer. It maintains a list of layers, where each layer is an instance of the EventModel class.
 """
 
-
 from .EventModel import EventModel
-from .ClickablePlotDataItem import ClickablePlotDataItem
 
 
 class LayerModel:
@@ -31,22 +29,8 @@ class LayerModel:
         # objet global frame_qty
 
     def get_layer_index(self, layer_name):
-        for index, layer in enumerate(self.layers):
-            print(
-                f"There are {len(self.layers)} layers in the list."
-            )  # Print the quantity of layers
-            print(
-                f"Checking layer at index: {index} whose name is {layer.name}"
-            )  # Print the index and name of the current layer
-            if layer.name == layer_name:
-                print(
-                    f"[MODEL][LAYERMODEL][get_layer_index] | Matched layer named: {layer_name} to index {index}"
-                )  # Print a message if the layer name matches
-                return index
-        print(
-            f"[MODEL][LAYERMODEL][get_layer_index] | No matched layer named: {layer_name}"
-        )  # Print a message if no layer name matches
-        return None
+        layer_names = {layer.name: index for index, layer in enumerate(self.layers)}
+        return layer_names.get(layer_name, None)
 
     def get_layer_qty(self):
         return len(self.layers)  # Returns the quantity of layers
@@ -68,20 +52,6 @@ class LayerModel:
     def set_event_data(self, layer_name, object_data):
         index = self.get_layer_index(layer_name)  # Get the index of the layer
         self.layers[index].objects = object_data  # Set the event data for the layer
-
-    def create_layer_plot_data_item(self, layer_name):
-        index = self.get_layer_index(layer_name)  # Get the index of the layer
-        self.layers[
-            index
-        ].plot_data_item = (
-            ClickablePlotDataItem()
-        )  # Create a new clickable plot data item for the layer
-
-    def set_event_plot_data_item(self, layer_name, plot_data):
-        index = self.get_layer_index(layer_name)  # Get the index of the layer
-        self.layers[index].plot_data_item = ClickablePlotDataItem(
-            plot_data, symbol="o", pen=None
-        )  # Create a new clickable plot data item with the specified plot data
 
     def remove_layer_from_model(self, layer_name):
         # Filter out the layer with the given layer_name
@@ -113,3 +83,9 @@ class LayerModel:
 
     def set_frame_qty(self, qty):
         self.frame_qty = qty  # Set the quantity of frames
+
+    def update_event(self, layer_index, original_frame, new_frame):
+        data = self.layers[layer_index].objects[original_frame]
+        self.layers[layer_index].objects[original_frame] = None
+        self.layers[layer_index].add(new_frame)
+        self.layers[layer_index].edit(new_frame, data)

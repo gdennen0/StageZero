@@ -13,6 +13,7 @@ Returns:
 """
 
 from view import DialogWindow
+from PopupManager import PopupManager
 
 
 class ProjectController:
@@ -36,9 +37,41 @@ class ProjectController:
         project_name = DialogWindow.input_text(
             "Input Text", "Project Name"
         )  # Getting the project name from the user
+        if not project_name:  # Check if project_name is empty or None
+            return
         self.model.project_name = project_name  # Setting the project name in the model
         self.main_controller.open_main_window()
 
     def load_project(self):
-        # functions to load the project file
-        print(f"Begin Loading Project")
+        path = DialogWindow.open_file("Open Location", "saves/")
+        self.model.load(path)
+        print(f"Project Loaded from {path}")
+        self.view.open_main_window()
+        self.view.close_launch_window()
+
+        self.main_controller.song_controller.initialize()
+        self.main_controller.song_overview_controller.refresh()  # Load the song data into the song overview plot
+        self.main_controller.layer_controller.refresh()  # initialize the layer widget
+        self.main_controller.song_select_controller.refresh()  # Update the song select widget dropdown items
+
+    def save_as(self):
+        self.model.save_path = DialogWindow.save_file("Save Location")
+        self.model.save()
+
+    def save(self):
+        if self.model.save_path is not None:
+            self.model.save()
+
+        else:
+            PopupManager.show_info("Info", "Project has not been saved yet")
+            self.save_as()
+
+    def reload_project(self):
+        path = DialogWindow.open_file("Open Location", "saves/")
+        self.model.load(path)
+        self.main_controller.layer_controller.refresh()
+        self.main_controller.song_overview_controller.refresh()
+        self.main_controller.audio_playback_controller.refresh()
+        self.main_controller.song_select_controller.refresh()  # Update the song select widget dropdown items
+
+        print(f"Project Loaded from {path}")

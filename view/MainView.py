@@ -56,7 +56,6 @@ class MainView(QMainWindow):  # Main view class
             (screen_resolution.height() - self.main_window.height()) / 2,
         )  # Center the window
 
-
     def open_launch_window(self):
         self.launch_window.open()
 

@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,  # Box layout with a vertical direction
 )
 
+
 class EventEditorWidget(QDialog):  # Widget for editing events
     def __init__(self, event_object, parent=None):
         super().__init__(parent)  # Call the constructor of the parent class
@@ -28,17 +29,25 @@ class EventEditorWidget(QDialog):  # Widget for editing events
         self.layout = QVBoxLayout(self)  # Set the layout to vertical box layout
 
         self.attr1_edit = QLineEdit(self)  # Line edit for editing the first attribute
-        self.attr1_edit.setText(str(self.event_object.name))  # Set the text of the line edit to the name of the event
+        self.attr1_edit.setText(
+            str(self.event_object.name)
+        )  # Set the text of the line edit to the name of the event
         self.layout.addWidget(self.attr1_edit)  # Add the line edit to the layout
 
         # Create a button for opening the color dialog
-        self.color_button = QPushButton("Choose color", self)  # Button for choosing the color
-        self.color_button.clicked.connect(self.open_color_dialog)  # Connect the button click to the open_color_dialog method
+        self.color_button = QPushButton(
+            "Choose color", self
+        )  # Button for choosing the color
+        self.color_button.clicked.connect(
+            self.open_color_dialog
+        )  # Connect the button click to the open_color_dialog method
         self.layout.addWidget(self.color_button)  # Add the color button to the layout
 
         # Create a save button
         self.save_button = QPushButton("Save", self)  # Button for saving the changes
-        self.save_button.clicked.connect(self.save_changes)  # Connect the button click to the save_changes method
+        self.save_button.clicked.connect(
+            self.save_changes
+        )  # Connect the button click to the save_changes method
         self.layout.addWidget(self.save_button)  # Add the save button to the layout
 
     def open_color_dialog(self):  # Open the color dialog

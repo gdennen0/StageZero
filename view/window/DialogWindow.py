@@ -24,9 +24,10 @@ from PyQt5.QtWidgets import (
     QMessageBox,  # Modal dialog for informing the user or for asking the user a question and receiving an answer
 )
 
+
 class DialogWindow:
     # Prompt user to select a file to open
-    def open_file(title, dir, filter):
+    def open_file(title, dir=None, filter=None):
         options = QFileDialog.Options()  # Define the options for the file dialog
         file_path, _ = QFileDialog.getOpenFileName(  # Get the open file name
             None,
@@ -38,7 +39,7 @@ class DialogWindow:
         return file_path  # Return the file path
 
     # Prompt user to select file save name/path
-    def save_file(title, dir, filter):
+    def save_file(title, dir=None, filter=None):
         options = QFileDialog.Options()  # Define the options for the file dialog
         file_path, _ = QFileDialog.getSaveFileName(  # Get the save file name
             None,
@@ -51,7 +52,9 @@ class DialogWindow:
 
     # Prompt user to input text
     def input_text(title, label):
-        name, ok = QInputDialog.getText(None, title, label)  # Get the text input from the user
+        name, ok = QInputDialog.getText(
+            None, title, label
+        )  # Get the text input from the user
         if ok:  # If the input is valid
             return name  # Return the name
 

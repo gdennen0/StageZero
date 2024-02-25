@@ -17,7 +17,6 @@ The load_song method loads a song into the player using the path of the song fro
 The update_time_label method updates the time label in the view with the current time of the player.
 """
 
-
 from .AudioPlaybackEngine import AudioPlaybackEngine
 
 
@@ -31,8 +30,14 @@ class AudioPlaybackController:
         self.init_connections()  # Initialize connections
         self.connect_playhead()
 
+    def refresh(self):
+        self.audio_playback_engine.load_song(self.model.loaded_song)
+        self.audio_playback_engine.reload_audio()
+        self.connect_playhead()
+
     def load_song(self, song_object):
         self.audio_playback_engine.load_song(song_object)
+        self.connect_playhead()
 
     def play(self):
         if self.model.loaded_song:
@@ -68,3 +73,7 @@ class AudioPlaybackController:
         self.audio_playback_engine.playback_clock_thread.time_updated.connect(
             self.update_time_label
         )
+        self.audio_playback_engine.playback_clock_thread.time_updated.connect(
+            self.main.layer_controller.update_playhead_position
+        )
+        print(f"Connecting playhead in APC")

@@ -87,6 +87,13 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
             angle=90, movable=True, pen=line_specs
         )  # Create an infinite line
         self.song_plot.addItem(self.playhead)  # Add the line to the song plot
+        self.playhead.setPos(0)
+
+    def reset_playhead(self):
+        self.song_plot.removeItem(
+            self.playhead
+        )  # Remove the playhead from the song plot
+        self.init_playhead()
 
     def paint_beat_line(self, frame_number):
         line_specs = mkPen(color="b", width=1)  # Define the specifications for the line
@@ -153,3 +160,4 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
         # logic to update plot
         self.song_plot.clear()  # Clear the song plot
         self.plot_events(ticks, song_data)  # Plot the events
+        self.reset_playhead()

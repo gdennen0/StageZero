@@ -13,7 +13,6 @@ Returns:
 The EventModel class provides a method to add event items to its dictionary of objects. Each event item is an instance of the EventItem class.
 """
 
-
 from .EventItem import EventItem
 
 
@@ -31,3 +30,9 @@ class EventModel:
             )
             return
         self.objects[frame_number] = EventItem()  # Add an event item to the dictionary
+
+    def edit(self, frame_number, data):
+        if frame_number not in self.objects:
+            print(f"no frame exists at frame: {frame_number}")
+            return
+        self.objects[frame_number] = data

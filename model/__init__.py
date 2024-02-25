@@ -1,4 +1,4 @@
-from .stack.ClickablePlotDataItem import *
+from view.LayerPlotItem import *
 from .stack.EventItem import *
 from .stack.EventModel import *
 from .stack.LayerItem import *

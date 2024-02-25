@@ -21,27 +21,46 @@ class MainMenuController:
         self.initialize_connections()
 
     def initialize_connections(self):
-        self.view.main_menu.file_menu.exit_action.triggered.connect(
-            QApplication.instance().quit
+        # Organize connections by menu categories
+        self.setup_file_menu_connections()
+        self.setup_view_menu_connections()
+        self.setup_filter_menu_connections()
+
+    def setup_file_menu_connections(self):
+        self.connect_action(
+            self.view.main_menu.file_menu.exit_action, QApplication.instance().quit
         )
-        self.view.main_menu.view_menu.tools_action.triggered.connect(
-            self.open_tools_window
+        self.connect_action(
+            self.view.main_menu.file_menu.save_as_action,
+            self.main_controller.project_controller.save_as,
         )
-        self.view.main_menu.view_menu.graphs_action.triggered.connect(
-            self.open_graphs_window
+        self.connect_action(
+            self.view.main_menu.file_menu.save_action,
+            self.main_controller.project_controller.save,
+        )
+        self.connect_action(
+            self.view.main_menu.file_menu.load_action,
+            self.main_controller.project_controller.reload_project,
         )
 
-        self.view.main_menu.view_menu.plugins_action.triggered.connect(
-            self.open_plugins_window
+    def setup_view_menu_connections(self):
+        self.connect_action(
+            self.view.main_menu.view_menu.plugin_action, self.open_plugins_window
         )
 
-        self.view.main_menu.filter_menu.edit_filters_action.triggered.connect(
-            self.open_filter_editor
+    def setup_filter_menu_connections(self):
+        self.connect_action(
+            self.view.main_menu.filter_menu.edit_filters_action, self.open_filter_editor
         )
-        self.view.main_menu.filter_menu.filter_audio_action.triggered.connect(
-            self.open_filter_audio
+        self.connect_action(
+            self.view.main_menu.filter_menu.filter_audio_action, self.open_filter_audio
         )
 
+    def connect_action(self, action, method):
+        """Helper method to connect a menu action to a method."""
+        action.triggered.connect(method)
+
+    # Methods to open different windows remain unchanged
     def open_tools_window(self):
         print(f"Opening tools window")
         self.view.tools_window.open()
@@ -59,5 +78,8 @@ class MainMenuController:
         self.main_controller.filter_editor_controller.open()
 
     def open_filter_audio(self):
-        print(f"Opening filter aduio")
+        print(f"Opening filter audio")
         self.main_controller.filter_audio_controller.open()
+
+    def open_main_window(self):
+        print(f"Opening main window")

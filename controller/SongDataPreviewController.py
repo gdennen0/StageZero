@@ -56,3 +56,9 @@ class SongDataPreviewController:
     def update_playhead_position(self, frame_number):
         # Update the position of the vertical line
         self.song_data_preview_window.playhead.setPos(float(frame_number))
+
+    def add_events(self, events):  # add array of events
+        [self.add_event(event) for event in events]
+
+    def add_event(self, event):
+        self.song_data_preview_window.add_event(event)

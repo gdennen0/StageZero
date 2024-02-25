@@ -1,4 +1,3 @@
-
 """
 Module: StackController
 
@@ -12,7 +11,6 @@ Returns:
 
 The StackController class is initialized with a reference to the main controller. It uses this reference to access the model and view components of the application. The class provides methods to create a new stack, change the selected stack, get the currently loaded stack, and set the number of frames for a stack. These methods manipulate the stack state in the model and update the view accordingly.
 """
-
 
 
 class StackController:
@@ -35,6 +33,10 @@ class StackController:
         # Change the selected stack to the one with the given name
         self.model.stack.selected_stack = stack_name
         self.main_controller.layer_controller.init_plot(stack_name)
+
+    def reload_stack(self):
+        # Change the selected stack to the one with the given name
+        self.main_controller.layer_controller.init_plot(self.model.loaded_stack.name)
 
     def get_loaded_stack(self):
         # Return the currently loaded stack

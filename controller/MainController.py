@@ -17,6 +17,7 @@ This allows the other controllers to access the model and view through the MainC
 
 The MainController also has an initialize_app method, which opens the main window of the application and connects the new project button click signal to the project controller's new project method.
 """
+
 import os
 
 from .ProjectController import ProjectController
@@ -29,8 +30,8 @@ from .EventController import EventController
 from .PlaybackModeController import PlaybackModeController
 from .AudioPlaybackController import AudioPlaybackController
 from .MainMenuController import MainMenuController
-from .GraphWindowController import GraphWindowController
-from .ToolWindowController import (
+from .depriciated.GraphWindowController import GraphWindowController
+from .depriciated.ToolWindowController import (
     BpmToolController,
     OnsetDetectionToolController,
     KicksToolController,
@@ -91,3 +92,6 @@ class MainController:
     def open_main_window(self):
         self.view.open_main_window()  # Opening the main window with the project name
         self.view.close_launch_window()
+
+    def close_main_window(self):
+        self.view.close_main_window()

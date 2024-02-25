@@ -18,6 +18,7 @@ Returns:
 import librosa
 import constants
 import numpy as np
+from ..pool.PoolModel import PoolModel
 
 
 class SongItem:
@@ -38,6 +39,7 @@ class SongItem:
         self.frame_qty = self.calculate_frame_qty()  # Calculate the quantity of frames
         self.filter = {}
         self.x_axis = self.generate_x_axis()
+        self.pool = PoolModel()
 
     @staticmethod
     def load_song_data(path):

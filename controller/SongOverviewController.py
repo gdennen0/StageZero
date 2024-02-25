@@ -15,7 +15,6 @@ It initializes the connections for the song overview and defines the actions to 
 This includes generating ticks for the song, initializing the playhead, painting beat lines, removing beat lines, and updating the playhead position.
 """
 
-
 import math
 import numpy as np
 import constants
@@ -72,12 +71,11 @@ class SongOverviewController:
         print(f"Creating {frame_qty} frame array")
         return np.arange(frame_qty)
 
-    def update_plot(self):
+    def refresh(self):
         # Update the plot
         x_axis = self.model.loaded_song.x_axis
         song_data = self.model.loaded_song.song_data
         self.song_overview_widget.update_plot(x_axis, song_data)
-        self.init_playhead()
 
     def update_playhead_position(self, frame_number):
         # Update the position of the vertical line

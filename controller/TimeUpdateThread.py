@@ -14,7 +14,6 @@ The TimeUpdateThread class has several methods to manage the time updates. The '
 The 'start_clock' method starts the clock and begins the execution of the thread. The time updates are managed using a condition variable to synchronize the thread execution.
 """
 
-
 import time
 from threading import Condition
 from PyQt5.QtCore import (
@@ -72,11 +71,10 @@ class TimeUpdateThread(QThread):
             if self.state == self.RUNNING:
                 self.paused_time = time.perf_counter()
                 current_time = time.perf_counter()
-                self.elapsed_time += current_time - self.start_time
+                self.elapsed_time += (
+                    current_time - self.start_time
+                )  # This line calculates the total elapsed time by adding the current time since the clock started to the previously elapsed time before the pause
                 self.state = self.PAUSED
-                # print(
-                #     f"paused clock at {self.paused_time}, elapsed time is {self.elapsed_time}"
-                # )
 
     def resume_clock(self):
         # This function resumes the clock

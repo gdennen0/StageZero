@@ -16,16 +16,13 @@ class LocalWindow(QWidget):
         self.layout = QVBoxLayout(self)
 
         self.count_button = QPushButton("Count", self)
-        self.paint_to_song_overview_button = QPushButton("Paint to SongOverview", self)
-        self.remove_from_song_overview_button = QPushButton(
-            "Remove BPM from SongOverview", self
-        )
+        self.add_events_to_layer_button = QPushButton("Add BPM events to layer", self)
         self.bpm_label = QLabel("BPM", self)
+        self.bpm_label.setStyleSheet("font-size: 24pt")
 
-        self.layout.addWidget(self.count_button)
-        self.layout.addWidget(self.paint_to_song_overview_button)
-        self.layout.addWidget(self.remove_from_song_overview_button)
         self.layout.addWidget(self.bpm_label)
+        self.layout.addWidget(self.count_button)
+        self.layout.addWidget(self.add_events_to_layer_button)
 
     def open(self):
         self.show()

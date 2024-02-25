@@ -37,6 +37,9 @@ class AudioPlaybackEngine:
             sf.write(tmpfile, self.loaded_audio_data, self.original_sample_rate)
         tmpfile_path = tmpfile.name
         self.audio_player.set_mrl(tmpfile_path)
+        self.playback_clock_thread = TimeUpdateThread()
+        self.stop()
+        self.reset()
 
     def load_filtered_data(self, filter_name):
         self.loaded_audio_data = self.filter_objects[filter_name].filtered_data

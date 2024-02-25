@@ -1,4 +1,3 @@
-
 """
 Module: SongSelectController
 
@@ -9,7 +8,7 @@ The selected song is stored in the 'selected_song' attribute.
 The 'connect_signals' method connects the UI signals to the appropriate slots in this controller. 
 The 'generate_dropdown_items' method populates the dropdown menu with the available songs. 
 The 'on_song_selected' method handles the event when a song is selected from the dropdown menu. 
-The 'update_dropdown' method clears and repopulates the dropdown menu.
+The 'refresh' method clears and repopulates the dropdown menu.
 
 Arguments:
     main_controller: A reference to the main controller of the application.
@@ -17,7 +16,6 @@ Arguments:
 Returns:
     None
 """
-
 
 
 class SongSelectController:
@@ -45,7 +43,9 @@ class SongSelectController:
             return
 
         song_selector = self.view.main_window.song_select_menu.song_selector
-        loaded_song_name = self.model.loaded_song.name if self.model.loaded_song else None
+        loaded_song_name = (
+            self.model.loaded_song.name if self.model.loaded_song else None
+        )
 
         # Add the loaded song to the dropdown menu if it exists
         if loaded_song_name:
@@ -54,22 +54,28 @@ class SongSelectController:
         # Add the remaining songs to the dropdown menu
         for song in self.model.song.objects:
             if song != loaded_song_name:
-                song_selector.addItem(song.name)
+                song_selector.addItem(song)
 
     def on_song_selected(self, index):
         # Handle what happens when a song is selected
-        if index == -1:  # Checking if the index is -1 (if the song_selector does not have any items in it)
-            return  # If the index is -1, return
+        if (
+            index == -1
+        ):  # Checking if the index is -1 (if the song_selector does not have any items in it)
+            return
         selected_song = self.view.main_window.song_select_menu.song_selector.itemText(
             index
         )  # Getting the selected songs name from the song_selector dropdown menu given the song_selector index
         if selected_song == self.model.loaded_song.name:
             return
         else:
-            print(f"Selected song: {selected_song} index: {index}")  # Printing the selected song and index
-            self.main_controller.song_controller.load_song(selected_song)  # Loading the selected song with the song_controller
+            print(
+                f"Selected song: {selected_song} index: {index}"
+            )  # Printing the selected song and index
+            self.main_controller.song_controller.load_song(
+                selected_song
+            )  # Loading the selected song with the song_controller
 
-    def update_dropdown(self):
+    def refresh(self):
         # Clear the dropdown
         self.view.main_window.song_select_menu.song_selector.clear()
         # Generate and place the dropdown Items

@@ -19,13 +19,16 @@ class UIColors:
     INPUT_BOX_BORDER_COLOR = "#404040"
     LAYER_BACKGROUND = "#000000"
     LAYER_COLOR = "#000000"
-    MENU_BAR_COLOR  = "#404040"
+    MENU_BAR_COLOR = "#404040"
     MENU_BAR_TEXT_COLOR = "#FFFFFF"
     MENU_BAR_ITEM_COLOR = "#404040"
     MENU_BAR_ITEM_TEXT_COLOR = "#404040"
     MENU_BAR_ITEM_SELECTED_COLOR = "#282828"
     MENU_BAR_ITEM_PRESSED_COLOR = "#282828"
     MENU_BAR_ITEM_HOVER_COLOR = "#282828"
+    TOOL_TIP_BACKGROUND_COLOR = "#404040"
+    TOOL_TIP_TEXT_COLOR = "#FFFFFF"
+    TOOL_TIP_BORDER_COLOR = "#000000"
 
     @staticmethod
     def initialize_ui_colors(ui_elements):
@@ -65,9 +68,17 @@ class UIColors:
                 elif property == "main-menu":
                     styles.append(f"background-color: {UIColors.MENU_BAR_COLOR};")
                     styles.append(f"color: {UIColors.MENU_BAR_TEXT_COLOR};")
-                    styles.append(f"QMenuBar::item:hover {{ background-color: {UIColors.MENU_BAR_ITEM_HOVER_COLOR}; }}")
-                    styles.append(f"QMenuBar::item {{ background-color: {UIColors.MENU_BAR_ITEM_COLOR}; color: {UIColors.MENU_BAR_ITEM_TEXT_COLOR}; }}")
-                    styles.append(f"QMenuBar::item:selected {{ background-color: {UIColors.MENU_BAR_ITEM_SELECTED_COLOR}; }}")
-                    styles.append(f"QMenuBar::item:pressed {{ background-color: {UIColors.MENU_BAR_ITEM_PRESSED_COLOR}; }}")
+                    styles.append(
+                        f"QMenuBar::item:hover {{ background-color: {UIColors.MENU_BAR_ITEM_HOVER_COLOR}; }}"
+                    )
+                    styles.append(
+                        f"QMenuBar::item {{ background-color: {UIColors.MENU_BAR_ITEM_COLOR}; color: {UIColors.MENU_BAR_ITEM_TEXT_COLOR}; }}"
+                    )
+                    styles.append(
+                        f"QMenuBar::item:selected {{ background-color: {UIColors.MENU_BAR_ITEM_SELECTED_COLOR}; }}"
+                    )
+                    styles.append(
+                        f"QMenuBar::item:pressed {{ background-color: {UIColors.MENU_BAR_ITEM_PRESSED_COLOR}; }}"
+                    )
 
             element.setStyleSheet(" ".join(styles))
