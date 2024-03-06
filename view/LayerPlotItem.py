@@ -1,5 +1,5 @@
 from pyqtgraph import PlotDataItem, mkPen
-from PyQt5.QtCore import Qt, QPointF, Signal, pyqtSignal
+from PyQt5.QtCore import Qt, QPointF, pyqtSignal
 from PyQt5.QtGui import QMouseEvent, QPen, QHelpEvent
 from PyQt5.QtWidgets import QGraphicsItem
 

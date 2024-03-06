@@ -1,5 +1,3 @@
-
-
 """
 Module: EventItem
 
@@ -17,8 +15,95 @@ Returns:
 
 """
 
+from view.LayerPlotItem import LayerPlotItem
+import pyqtgraph as pg
+
 
 class EventItem:
-    def __init__(self, event_name="Default", color=(255,255,255)):
+    def __init__(self, event_name="Default", color=(255, 255, 255)):
+        self.frame_number = None
+        self.parent_layer = None
+        self.parent_layer_index = None
         self.name = event_name  # The name of the event
         self.color = color  # The color of the event
+        self.plot_data_item = None
+
+    def to_dict(self):
+        return {
+            "frame_number": self.frame_number,
+            "parent_layer": self.parent_layer,
+            "parent_layer_index": self.parent_layer_index,
+            "name": self.name,
+            "color": str(self.color),
+            # Exclude "plot_data_item" from serialization
+        }
+
+    def deserialize(self, data):
+        self.frame_number = data.get("frame_number")
+        self.parent_layer = data.get("parent_layer")
+        self.parent_layer_index = data.get("parent_layer_index")
+        self.name = data.get("name")
+        self.generate_layer_plot_item()
+        color_str = data.get("color", "(100, 100, 100)")
+        self.set_color(color_str)
+
+    def set_color(self, color):
+        # Gobbles up either #HEX or RGB values
+        if color.startswith("#"):  # Check if color is in hex format
+            color = color.lstrip("#")
+            try:
+                self.color = tuple(
+                    int(color[i : i + 2], 16) for i in (0, 2, 4)
+                )  # Convert hex to RGB
+                self.plot_data_item.setBrush(self.color)
+            except ValueError:
+                raise ValueError("Invalid hex color format")
+        elif "," in color:  # Check if color is in "255,255,255" string format
+            try:
+                self.color = tuple(map(int, color.strip("()").split(",")))
+                self.plot_data_item.setBrush(self.color)
+            except ValueError:
+                raise ValueError("Invalid RGB string format")
+        else:
+            raise ValueError(
+                "Color must be in hex (#RRGGBB) or RGB (255,255,255) format"
+            )
+
+    def set_frame_number(self, frame_number):
+        if not isinstance(frame_number, int):
+            raise ValueError("Frame number must be an integer")
+        self.frame_number = frame_number
+
+    def set_parent_layer_index(self, parent_layer_index):
+        self.parent_layer_index = parent_layer_index
+        print(f"set parent layer index to {parent_layer_index}")
+
+    def update_pdi(self):
+        self.plot_data_item = self.generate_layer_plot_item()
+
+    def delete_pdi(self):
+        self.plot_data_item = None
+
+    def generate_layer_plot_item(self):
+        # translates model data to layerPlotItem
+        self.plot_data_item = self.create_point(
+            self.name, self.frame_number, self.parent_layer_index, self.color
+        )
+
+    def create_point(self, name, frame_num, layer_index, color):
+        adj_layer_index = layer_index + 0.5
+        print(f"create_point, color {color}")
+        plot_point = LayerPlotItem(
+            x=[frame_num],
+            y=[adj_layer_index],
+            symbol="d",
+            brush=pg.mkBrush(color),
+            hoverable=True,
+            hoverPen=pg.mkPen("orange"),
+            # hoverBrush=pg.mkBrush("w"),
+            size=12,
+            name=name,
+        )
+        plot_point.set_frame_num(frame_num)
+        plot_point.set_layer_index(adj_layer_index)
+        return plot_point

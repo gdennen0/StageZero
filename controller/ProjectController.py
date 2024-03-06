@@ -14,6 +14,7 @@ Returns:
 
 from view import DialogWindow
 from PopupManager import PopupManager
+import os
 
 
 class ProjectController:
@@ -33,17 +34,15 @@ class ProjectController:
         )  # Connecting the load_project_button click signal to the load_project method
 
     def new_project(self):
-        print(f"Begin Initializing New Project")
-        project_name = DialogWindow.input_text(
-            "Input Text", "Project Name"
-        )  # Getting the project name from the user
-        if not project_name:  # Check if project_name is empty or None
-            return
-        self.model.project_name = project_name  # Setting the project name in the model
+        self.model.project_name = "Untitled"  # Setting the project name in the model
         self.main_controller.open_main_window()
 
     def load_project(self):
         path = DialogWindow.open_file("Open Location", "saves/")
+        if os.path.exists(path):
+            pass
+        else:
+            return
         self.model.load(path)
         print(f"Project Loaded from {path}")
         self.view.open_main_window()

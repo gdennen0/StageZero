@@ -11,35 +11,39 @@ Returns:
 """
 
 import math
-import pyqtgraph as pg
 import numpy as np
 from PyQt5.QtCore import Qt, QTimer
 from view import DialogWindow
 from view.LayerPlotItem import LayerPlotItem
 from view.PlotDataGroup import PlotDataGroup
+from .PlotClickHandler import PlotClickHandler
 
 
 class LayerController:
     # This class manages the layers in the application.
     def __init__(self, main_controller):
+        self.plot_layer_items = {}
+
         self.main_controller = main_controller
         self.stack = main_controller.model.stack
         self.model = main_controller.model
         self.view = main_controller.view
         self.layer_widget = self.view.main_window.stack.layer_widget
         self.layer_plot = self.view.main_window.stack.layer_widget.layer_plot
-        self.layer_widget = self.view.main_window.stack.layer_widget
         self.song_overview_plot = self.view.main_window.song_overview.song_plot
 
         self.layer_plot.setXLink(self.song_overview_plot)
 
         self.connect_signals()
-        # self.connect_layer_plot_signals(self.layer_plot)
+        self.connect_layer_plot_signals()
 
     def connect_signals(self):
         # Connect the remove and add layer buttons to their respective functions
         self.view.main_window.layer_control.btnRemove.clicked.connect(self.remove_layer)
         self.view.main_window.layer_control.btnAdd.clicked.connect(self.add_layer)
+
+    def connect_layer_plot_signals(self):
+        self.layer_plot.scene().sigMouseClicked.connect(self.click)
 
     def refresh(self):
         # Clear the layer plot and reinitialize it
@@ -60,6 +64,7 @@ class LayerController:
             self.add_plot_layer(layer_name)
 
     def replot_layer_plot(self):
+        print(f"replot layer plot")
         # Replot the layer plot
         self.layer_plot = self.view.main_window.stack.layer_widget.layer_plot
         self.layer_plot.replot()
@@ -70,6 +75,11 @@ class LayerController:
 
     def reload_playhead(self):
         self.layer_widget.reload_playhead()
+
+    def refresh_plot_data_item(self):
+        # item = self.model.loaded_stack.layers[layer_name].objects[frame_number].plot_data_item
+        # self.replot_layer_plot()
+        pass
 
     def add_layer(self):
         # Add a new layer to the stack
@@ -91,36 +101,40 @@ class LayerController:
 
     def add_model_layer(self, layer_name):
         # Add a new layer to the model
-        self.model.stack.objects[self.model.loaded_song.name].create_layer(layer_name)
+        self.model.loaded_stack.create_layer(layer_name)
 
     def add_plot_layer(self, layer_name):
         # Add a new layer to the plot
         print(f"add plot layer {layer_name}")
-        self.refresh_plot_data_group(layer_name)
-
+        self.load_plot_layer_data(layer_name)
         self.update_layer_names()
         self.update_layer_plot_height()
         # self.refresh_plot_widget_layer(layer_name)
 
-    def load_plot_data_group(self, layer_name):
-        print(f"loading plot data group for layer: {layer_name}")
-        pass
-
-    def refresh_plot_data_group(self, layer_name):
+    def load_plot_layer_data(self, layer_name):
         # Refresh a single layer in the layer plot by name
-        # layer_event_items = self.model.stack.get_layer_items(layer_name)
-        plot_group = self.translate_raw_data_to_plot_group(layer_name)
-        # self.layer_widget.remove_plot_group(layer_plot_item)
-        self.layer_widget.add_plot_group(plot_group)
+        layer_index = self.model.loaded_stack.get_layer_index(layer_name)
+        layer_object = self.model.loaded_stack.layers[layer_index]
+        plot_layer_data = layer_object.get_plot_layer_data()
+
+        self.layer_widget.remove_items(plot_layer_data)
+        self.main_controller.event_controller.add_plot_layer_data(plot_layer_data)
         layer_qty = self.model.loaded_stack.get_layer_qty()
         self.set_layer_plot_limits(yMax=layer_qty)
-        # for key, value in plot_group:
-        # print(f"event : {key}")
 
     def update_layer_names(self):
         # Update the names of the layers
         loaded_stack = self.model.loaded_stack
-        layer_names = [layer.name for layer in loaded_stack.layers]
+        # loaded_stack = self.model.stack.objects[self.model.stack.loaded_stack]
+        print(
+            f"update layer name loaded stack {loaded_stack} type {type(loaded_stack)}"
+        )
+        # layer_names = [layer.name for layer in loaded_stack]
+        layer_names = []
+        for layer in loaded_stack.layers:
+            print(f"layer {layer}")
+            layer_names.append(layer.name)
+
         self.layer_widget.update_layer_names(layer_names)
 
     def update_layer_plot_height(self):
@@ -149,49 +163,19 @@ class LayerController:
         # But only zoom out the y axis 100%
         self.layer_plot.getViewBox().setRange(yRange=(yMin, yMax), padding=0)
 
-    def translate_raw_data_to_plot_group(self, layer_name):
-        # Translate the raw data of a layer to plottable data
-        raw_data = self.model.loaded_stack.get_layer_raw_data(
-            layer_name
-        )  # Get the layers raw data
-        layer_index = self.model.loaded_stack.get_layer_index(
-            layer_name
-        )  # get the layers index
-        plot_data_group = PlotDataGroup()
-        for key, point_raw_data in raw_data.items():
-            if point_raw_data is not None:
-                # print(
-                #     f"translating raw to pdg: frame:{key} layer index: {layer_index}, {point_raw_data},"
-                # )
-                name = point_raw_data.name
-                x = key
-                y = layer_index + 0.5
-                plot_point = self.create_point(name, x, y, point_raw_data)
-                # Connect Signals
-                self.connect_point_signals(plot_point)
-                plot_data_group.add(plot_point)
-
-        return plot_data_group
-
-    def connect_point_signals(self, plot_point):
-        print(f"Connecting Point Signal {plot_point}")
-        plot_point.sigClicked.connect(self.click)
-        plot_point.sigPositionChanged.connect(self.handle_position_change)
-        plot_point.sigMouseRightClicked.connect(self.handle_right_click)
-
     def handle_position_change(self, current_frame, new_frame_object):
         new_frame_x = int(new_frame_object.x())
         new_frame_y = int(new_frame_object.y())
         print(
             f"handle_pos_change | start position: {current_frame} | new x position: {new_frame_x}"
         )
-        self.model.loaded_stack.update_event(
+        self.model.loaded_stack.move_event(
             new_frame_y, current_frame, new_frame_x
         )  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
 
     def handle_right_click(self, layer_index, frame_num):
         try:
-            event_object = self.model.loaded_stack.layers[layer_index].objects[
+            model_object = self.model.loaded_stack.layers[layer_index].objects[
                 frame_num
             ]
         except KeyError:
@@ -199,29 +183,17 @@ class LayerController:
                 f"Model Error: Event at frame {frame_num} does not exist in layer {layer_index}."
             )
             return
+        layer_name = self.model.loaded_stack.get_layer_name(
+            layer_index
+        )  # TODO: update all these unnecessary conversions to find list/dict indexes
+        self.main_controller.event_controller.edit_event(layer_name, model_object)
 
-        self.main_controller.event_controller.edit_event(event_object)
-
-    def create_point(self, name, x, y, event_raw_data):
-        color = event_raw_data.color
-        plot_point = LayerPlotItem(
-            x=[x],
-            y=[y],
-            symbol="d",
-            brush=pg.mkBrush(color),
-            hoverable=True,
-            hoverPen=pg.mkPen("orange"),
-            hoverBrush=pg.mkBrush("w"),
-            size=12,
-            name=name,
-        )
-        plot_point.set_frame_num(x)
-        plot_point.set_layer_index(y)
-        return plot_point
-
-    def click(self, plot_point, event):
-        print(f"plot point: {plot_point}")
-        print(f"event: {event}")
+    def click(self, event):
+        scene_pos = event.scenePos()
+        plot_pos = self.layer_plot.plotItem.vb.mapSceneToView(scene_pos)
+        print(f"[PLOT CLICK] scene: {scene_pos} | plot: {plot_pos} ")
+        self.plot_click_handler = PlotClickHandler(self.main_controller)
+        self.plot_click_handler.handle_click(scene_pos, plot_pos)
 
     def update_playhead_position(self, frame_number):
         # Update the position of the vertical line

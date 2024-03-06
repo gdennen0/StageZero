@@ -14,25 +14,56 @@ The EventModel class provides a method to add event items to its dictionary of o
 """
 
 from .EventItem import EventItem
+from pprint import pprint
 
 
 class EventModel:
     def __init__(self, name):
         self.objects = {}  # Dictionary to store event objects
-        self.plot_data_item = None  # The plot data item
         self.name = name
+        self.layer_index = None
+
+    def set_index(self, layer_index):
+        print(f"Setting layer index to {layer_index}")
+        self.layer_index = layer_index
+
+    def delete(self, frame_number):
+        if frame_number in self.objects:
+            del self.objects[frame_number]
+            print(f"Frame number {frame_number} deleted from event objects.")
+        else:
+            print(f"No event object found for frame number {frame_number}. for delete")
 
     def add(self, frame_number):
         # adds an instance of EventItem to self.objects
-        if frame_number in self.objects:
+        print(f"start list objects:")
+        pprint(self.objects)
+        if frame_number in self.objects and not None:
             print(
                 f"Data already exists for frame number {frame_number}, frame not added"
             )
             return
-        self.objects[frame_number] = EventItem()  # Add an event item to the dictionary
+        event = EventItem()
+        event.parent_layer = self.name
+        event.parent_layer_index = self.layer_index
+        event.frame_number = frame_number
+        self.objects[frame_number] = event  # Add an event item to the dictionary
+        print(f"adding event at frame {frame_number}")
+        print(f"end list objects:")
+        pprint(self.objects)
 
-    def edit(self, frame_number, data):
+    def update_data(self, frame_number, data):
         if frame_number not in self.objects:
             print(f"no frame exists at frame: {frame_number}")
             return
         self.objects[frame_number] = data
+        self.objects[frame_number].frame_number = frame_number
+        print(f"attempting to update frame {frame_number} data")
+
+    def generate_plot_layer_data_items(self):
+        for event_key, event in self.objects.items():
+            event.generate_layer_plot_item()
+
+    def get_plot_layer_data(self):
+        plot_layer_objects = [event.plot_data_item for event in self.objects.values()]
+        return plot_layer_objects

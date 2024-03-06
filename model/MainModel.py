@@ -22,6 +22,8 @@ from .stack.StackModel import StackModel
 from .plugin import PluginModel
 import os
 from PopupManager import PopupManager
+import json
+import types
 
 
 class MainModel:
@@ -47,6 +49,9 @@ class MainModel:
     @property
     def loaded_stack(self):
         if self.stack.loaded_stack:
+            # print(
+            #     f"accessed loaded stack property method trying to get object {self.stack.loaded_stack} {type(self.stack.objects[self.stack.loaded_stack])}"
+            # )
             return self.stack.objects[self.stack.loaded_stack]
         else:
             print(f"ERROR: No stack loaded yet")  # Error message if no song is loaded]
@@ -67,20 +72,46 @@ class MainModel:
     def add_filtered_data(self, filter_name, filtered_data):
         self.loaded_song.add_filtered_data(filter_name, filtered_data)
 
+    def serialize_stack(self):
+        serialized_stacks = {}
+        for stack_name, stack in self.stack.objects.items():
+            serialized_layers = {}
+            for layer in stack.layers:
+                serialized_events = {}
+                for event_key, event in layer.objects.items():
+                    # Serialize each event, excluding the plot_layer_item
+                    serialized_events[event_key] = event.to_dict()
+                serialized_layers[layer.name] = {
+                    "frame_qty": stack.frame_qty,
+                    "events": serialized_events,
+                }
+            serialized_stacks[stack_name] = {
+                "loaded_stack": stack_name == self.loaded_stack,
+                "layers": serialized_layers,
+            }
+        return serialized_stacks
+
     def save(self):
+        print(
+            f"saving loaded stack {self.stack.loaded_stack} type {type(self.loaded_stack)}"
+        )
+        # self.prepare_stack_data_for_saving()
         model_data = {
             "song_model": {
                 "objects": self.song.objects,
                 "loaded_song": self.song.loaded_song,
             },
             "stack_model": {
-                "objects": self.stack.objects,
+                "objects": self.serialize_stack(),
                 "loaded_stack": self.stack.loaded_stack,
             },
             "main_model": {
                 "save_path": self.save_path,
             },
         }
+
+        print(self.serialize_stack())
+
         if self.save_path:
             with open(self.save_path, "wb") as file:
                 pickle.dump(model_data, file)
@@ -99,6 +130,10 @@ class MainModel:
             data_loaded = pickle.load(file)
         self.song.objects = data_loaded["song_model"]["objects"]
         self.song.loaded_song = data_loaded["song_model"]["loaded_song"]
-        self.stack.objects = data_loaded["stack_model"]["objects"]
-        self.stack.loaded_stack = data_loaded["stack_model"]["loaded_stack"]
+        # self.stack.objects = data_loaded["stack_model"]["objects"]
+        self.stack.set_loaded_stack(data_loaded["stack_model"]["loaded_stack"])
+        self.stack.deserialize_stack(data_loaded["stack_model"]["objects"])
+
+        # self.stack.set_loaded_stack(data_loaded["stack_model"]["loaded_stack"])
         self.save_path = data_loaded["main_model"]["save_path"]
+        self.stack.generate_plot_data_items()

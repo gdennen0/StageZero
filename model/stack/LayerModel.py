@@ -23,14 +23,22 @@ from .EventModel import EventModel
 class LayerModel:
     # Manage Layer Item Instances and events item instances
     def __init__(self):
-        # Init the layers dict
         self.layers = []  # List to store layer objects
         self.frame_qty = None  # The quantity of frames
-        # objet global frame_qty
+
+    def generate_plot_data_items(self):
+        for layer in self.layers:
+            layer.generate_plot_layer_data_items()
 
     def get_layer_index(self, layer_name):
         layer_names = {layer.name: index for index, layer in enumerate(self.layers)}
         return layer_names.get(layer_name, None)
+
+    def get_layer_name(self, layer_index):
+        for layer in self.layers:
+            if self.layers.index(layer) == layer_index:
+                return layer.name
+        return None
 
     def get_layer_qty(self):
         return len(self.layers)  # Returns the quantity of layers
@@ -44,6 +52,9 @@ class LayerModel:
         if index is None:
             self.layers.append(layer)  # Append the layer to the list
             print(f"[MODEL] appended Layer Object {layer_name}")  # Print a message
+            layer_index = self.get_layer_index(layer_name)
+            print(f"getting layer index {layer_index}")
+            self.layers[layer_index].set_index(layer_index)
         else:
             self.layers.insert(index, layer)  # Insert the layer at the specified index
             print(f"[MODEL] inserted Layer Object at index: {index}")  # Print a message
@@ -84,8 +95,19 @@ class LayerModel:
     def set_frame_qty(self, qty):
         self.frame_qty = qty  # Set the quantity of frames
 
-    def update_event(self, layer_index, original_frame, new_frame):
-        data = self.layers[layer_index].objects[original_frame]
-        self.layers[layer_index].objects[original_frame] = None
+    def delete_event(self, layer, frame):
+        del self.layers[layer].objects[frame]
+        print(f"Deleted event at frame {frame}")
+
+    def get_event_data(self, layer, frame):
+        return self.layers[layer].objects[frame]
+
+    def move_event(self, layer_index, original_frame, new_frame):
+        print(
+            f"updating event layer index: {layer_index}\n...{   original_frame} ----> {new_frame}"
+        )
+        data = self.get_event_data(layer_index, original_frame)
         self.layers[layer_index].add(new_frame)
-        self.layers[layer_index].edit(new_frame, data)
+        self.layers[layer_index].update_data(new_frame, data)
+
+        self.delete_event(layer_index, original_frame)

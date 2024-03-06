@@ -45,6 +45,7 @@ class PlotClickHandler:
     def handle_record_click(self, scene_pos, plot_pos_raw):
         # This function handles the click when the playback mode is "Record"
         matched_layer_index = math.floor(plot_pos_raw.y())
+        print(f"matched layer index: {matched_layer_index}")
         matched_layer_name = self.model.loaded_stack.layers[matched_layer_index].name
         matched_frame = self.match_click_to_frame(scene_pos, plot_pos_raw)
 
@@ -56,9 +57,10 @@ class PlotClickHandler:
             print("ERROR: Layer doesn't exist at index")
 
         # add event to appropritate PlotDataGroup
-        self.main_controller.layer_controller.refresh_plot_data_group(
-            matched_layer_name
+        self.main_controller.event_controller.add_new_event_to_plot(
+            matched_layer_name, matched_frame
         )
+        # self.main_controller.layer_controller.refresh()
 
     def handle_edit_click(self, scene_pos, plot_pos_raw):
         # This function handles the click when the playback mode is "Edit"
