@@ -64,14 +64,57 @@ class EventController:
     def connect_point_signals(self, plot_data_item):
         print(f"Connecting Point Signal {plot_data_item}")
         plot_data_item.sigClicked.connect(self.main_controller.layer_controller.click)
-        plot_data_item.sigPositionChanged.connect(
-            self.main_controller.layer_controller.handle_position_change
-        )
+        # plot_data_item.sigPositionChanged.connect(
+        #     self.main_controller.layer_controller.handle_position_change
+        # )
         plot_data_item.sigMouseRightClicked.connect(
             self.main_controller.layer_controller.handle_right_click
         )
-        self.view.main_window.stack.layer_widget.connectCustomViewBoxSignal("sigItemsSelected", self.select_events)
-    
+        # self.view.main_window.stack.layer_widget.connectCustomViewBoxSignal("sigItemsSelected", self.select_events)
+        plot_data_item.sigPositionDrag.connect(
+            self.drag_selected_events
+        )        
+        plot_data_item.sigEventSelected.connect(
+            self.select_event
+        )
+        plot_data_item.sigAdditionalEventSelected.connect(
+            self.select_additional_event
+        )
+        plot_data_item.sigEventDragStart.connect(
+            self.start_drag
+        )
+        plot_data_item.sigEventDragEnd.connect(
+            self.end_drag
+        )
+    def start_drag(self):
+        # Call this method when the drag operation starts
+        print(f"start drag controller")
+        self.initial_positions = {event: event.frame_num for event in self.selected_events}
+        print(f"initial positions {self.initial_positions}")
+
+    def drag_selected_events(self, pos_delta):
+        # Ensure initial positions are captured before calling this method
+        for event in self.selected_events:
+            initial_pos_x = self.initial_positions[event]
+            new_pos_x = initial_pos_x + pos_delta.x()
+            event.set_x_position(new_pos_x)
+
+    def end_drag(self):
+        # Call this method when the drag operation ends
+        self.initial_positions.clear()
+
+    def select_event(self, event):
+        print(f"selecting event")
+        self.selected_events = []
+        self.selected_events.append(event)
+        event.select()
+
+    def select_additional_event(self, event):
+        print(f"selecting event")
+        self.selected_events.append(event)
+        event.select()
+
+
     def edit_event(self, layer_name, model_object):
         # This function edits an event
         print(f"edit_event \n layer:{layer_name}")
@@ -82,20 +125,54 @@ class EventController:
         )
         self.editor.exec_()
 
-    def select_events(self, items):
-        self.selected_items = items
-        for item in items:
-            item.set_selected(True)
+    # def select_events(self, items):
+    #     self.selected_items = items
+    #     for item in items: 
+    #         item.set_selected(True)
 
-    def deselect_events(self):
-        for item in self.selected_items:
-            item.set_selected(False)
-        self.selected_items = []
+    # def deselect_events(self):
+    #     for item in self.selected_items:
+    #         item.set_selected(False)
+    #     self.selected_items = []
 
-    def handle_drag_event(self, event, newPos):
-        if event.isStart():
-            self.drag_offset = newPos - event.buttonDownPos(Qt.LeftButton)
-        elif event.isFinish():
-            for item in self.selected_items:
-                item.setPos(item.pos() + self.drag_offset)
-                # Emit position changed signal if needed
+    # def handle_drag_event(self, selected_events, drag_offset):
+    #     for event in selected_events:
+    #         if event.isStart():
+    #             self.drag_offset = newPos - event.buttonDownPos(Qt.LeftButton)
+    #         elif event.isFinish():
+    #             for item in self.selected_items:
+    #                 item.setPos(item.pos() + self.drag_offset)
+    #                 # Emit position changed signal if needed
+
+    #     if ev.button() == Qt.LeftButton:
+    #         if ev.isStart():
+    #             # This block will only execute at the start of the drag
+    #             print("Drag Start")
+    #             self.dragOffset = self.points()[0].pos() - ev.buttonDownPos(
+    #                 Qt.LeftButton
+    #             )
+    #             self.dragIndex = 0
+    #             self.dragPoint = True
+    #             self.dragStart = ev.buttonDownPos()
+    #             ev.accept()
+
+    #         if self.dragPoint:
+    #             # This block executes throughout the drag after initialization
+    #             # print("Dragging")
+    #             newPos = ev.pos() + self.dragOffset
+    #             if self.dragIndex is not None:
+    #                 data = self.getData()
+    #                 data[0][self.dragIndex] = newPos.x()
+    #                 # data[1][self.dragIndex] = newPos.y()
+    #                 self.setData(*data)
+    #             ev.accept()
+
+    #         if ev.isFinish():
+    #             # print(f"Finished Drag {ev.lastPos()}")
+    #             newPos = ev.lastPos()
+    #             newPos.setX(round(newPos.x()))
+
+    #             self.sigPositionChanged.emit(self.frame_num, newPos)
+    #             self.set_x_position(newPos.x())
+    #     else:
+    #         ev.ignore()

@@ -26,7 +26,12 @@ from PyQt5.QtWidgets import QToolTip
 
 class LayerPlotItem(ScatterPlotItem):
     sigPositionChanged = pyqtSignal(int, QPointF)  # Signal emitting the new position
+    sigPositionDrag = pyqtSignal(QPointF)
     sigMouseRightClicked = pyqtSignal(int, int)  # New signal for mouse click events
+    sigEventSelected = pyqtSignal(object)
+    sigAdditionalEventSelected = pyqtSignal(object)
+    sigEventDragStart = pyqtSignal()
+    sigEventDragEnd = pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,13 +70,46 @@ class LayerPlotItem(ScatterPlotItem):
     def mouseClickEvent(self, ev):
         if ev.button() == Qt.LeftButton:
             print("Left Click")
+            self.sigEventSelected.emit(self)
             ev.accept()
+        if ev.button() == Qt.LeftButton and ev.modifiers() == Qt.ShiftModifier:
+            print("Left Click + Shift")
+            self.sigAdditionalEventSelected.emit(self)
+            ev.accept()
+        
         if ev.button() == Qt.RightButton:
             print("Right Click")
             self.sigMouseRightClicked.emit(
                 self.layer_index, self.frame_num
             )  # Emit the signal with the click position
 
+    def mouseDragEvent(self, ev):
+        if ev.button() == Qt.LeftButton:
+            if ev.isStart():
+                # This block will only execute at the start of the drag
+                print("Drag Start")
+                self.dragOffset = self.points()[0].pos() - ev.buttonDownPos(
+                    Qt.LeftButton
+                )
+                self.dragPoint = True
+                self.dragStart = ev.buttonDownPos()
+                self.sigEventDragStart.emit()
+                ev.accept()
+
+            if self.dragPoint:
+                new_pos = ev.pos() + self.dragOffset
+                pos_delta = new_pos - self.dragStart
+
+
+                print(f"New Pos {new_pos}, pos delta {pos_delta}")
+                self.sigPositionDrag.emit(pos_delta)
+                ev.accept()
+
+            if ev.isFinish():
+                self.sigEventDragEnd.emit()
+                pass
+        else:
+            ev.ignore()
     # def mouseDragEvent(self, ev):
     #     if ev.button() == Qt.LeftButton:
     #         if ev.isStart():
@@ -106,65 +144,75 @@ class LayerPlotItem(ScatterPlotItem):
     #     else:
     #         ev.ignore()
 
-    def mouseDragEvent(self, ev):
-        if ev.button() == Qt.LeftButton:
-            if self.isSelected:  # Assuming isSelected is a property that indicates if the item is selected
-                if ev.isStart():
-                    # This block will only execute at the start of the drag
-                    self.dragOffset = self.pos() - ev.buttonDownPos(Qt.LeftButton)
-                    ev.accept()
+    # def mouseDragEvent(self, ev):
+    #     if ev.button() == Qt.LeftButton:
+    #         if self.isSelected:  # Assuming isSelected is a property that indicates if the item is selected
+    #             if ev.isStart():
+    #                 # This block will only execute at the start of the drag
+    #                 self.dragOffset = self.pos() - ev.buttonDownPos(Qt.LeftButton)
+    #                 ev.accept()
 
-                if ev.isFinish():
-                    # At the end of the drag, update the position for all selected items
-                    newPos = ev.pos() + self.dragOffset
-                    self.updatePositionForAllSelected(newPos)
-                    ev.accept()
-                else:
-                    # During the drag, we don't do anything because we'll move all items at once at the end
-                    ev.ignore()
-            else:
-                # If the item is not selected, ignore the drag event
-                ev.ignore()
-        else:
-            ev.ignore()
+    #             if ev.isFinish():
+    #                 # At the end of the drag, update the position for all selected items
+    #                 newPos = ev.pos() + self.dragOffset
+    #                 self.updatePositionForAllSelected(newPos)
+    #                 ev.accept()
+    #             else:
+    #                 # During the drag, we don't do anything because we'll move all items at once at the end
+    #                 ev.ignore()
+    #         else:
+    #             # If the item is not selected, ignore the drag event
+    #             ev.ignore()
+    #     else:
+    #         ev.ignore()
 
-    def updatePositionForAllSelected(self, newPos):
-        # This method should move all selected items to the new position.
-        # You'll need to adjust this logic based on how you track selected items.
-        # for item in self.getAllSelectedItems():  # You need to implement this method
-        #     item.setPos(newPos)
-        #     item.sigPositionChanged.emit(item.frame_num, newPos)  # Emit position changed signal
-        pass
-    
-    def getAllSelectedItems(self):
-        # This method should return a list of all selected LayerPlotItems.
-        # Implementation depends on how you're tracking selected items.
-        # For example, this could be a class method that checks a static list of all items,
-        # or it might query a parent or controller object that tracks selected items.
-        pass
+    # def updatePositionForAllSelected(self, newPos):
+    #     # This method should move all selected items to the new position.
+    #     # You'll need to adjust this logic based on how you track selected items.
+    #     # for item in self.getAllSelectedItems():  # You need to implement this method
+    #     #     item.setPos(newPos)
+    #     #     item.sigPositionChanged.emit(item.frame_num, newPos)  # Emit position changed signal
+    #     pass
 
-    def set_selected(self, selected=True):
+    # def getAllSelectedItems(self):
+    #     # This method should return a list of all selected LayerPlotItems.
+    #     # Implementation depends on how you're tracking selected items.
+    #     # For example, this could be a class method that checks a static list of all items,
+    #     # or it might query a parent or controller object that tracks selected items.
+    #     pass
+
+    # def set_selected(self, selected=True):
+    #     """Mark this item as selected and change the border color."""
+    #     if selected:
+    #         self.setPen(mkPen(QColor("orange"), width=2))  # Change border color to orange
+    #     else:
+    #         self.setPen(mkPen(QColor("w"), width=1))  # Change back to default or previous color
+    #     self.enable_dragging(selected)
+    def select(self, selected=True):
         """Mark this item as selected and change the border color."""
         if selected:
             self.setPen(mkPen(QColor("orange"), width=2))  # Change border color to orange
         else:
             self.setPen(mkPen(QColor("w"), width=1))  # Change back to default or previous color
-        self.enable_dragging(selected)
+        # self.enable_dragging(selected)
 
     def enable_dragging(self, enable=True):
         """Enable or disable dragging for this item."""
         self.setFlag(QGraphicsItem.ItemIsMovable, enable)
 
-    def set_x_position(self, x_position):
+    def set_x_position(self, x_pos):
         """
         Set the x position of this object and move the event on the plot.
-        :param x_position: The new x position.
+        :param pos_delta: The delta to add to the current x position.
         """
         if self.points():
+            print(f"set x pos {x_pos}")
             data = self.getData()
-            data[0][0] = x_position  # Set the x position of the first point
+            data[0][0] = x_pos  # Set the x position equal to x_pos
             self.setData(*data)
-            self.frame_num = x_position
+            self.frame_num = x_pos  # Update frame_num accordingly
+            # self.setPos(x_pos, self.pos().y())  # Update position
+            # self.update()  # Refresh the item
 
     def event(self, event):
         # print(f"Event type: {event.type()}")
