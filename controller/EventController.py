@@ -14,6 +14,7 @@ Returns:
 """
 
 from view import EventEditorWidget
+from PyQt5.QtCore import Qt
 
 
 class EventController:
@@ -24,7 +25,8 @@ class EventController:
         self.model = main_controller.model
         self.view = main_controller.view
         self.layer_plot = self.view.main_window.stack.layer_widget.layer_plot
-
+        self.selected_events = []
+        
     def clear_event_plot(self, layer_name):
         # This function clears the event plot
         widget = self.main_controller.layer_controller.get_widget_by_name(layer_name)
@@ -68,7 +70,8 @@ class EventController:
         plot_data_item.sigMouseRightClicked.connect(
             self.main_controller.layer_controller.handle_right_click
         )
-
+        self.view.main_window.stack.layer_widget.connectCustomViewBoxSignal("sigItemsSelected", self.select_events)
+    
     def edit_event(self, layer_name, model_object):
         # This function edits an event
         print(f"edit_event \n layer:{layer_name}")
@@ -78,3 +81,21 @@ class EventController:
             self.main_controller.layer_controller.refresh_plot_data_item
         )
         self.editor.exec_()
+
+    def select_events(self, items):
+        self.selected_items = items
+        for item in items:
+            item.set_selected(True)
+
+    def deselect_events(self):
+        for item in self.selected_items:
+            item.set_selected(False)
+        self.selected_items = []
+
+    def handle_drag_event(self, event, newPos):
+        if event.isStart():
+            self.drag_offset = newPos - event.buttonDownPos(Qt.LeftButton)
+        elif event.isFinish():
+            for item in self.selected_items:
+                item.setPos(item.pos() + self.drag_offset)
+                # Emit position changed signal if needed

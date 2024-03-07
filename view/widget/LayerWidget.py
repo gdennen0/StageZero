@@ -19,6 +19,7 @@ It also leverages the power of the PyQt5 and pyqtgraph libraries to provide a ri
 from ..UI_COLORS import UIColors
 import pyqtgraph as pg  # For plotting
 from pyqtgraph import AxisItem, InfiniteLine, mkPen  # For customizing plots
+from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtWidgets import (
     QWidget,  # Base class for all user interface objects
     QHBoxLayout,  # Box layout with a horizontal direction
@@ -27,9 +28,12 @@ from pyqtgraph.Qt import QtCore
 from ..CustomAxis import CustomAxis
 from pyqtgraph import RectROI
 from view.LayerPlotItem import LayerPlotItem
-
+from pyqtgraph import ViewBox, RectROI
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal
 
 class LayerWidget(QWidget):  # Widget for a layer
+
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.plot_items = None
@@ -94,12 +98,13 @@ class LayerWidget(QWidget):  # Widget for a layer
             self.layer_plot.removeItem(plot_data_item)
             print(f"removing plot data item: {plot_data_item}")
 
-
-from pyqtgraph import ViewBox, RectROI
-from PyQt5.QtCore import Qt
-
+    def connectCustomViewBoxSignal(self, signal, slot):
+        if signal == "sigItemsSelected":
+            self.layer_plot.getViewBox().sigItemsSelected.connect(slot)
 
 class CustomViewBox(ViewBox):
+    sigItemsSelected = pyqtSignal(list)  # Signal to emit when items are selected
+
     def __init__(self, *args, **kwargs):
         super(CustomViewBox, self).__init__(*args, **kwargs)
         self.roi = None
@@ -141,21 +146,23 @@ class CustomViewBox(ViewBox):
         # Get the bounds of the ROI
         roi_bounds = self.roi.mapRectToParent(self.roi.boundingRect())
         print(f"ROI BOUNDS: {roi_bounds}")
-
         # List to hold items within the ROI
         selected_items = []
 
         # Iterate over all items in the ViewBox
         for item in self.allChildren():
-            if hasattr(item, "pos"):
-                # Ensure the item has a position attribute and is an instance of LayerPlotItem
-                item_pos = item.pos()
-                # print(f"item pos: {item_pos}")
-                if roi_bounds.contains(item_pos):
-                    # The item's position is within the ROI bounds
+            # Check if the item is an instance of LayerPlotItem
+            if isinstance(item, LayerPlotItem):
+                data = item.getData()
+                x_data, y_data = data
+                if roi_bounds.contains(QPointF(x_data[0], y_data[0])):
+                    # item.set_selected(True)
                     selected_items.append(item)
-                    print(f"item within ROI bounds at pos {item_pos}")
 
-        # Now you have a list of selected items
-        # You can process these items further as needed
         print(f"Selected items: {selected_items}")
+        self.sigItemsSelected.emit(selected_items)
+
+    def clear_selection(self):
+        for item in self.allChildren():
+            if isinstance(item, LayerPlotItem):
+                item.set_selected(False)
