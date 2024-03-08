@@ -192,6 +192,7 @@ class LayerController:
         scene_pos = event.scenePos()
         plot_pos = self.layer_plot.plotItem.vb.mapSceneToView(scene_pos)
         print(f"[PLOT CLICK] scene: {scene_pos} | plot: {plot_pos} ")
+        # self.main_controller.event_controller.select_event(None)
         self.plot_click_handler = PlotClickHandler(self.main_controller)
         self.plot_click_handler.handle_click(scene_pos, plot_pos)
 

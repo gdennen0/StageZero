@@ -17,6 +17,7 @@ Returns:
 
 from view.LayerPlotItem import LayerPlotItem
 import pyqtgraph as pg
+from PyQt5.QtGui import QColor
 
 
 class EventItem:
@@ -98,9 +99,9 @@ class EventItem:
             y=[adj_layer_index],
             symbol="d",
             brush=pg.mkBrush(color),
+            pen=pg.mkPen(QColor("white"), width=1),
             hoverable=True,
             hoverPen=pg.mkPen("orange"),
-            # hoverBrush=pg.mkBrush("w"),
             size=12,
             name=name,
         )

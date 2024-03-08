@@ -32,6 +32,7 @@ from pyqtgraph import ViewBox, RectROI
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal
 
+
 class LayerWidget(QWidget):  # Widget for a layer
 
     def __init__(self):
@@ -101,6 +102,7 @@ class LayerWidget(QWidget):  # Widget for a layer
     def connectCustomViewBoxSignal(self, signal, slot):
         if signal == "sigItemsSelected":
             self.layer_plot.getViewBox().sigItemsSelected.connect(slot)
+
 
 class CustomViewBox(ViewBox):
     sigItemsSelected = pyqtSignal(list)  # Signal to emit when items are selected
