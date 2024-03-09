@@ -24,7 +24,7 @@ class SongOverviewController:
     def __init__(self, main_controller):
         self.model = main_controller.model  # Model reference
         self.song_overview_widget = (
-            main_controller.view.main_window.song_overview
+            main_controller.view.main_window.stage_widget.song_overview
         )  # Song overview widget reference
         self.main_controller = main_controller  # Main controller reference
         self.view = main_controller.view  # View reference
@@ -32,7 +32,7 @@ class SongOverviewController:
 
     def init_playhead(self):
         # Initialize the vertical line
-        self.view.main_window.song_overview.init_playhead()
+        self.view.main_window.stage_widget.song_overview.init_playhead()
 
     def paint_beat_lines(self, beats):
         for beat in beats:
@@ -40,11 +40,11 @@ class SongOverviewController:
             song_overview_widget.paint_beat_line(beat)
 
     def remove_beat_lines(self):
-        song_overview_widget = self.view.main_window.song_overview
+        song_overview_widget = self.view.main_window.stage_widget.song_overview
         song_overview_widget.remove_beat_lines()
 
     def paint_onset_lines(self, onsets, onset_type):
-        song_overview_widget = self.view.main_window.song_overview
+        song_overview_widget = self.view.main_window.stage_widget.song_overview
 
         if onset_type == "all-pass":
             for onset in onsets:
@@ -54,12 +54,12 @@ class SongOverviewController:
                 song_overview_widget.paint_onset_line(onset, "lo-pass", "g")
 
     def remove_onset_lines(self, onset_type):
-        song_overview_widget = self.view.main_window.song_overview
+        song_overview_widget = self.view.main_window.stage_widget.song_overview
         song_overview_widget.remove_onset_lines(onset_type)
 
     def update_playhead_position(self, frame_number):
         # Update the position of the vertical line
-        self.view.main_window.song_overview.playhead.setPos(float(frame_number))
+        self.view.main_window.stage_widget.song_overview.playhead.setPos(float(frame_number))
 
     def calculate_frame_quantity(self, length_ms, fps):
         # Calculate the frame quantity and round up to the nearest whole frame
@@ -79,4 +79,4 @@ class SongOverviewController:
 
     def update_playhead_position(self, frame_number):
         # Update the position of the vertical line
-        self.view.main_window.song_overview.playhead.setPos(float(frame_number))
+        self.view.main_window.stage_widget.song_overview.playhead.setPos(float(frame_number))

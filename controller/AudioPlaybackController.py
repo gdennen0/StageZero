@@ -24,7 +24,7 @@ class AudioPlaybackController:
     def __init__(self, main_controller):
         self.model = main_controller.model
         self.main = main_controller
-        self.apc = main_controller.view.main_window.audio_playback_command
+        self.apc = main_controller.view.main_window.stage_widget.audio_playback_command
         self.view = main_controller.view
         self.audio_playback_engine = AudioPlaybackEngine()
         self.init_connections()  # Initialize connections

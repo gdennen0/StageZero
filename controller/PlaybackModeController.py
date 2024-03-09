@@ -26,13 +26,13 @@ class PlaybackModeController:
 
     def connect_signals(self):
         # Connect the signal for when the user selects an item in playback_mode_selector 
-        self.view.main_window.playback_mode.playback_mode_selector.currentIndexChanged.connect(
+        self.view.main_window.stage_widget.playback_mode.playback_mode_selector.currentIndexChanged.connect(
             self.on_playback_mode_changed
         )
 
     def get_current_mode(self):
         # Get the current playback mode
-        playback_selector = self.view.main_window.playback_mode.playback_mode_selector      # Reference to the playback selector
+        playback_selector = self.view.main_window.stage_widget.playback_mode.playback_mode_selector      # Reference to the playback selector
 
         # call currentIndex method on the selector
         current_index = playback_selector.currentIndex()

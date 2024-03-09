@@ -29,10 +29,10 @@ class SongSelectController:
         self.connect_signals()  # Connecting the UI signals to slots in this controller
 
     def connect_signals(self):
-        self.view.main_window.song_select_menu.song_selector.currentIndexChanged.connect(
+        self.view.main_window.stage_widget.song_select_menu.song_selector.currentIndexChanged.connect(
             self.on_song_selected
         )  # Connecting the song_selector currentIndexChanged signal to the on_song_selected method
-        self.view.main_window.song_select_menu.add_new_song.clicked.connect(
+        self.view.main_window.stage_widget.song_select_menu.add_new_song.clicked.connect(
             self.main_controller.song_controller.add_song
         )  # Connecting the add_new_song clicked signal to the add_song method in the song controller
 
@@ -42,7 +42,7 @@ class SongSelectController:
             self.initialized = True
             return
 
-        song_selector = self.view.main_window.song_select_menu.song_selector
+        song_selector = self.view.main_window.stage_widget.song_select_menu.song_selector
         loaded_song_name = (
             self.model.loaded_song.name if self.model.loaded_song else None
         )
@@ -62,7 +62,7 @@ class SongSelectController:
             index == -1
         ):  # Checking if the index is -1 (if the song_selector does not have any items in it)
             return
-        selected_song = self.view.main_window.song_select_menu.song_selector.itemText(
+        selected_song = self.view.main_window.stage_widget.song_select_menu.song_selector.itemText(
             index
         )  # Getting the selected songs name from the song_selector dropdown menu given the song_selector index
         if selected_song == self.model.loaded_song.name:
@@ -77,6 +77,6 @@ class SongSelectController:
 
     def refresh(self):
         # Clear the dropdown
-        self.view.main_window.song_select_menu.song_selector.clear()
+        self.view.main_window.stage_widget.song_select_menu.song_selector.clear()
         # Generate and place the dropdown Items
         self.generate_dropdown_items()

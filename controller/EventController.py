@@ -25,7 +25,7 @@ class EventController:
         self.stack = main_controller.model.stack
         self.model = main_controller.model
         self.view = main_controller.view
-        self.layer_plot = self.view.main_window.stack.layer_widget.layer_plot
+        self.layer_plot = self.view.main_window.stage_widget.stack.layer_widget.layer_plot
         self.selected_events = []
 
     def clear_event_plot(self, layer_name):
@@ -71,7 +71,7 @@ class EventController:
         plot_data_item.sigMouseRightClicked.connect(
             self.main_controller.layer_controller.handle_right_click
         )
-        self.view.main_window.stack.layer_widget.connectCustomViewBoxSignal(
+        self.view.main_window.stage_widget.stack.layer_widget.connectCustomViewBoxSignal(
             "sigItemsSelected", self.select_roi_events
         )
         plot_data_item.sigPositionDrag.connect(self.drag_selected_events)

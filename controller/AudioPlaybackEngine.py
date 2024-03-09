@@ -98,7 +98,7 @@ class AudioPlaybackEngine:
 
     def init_connections(self):
         # Initialize connections for the play, pause, and reset buttons
-        apc = self.view.main_window.audio_playback_command  # set apc reference
+        apc = self.view.main_window.stage_widget.stage_widget.audio_playback_command  # set apc reference
         # connect the buttons
         apc.play_button.clicked.connect(self.play)
         apc.pause_button.clicked.connect(self.pause)

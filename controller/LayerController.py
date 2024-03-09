@@ -28,9 +28,9 @@ class LayerController:
         self.stack = main_controller.model.stack
         self.model = main_controller.model
         self.view = main_controller.view
-        self.layer_widget = self.view.main_window.stack.layer_widget
-        self.layer_plot = self.view.main_window.stack.layer_widget.layer_plot
-        self.song_overview_plot = self.view.main_window.song_overview.song_plot
+        self.layer_widget = self.view.main_window.stage_widget.stack.layer_widget
+        self.layer_plot = self.view.main_window.stage_widget.stack.layer_widget.layer_plot
+        self.song_overview_plot = self.view.main_window.stage_widget.song_overview.song_plot
 
         self.layer_plot.setXLink(self.song_overview_plot)
 
@@ -39,8 +39,8 @@ class LayerController:
 
     def connect_signals(self):
         # Connect the remove and add layer buttons to their respective functions
-        self.view.main_window.layer_control.btnRemove.clicked.connect(self.remove_layer)
-        self.view.main_window.layer_control.btnAdd.clicked.connect(self.add_layer)
+        self.view.main_window.stage_widget.layer_control.btnRemove.clicked.connect(self.remove_layer)
+        self.view.main_window.stage_widget.layer_control.btnAdd.clicked.connect(self.add_layer)
 
     def connect_layer_plot_signals(self):
         self.layer_plot.scene().sigMouseClicked.connect(self.click)
@@ -66,7 +66,7 @@ class LayerController:
     def replot_layer_plot(self):
         print(f"replot layer plot")
         # Replot the layer plot
-        self.layer_plot = self.view.main_window.stack.layer_widget.layer_plot
+        self.layer_plot = self.view.main_window.stage_widget.stack.layer_widget.layer_plot
         self.layer_plot.replot()
 
     def init_playhead(self):
@@ -143,7 +143,7 @@ class LayerController:
         offset = 18  # This encompasses the x axis height
         num_layers = len(self.model.loaded_stack.layers)
         total_height = num_layers * layer_height + offset
-        self.view.main_window.stack.layer_widget.layer_plot.setFixedHeight(total_height)
+        self.view.main_window.stage_widget.stack.layer_widget.layer_plot.setFixedHeight(total_height)
 
     def set_layer_plot_limits(self, xMin=0, xMax=None, yMin=0, yMax=None):
         # Set the limits of the layer plot
