@@ -23,22 +23,12 @@ from .EventModel import EventModel
 class LayerModel:
     # Manage Layer Item Instances and events item instances
     def __init__(self):
-        self.layers = []  # List to store layer objects
+        self.layers = {}  # List to store layer objects
         self.frame_qty = None  # The quantity of frames
 
     def generate_plot_data_items(self):
-        for layer in self.layers:
-            layer.generate_plot_layer_data_items()
-
-    def get_layer_index(self, layer_name):
-        layer_names = {layer.name: index for index, layer in enumerate(self.layers)}
-        return layer_names.get(layer_name, None)
-
-    def get_layer_name(self, layer_index):
-        for layer in self.layers:
-            if self.layers.index(layer) == layer_index:
-                return layer.name
-        return None
+        for layer_key, layer_item in self.layers.items():
+            layer_item.generate_plot_layer_data_items()
 
     def get_layer_qty(self):
         return len(self.layers)  # Returns the quantity of layers
@@ -46,81 +36,85 @@ class LayerModel:
     def create_layer(self, layer_name):
         self.add_layer_to_model(layer_name)  # Add a layer to the model
 
-    def add_layer_to_model(self, layer_name, index=None):
-        layer = EventModel(layer_name)  # Create a new event model
-        # Add a layer item to the layers dict
-        if index is None:
-            self.layers.append(layer)  # Append the layer to the list
-            print(f"[MODEL] appended Layer Object {layer_name}")  # Print a message
-            layer_index = self.get_layer_index(layer_name)
-            print(f"getting layer index {layer_index}")
-            self.layers[layer_index].set_index(layer_index)
-        else:
-            self.layers.insert(index, layer)  # Insert the layer at the specified index
-            print(f"[MODEL] inserted Layer Object at index: {index}")  # Print a message
-            self.update_layer_indices()  # Update the indices of the layers
+    def add_layer_to_model(self, layer_name):
+        layer = EventModel()  # Create a new event model
+        layer.set_layer_name(layer_name)
+        layer.set_layer_number(self.get_next_free_layer_number())
 
+        # Add a layer item to the layers dict
+        if layer_name not in self.layers:
+            self.layers[layer_name] = layer # Append the layer to the list
+            print(f"[MODEL] Added Layer Object {layer_name}")  # Print a message
+        else:
+            print(f"error layer with that name already exists")
+    
+    def get_next_free_layer_number(self):
+        used_numbers = [self.layers[layer].layer_number for layer in self.layers]
+        next_free_number = 0
+        while next_free_number in used_numbers:
+            next_free_number += 1
+        
+        print(f"Next open index: {next_free_number}")
+        return next_free_number
+    
+    # Sets the layers objects to object_data arg
     def set_event_data(self, layer_name, object_data):
-        index = self.get_layer_index(layer_name)  # Get the index of the layer
-        self.layers[index].objects = object_data  # Set the event data for the layer
+        self.layers[layer_name].objects = object_data  # Set the event data for the layer
 
     def remove_layer_from_model(self, layer_name):
-        # Filter out the layer with the given layer_name
-        layer_index = self.get_layer_index(layer_name)  # Get the index of the layer
-        del self.layers[layer_index]  # Delete the layer
-        # self.update_layer_indices()
+        del self.layers[layer_name]  # Delete the layer
 
-    def move_layer_to_index(self, layer_name, new_index):
-        # Find the layer with the given layer_name
-        layer_to_move = next(
-            (layer for layer in self.layers if layer["layer_name"] == layer_name), None
-        )  # Find the layer with the specified name
-        # If the layer exists, proceed
-        if layer_to_move is not None:
-            # Remove the layer from its current position
-            self.layers.remove(layer_to_move)
-            # Insert the layer at the new index
-            self.layers.insert(new_index, layer_to_move)
-            # Update the indices of all layers
-            self.update_layer_indices()
+    # def move_layer_to_index(self, layer_name, new_layer_name):
+    #     # Find the layer with the given layer_name
+    #     layer_to_move = next(
+    #         (layer for layer in self.layers if layer["layer_name"] == layer_name), None
+    #     )  # Find the layer with the specified name
+    #     # If the layer exists, proceed
+    #     if layer_to_move is not None:
+    #         # Remove the layer from its current position
+    #         self.remove_layer_from_model(layer_to_move)
+    #         # Insert the layer at the new index
+    #         self.layers[new_layer_name] = layer_to_move
+    #         # Update the indices of all layers
+    #         self.update_layer_indices()
 
     def get_layer_raw_data(self, layer_name):
-        index = self.get_layer_index(layer_name)  # Get the index of the layer
-        return self.layers[index].objects  # Return the raw data of the layer
+        return self.layers[layer_name].objects  # Return the raw data of the layer
 
-    def update_layer_indices(self):
-        for i, layer in enumerate(self.layers):
-            layer.index = i  # Update the index of the layer
+    # def update_layer_indices(self):
+    #     for i, layer in enumerate(self.layers):
+    #         layer.index = i  # Update the index of the layer
 
     def set_frame_qty(self, qty):
         self.frame_qty = qty  # Set the quantity of frames
 
-    def delete_event(self, layer, frame):
-        del self.layers[layer].objects[frame]
-        print(f"Deleted event at frame {frame}")
+    def delete_event(self, layer_name, event_key):
+        del self.layers[layer_name].objects[event_key]
+        print(f"Deleted event {event_key}")
 
-    def get_event_data(self, layer, frame):
-        return self.layers[layer].objects[frame]
+    def get_event_data(self, layer_name, frame):
+        return self.layers[layer_name].objects[frame]
 
-    def move_event(self, layer_index, original_frame, new_frame):
+    def move_event(self, layer_name, original_frame, new_frame):
         print(
-            f"updating event layer index: {layer_index}\n...{   original_frame} ----> {new_frame}"
+            f"updating event layer: {layer_name}\n...{   original_frame} ----> {new_frame}"
         )
-        data = self.get_event_data(layer_index, original_frame)
-        self.layers[layer_index].add(new_frame)
-        self.layers[layer_index].update_data(new_frame, data)
+        data = self.get_event_data(layer_name, original_frame)
+        self.layers[layer_name].add(new_frame)
+        self.layers[layer_name].update_data(new_frame, data)
 
-        self.delete_event(layer_index, original_frame)
+        self.delete_event(layer_name, original_frame)
 
     def change_event_layer(self, original_layer, new_layer, frame_number):
-        event = self.layers[original_layer].objects[frame_number]
-        self.layers[new_layer].add(frame_number)
-        event.parent_layer = self.layers[new_layer].name
-        event.parent_layer_index = new_layer
-        event.plot_data_item.layer_name = self.layers[new_layer].name
-        event.plot_data_item.layer_index = new_layer
-        event.plot_data_item.set_y_position(new_layer + .5)
-        self.layers[new_layer].objects[frame_number] = event
-        self.layers[original_layer].delete(frame_number)
+        # event = self.layers[original_layer].objects[frame_number]
+        # self.layers[new_layer].add(frame_number)
+        # event.parent_layer_name = self.layers[new_layer].name
+        # event.parent_layer_index = self.layers[new_layer].layer_index
+        # event.plot_data_item.layer_name = self.layers[new_layer].name
+        # event.plot_data_item.layer_index = self.layers[new_layer].layer_index
+        # event.plot_data_item.set_y_position(self.layers[new_layer].layer_index)
+        # self.layers[new_layer].objects[frame_number] = event
+        # self.layers[original_layer].delete(frame_number)
 
-        print(f"changing event {frame_number} from layer {original_layer} to layer {new_layer} \n event parent layer {event.parent_layer} parent layer index: {event.parent_layer_index},\n plotdataitem name {event.plot_data_item.layer_name}, layer_index {event.plot_data_item.layer_index}")
+        # print(f"changing event {frame_number} from layer {original_layer} to layer {new_layer} \n event parent layer {event.parent_layer} parent layer index: {event.parent_layer_index},\n plotdataitem name {event.plot_data_item.layer_name}, layer_index {event.plot_data_item.layer_index}")
+        pass

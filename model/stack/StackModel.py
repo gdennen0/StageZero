@@ -45,8 +45,8 @@ class StackModel:
             self.create_stack(name)
 
     def generate_plot_data_items(self):
-        for stack_key, stack in self.objects.items():
-            stack.generate_plot_data_items()
+        for stack_key, stack_item in self.objects.items():
+            stack_item.generate_plot_data_items()
 
     def deserialize_stack(self, serialized_stacks):
         print(f"deserializeing stacks!")
@@ -58,11 +58,10 @@ class StackModel:
             for layer_name, layer_info in stack_info["layers"].items():
                 print(f"deserializing layer {layer_name}")
                 stack.create_layer(layer_name)
-                layer_index = stack.get_layer_index(layer_name)
                 for event_key, event_info in layer_info["events"].items():
                     print(f"deserializing event {event_key}, {event_info}")
-                    stack.layers[layer_index].add(event_info["frame_number"])
-                    event = stack.layers[layer_index].objects[
+                    stack.layers[layer_name].add(event_info["frame_number"])
+                    event = stack.layers[layer_name].objects[
                         event_info["frame_number"]
                     ]
                     event.deserialize(

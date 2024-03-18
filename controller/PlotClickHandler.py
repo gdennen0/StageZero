@@ -44,15 +44,13 @@ class PlotClickHandler:
 
     def handle_record_click(self, scene_pos, plot_pos_raw):
         # This function handles the click when the playback mode is "Record"
-        matched_layer_index = math.floor(plot_pos_raw.y())
-        print(f"matched layer index: {matched_layer_index}")
-        matched_layer_name = self.model.loaded_stack.layers[matched_layer_index].name
+        matched_layer_name = self.match_click_to_layer(scene_pos, plot_pos_raw)
         matched_frame = self.match_click_to_frame(scene_pos, plot_pos_raw)
 
         print(f"User Click: {matched_layer_name} | frame: {matched_frame}")
         # Add the EventItem to the appropriate layer in the LayerModel
-        if matched_layer_index < len(self.model.loaded_stack.layers):
-            self.model.loaded_stack.layers[matched_layer_index].add(matched_frame)
+        if matched_layer_name is not None:
+            self.model.loaded_stack.layers[matched_layer_name].add(matched_frame)
         else:
             print("ERROR: Layer doesn't exist at index")
 
@@ -60,7 +58,6 @@ class PlotClickHandler:
         self.main_controller.event_controller.add_new_event_to_plot(
             matched_layer_name, matched_frame
         )
-        # self.main_controller.layer_controller.refresh()
 
     def handle_edit_click(self, scene_pos, plot_pos_raw):
         # This function handles the click when the playback mode is "Edit"
@@ -81,6 +78,13 @@ class PlotClickHandler:
 
         # self.main_controller.event_controller.edit_event(event_object)
         pass
+
+    def match_click_to_layer(self, scene_pos, plot_pos_raw):
+        rounded_y_pos = rounded_layer_index = math.floor(plot_pos_raw.y())
+        for layer_key, layer_item in self.model.loaded_stack.layers.items():
+            if layer_item.layer_number == rounded_y_pos:
+                print(f"matched click with layer '{layer_key}'")
+                return layer_key    
 
     def match_click_to_frame(self, scene_pos, plot_pos):
         # This function matches the click to a frame

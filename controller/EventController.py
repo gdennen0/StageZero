@@ -72,28 +72,25 @@ class EventController:
             print("No events selected.")
             return
 
-        layer_names = [layer.name for layer in self.model.loaded_stack.layers]
+        layer_names = [layer_item.layer_name for layer_key, layer_item in self.model.loaded_stack.layers.items()]
         self.layer_selection_popup = open_layer_selection_popup(layer_names)
 
         def on_layer_selected():
             selected_layer_items = self.layer_selection_popup.layer_list_widget.selectedItems()
             if selected_layer_items:
-                selected_layer_name = selected_layer_items[0].text()
-                self.selected_layer_index = self.model.loaded_stack.get_layer_index(selected_layer_name)
-                print(f"Selected layer: {selected_layer_name}")
+                self.selected_layer_name = selected_layer_items[0].text()
+                print(f"Selected layer: {self.selected_layer_name}")
 
         def on_accept():
-            if hasattr(self, 'selected_layer_index'):
-                print(f"Moving selected events to layer index {self.selected_layer_index}")
-                for event in self.selected_events:
-                    original_layer_index = int(event.layer_index)
-                    self.model.loaded_stack.change_event_layer(original_layer_index, self.selected_layer_index, event.frame_num)
-                    self.layer_widget.remove_item(event)
-                    updated_plot_data_item = self.model.loaded_stack.layers[self.selected_layer_index].objects[event.frame_num].plot_data_item
-                    self.layer_widget.add_plot_item(updated_plot_data_item)
-                self.layer_selection_popup.close()
-            else:
-                print("No layer selected.")
+            print(f"Moving selected events to layer index {self.selected_layer_name}")
+            for event in self.selected_events:
+                original_layer_name = event.parent_layer_name
+                self.model.loaded_stack.change_event_layer(original_layer_name, self.selected_layer_name, event.frame_num)
+                self.layer_widget.remove_item(event)
+                updated_plot_data_item = self.model.loaded_stack.layers[self.selected_layer_name].objects[event.frame_num].plot_data_item
+                self.layer_widget.add_plot_item(updated_plot_data_item)
+            self.layer_selection_popup.close()
+
 
         self.layer_selection_popup.layer_list_widget.itemSelectionChanged.connect(on_layer_selected)
         self.layer_selection_popup.accept_button.clicked.connect(on_accept)
@@ -104,18 +101,16 @@ class EventController:
     def nudge_event_minus(self):
         print(f"nudge events minus")
         for event in self.selected_events:
-            self.model.loaded_stack.layers[event.layer_index].nudge_event(event.frame_num, -1)
+            self.model.loaded_stack.layers[event.parent_layer_name].nudge_event(event.frame_num, -1)
 
     def nudge_event_plus(self):
         print(f"nudge events plus")
         for event in self.selected_events:
-            self.model.loaded_stack.layers[event.layer_index].nudge_event(event.frame_num, 1)
+            self.model.loaded_stack.layers[event.parent_layer_name].nudge_event(event.frame_num, 1)
 
     def delete_selected_events(self):
         for event in self.selected_events:
-            frame = event.frame_num
-            layer = int(event.layer_index)
-            self.model.loaded_stack.delete_event(layer, frame)
+            self.model.loaded_stack.delete_event(event.parent_layer_name, event.frame_num)
             self.layer_widget.remove_item(event)
 
 
@@ -126,13 +121,12 @@ class EventController:
 
     def add_new_event_to_plot(self, layer_name, frame_number):
         # This function adds an event to the plot
-        print(f"layer: {layer_name}, adding event at frame {frame_number}")
-        layer_index = self.model.loaded_stack.get_layer_index(layer_name)
-        self.model.loaded_stack.layers[layer_index].objects[
+        print(f"layer '{layer_name}' adding event at frame {frame_number}")
+        self.model.loaded_stack.layers[layer_name].objects[
             frame_number
         ].generate_layer_plot_item()
         plot_data_item = (
-            self.model.loaded_stack.layers[layer_index]
+            self.model.loaded_stack.layers[layer_name]
             .objects[frame_number]
             .plot_data_item
         )
@@ -179,22 +173,24 @@ class EventController:
         for event in events:
             data = event.getData()
             current_frame = event.frame_num
+            layer_name = event.parent_layer_name
             new_frame_x = int(data[0][0])
-            new_frame_y = int(data[1][0])
+            # new_frame_y = int(data[1][0])
             print(f"Moving frame: {current_frame} ---> {new_frame_x}")
             self.model.loaded_stack.move_event(
-                new_frame_y, current_frame, new_frame_x
+                layer_name, current_frame, new_frame_x
             )  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
             event.frame_num = new_frame_x
 
-    def handle_position_change(self, current_frame, new_frame_object):
-        new_frame_x = int(new_frame_object.x())
-        new_frame_y = int(new_frame_object.y())
+    def handle_position_change(self, current_frame, event):
+        new_frame_x = int(event.x())
+        # new_frame_y = int(event.y())
+        layer_name = event.parent_layer_name
         print(
             f"handle_pos_change | start position: {current_frame} | new x position: {new_frame_x}"
         )
         self.model.loaded_stack.move_event(
-            new_frame_y, current_frame, new_frame_x
+            layer_name, current_frame, new_frame_x
         )  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
 
     def select_event(self, event):
@@ -206,27 +202,19 @@ class EventController:
         if event is not None:
             self.selected_events.append(event)
             event.select()
-            layer_index = int(event.layer_index - .5)
-            # layer_key = self.model.loaded_stack.get_layer_name(layer_index)
-            print(f"layer index: {layer_index} frame number: {event.frame_num}")
-            event_item = self.model.loaded_stack.layers[layer_index].get_event(event.frame_num)
+            layer_key = event.parent_layer_name
+            print(f"layer '{layer_key}' frame number: {event.frame_num}")
+            event_item = self.model.loaded_stack.layers[layer_key].get_event(event.frame_num)
             self.view.main_window.event_properties_widget.update(event_item)
-            # print(f"Selected Events:")
-            # for event in self.selected_events:
-            #     pprint(event.frame_num)
+
 
     def select_additional_event(self, event):
         if event not in self.selected_events:
             self.selected_events.append(event)
-            event.select()
-            layer_index = int(event.layer_index - .5)
-            # layer_key = self.model.loaded_stack.get_layer_name(layer_index)
-            print(f"layer index: {layer_index} frame number: {event.frame_num}")
-            event_item = self.model.loaded_stack.layers[layer_index].get_event(event.frame_num)
+            layer_key = event.parent_layer_name
+            print(f"layer '{layer_key}' frame number: {event.frame_num}")
+            event_item = self.model.loaded_stack.layers[layer_key].get_event(event.frame_num)
             self.view.main_window.event_properties_widget.update(event_item)
-            # print(f"Selected Additional Events:")
-            # for event in self.selected_events:
-            #     pprint(event.frame_num)
 
     def select_roi_events(self, events):
         for event in events:

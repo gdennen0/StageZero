@@ -23,8 +23,8 @@ from PyQt5.QtGui import QColor
 class EventItem:
     def __init__(self, event_name="Default", color=(255, 255, 255)):
         self.frame_number = None
-        self.parent_layer = None
-        self.parent_layer_index = None
+        self.parent_layer_name = None
+        self.parent_layer_number = None
         self.name = event_name  # The name of the event
         self.color = color  # The color of the event
         self.plot_data_item = None
@@ -32,8 +32,8 @@ class EventItem:
     def to_dict(self):
         return {
             "frame_number": self.frame_number,
-            "parent_layer": self.parent_layer,
-            "parent_layer_index": self.parent_layer_index,
+            "parent_layer_name": self.parent_layer_name,
+            "parent_layer_number": self.parent_layer_number,
             "name": self.name,
             "color": str(self.color),
             # Exclude "plot_data_item" from serialization
@@ -41,8 +41,8 @@ class EventItem:
 
     def deserialize(self, data):
         self.frame_number = data.get("frame_number")
-        self.parent_layer = data.get("parent_layer")
-        self.parent_layer_index = data.get("parent_layer_index")
+        self.parent_layer_name = data.get("parent_layer_name")
+        self.parent_layer_number = data.get("parent_layer_number")
         self.name = data.get("name")
         self.generate_layer_plot_item()
         color_str = data.get("color", "(100, 100, 100)")
@@ -75,9 +75,13 @@ class EventItem:
             raise ValueError("Frame number must be an integer")
         self.frame_number = frame_number
 
-    def set_parent_layer_index(self, parent_layer_index):
-        self.parent_layer_index = parent_layer_index
-        print(f"set parent layer index to {parent_layer_index}")
+    def set_parent_layer_number(self, parent_layer_number):
+        self.parent_layer_number = parent_layer_number
+        print(f"set parent layer index to {parent_layer_number}")
+
+    def set_parent_layer_name(self, parent_layer_name):
+        self.parent_layer_name = parent_layer_name
+        print(f"set parent layer name to '{parent_layer_name}'")
 
     def update_pdi(self):
         self.plot_data_item = self.generate_layer_plot_item()
@@ -88,23 +92,23 @@ class EventItem:
     def generate_layer_plot_item(self):
         # translates model data to layerPlotItem
         self.plot_data_item = self.create_point(
-            self.name, self.frame_number, self.parent_layer_index, self.color
+            self.name, self.frame_number, self.parent_layer_name, self.parent_layer_number, self.color
         )
 
-    def create_point(self, name, frame_num, layer_index, color):
-        adj_layer_index = layer_index + 0.5
+    def create_point(self, name, frame_num, parent_layer_name, parent_layer_number, color):
+        adj_layer_number = parent_layer_number + 0.5
         print(f"create_point, color {color}")
         plot_point = LayerPlotItem(
             x=[frame_num],
-            y=[adj_layer_index],
+            y=[adj_layer_number],
             symbol="d",
             brush=pg.mkBrush(color),
             pen=pg.mkPen(QColor("white"), width=1),
             hoverable=True,
             hoverPen=pg.mkPen("orange"),
             size=12,
-            name=name,
         )
         plot_point.set_frame_num(frame_num)
-        plot_point.set_layer_index(adj_layer_index)
+        plot_point.set_layer_name(parent_layer_name)
+        plot_point.set_layer_number(adj_layer_number)
         return plot_point

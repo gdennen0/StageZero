@@ -46,7 +46,7 @@ class EventPropertiesWidget(QDockWidget):
         # Update the line items with the properties of the LayerPlotItem instance
         self.line_items["Name"].setText(event_item.name)
         self.line_items["Color"].setText(str(event_item.color))
-        self.line_items["Layer"].setText(event_item.parent_layer)
+        self.line_items["Layer"].setText(event_item.parent_layer_name)
         self.line_items["Frame"].setText(str(event_item.frame_number))
 
     

@@ -59,7 +59,7 @@ class LayerController:
         self.update_layer_plot_height()
 
     def add_layers_to_plot(self):
-        layer_names = [layer.name for layer in self.model.loaded_stack.layers]
+        layer_names = [layer_item.layer_name for layer_key, layer_item in self.model.loaded_stack.layers.items()]
         for layer_name in layer_names:
             self.add_plot_layer(layer_name)
 
@@ -113,8 +113,8 @@ class LayerController:
 
     def load_plot_layer_data(self, layer_name):
         # Refresh a single layer in the layer plot by name
-        layer_index = self.model.loaded_stack.get_layer_index(layer_name)
-        layer_object = self.model.loaded_stack.layers[layer_index]
+        # layer_index = self.model.loaded_stack.get_layer_index(layer_name)
+        layer_object = self.model.loaded_stack.layers[layer_name]
         plot_layer_data = layer_object.get_plot_layer_data()
 
         self.layer_widget.remove_items(plot_layer_data)
@@ -131,9 +131,9 @@ class LayerController:
         )
         # layer_names = [layer.name for layer in loaded_stack]
         layer_names = []
-        for layer in loaded_stack.layers:
-            print(f"layer {layer}")
-            layer_names.append(layer.name)
+        for layer_key, layer_item in loaded_stack.layers.items():
+            print(f"layer key: {layer_key} layer item: {layer_item}")
+            layer_names.append(layer_key)
 
         self.layer_widget.update_layer_names(layer_names)
 
@@ -163,29 +163,27 @@ class LayerController:
         # But only zoom out the y axis 100%
         self.layer_plot.getViewBox().setRange(yRange=(yMin, yMax), padding=0)
 
-    def handle_position_change(self, current_frame, new_frame_object):
-        new_frame_x = int(new_frame_object.x())
-        new_frame_y = int(new_frame_object.y())
+    def handle_position_change(self, current_frame, event):
+        new_frame_x = int(event.x())
+        new_frame_y = int(event.y())
+        layer_name = event.parent_layer_name
         print(
             f"handle_pos_change | start position: {current_frame} | new x position: {new_frame_x}"
         )
         self.model.loaded_stack.move_event(
-            new_frame_y, current_frame, new_frame_x
-        )  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
+            layer_name, current_frame, new_frame_x
+        )
 
-    def handle_right_click(self, layer_index, frame_num):
+    def handle_right_click(self, layer_name, frame_num):
         try:
-            model_object = self.model.loaded_stack.layers[layer_index].objects[
+            model_object = self.model.loaded_stack.layers[layer_name].objects[
                 frame_num
             ]
         except KeyError:
             DialogWindow.error(
-                f"Model Error: Event at frame {frame_num} does not exist in layer {layer_index}."
+                f"Model Error: Event at frame {frame_num} does not exist in layer {layer_name}."
             )
             return
-        layer_name = self.model.loaded_stack.get_layer_name(
-            layer_index
-        )  # TODO: update all these unnecessary conversions to find list/dict indexes
         self.main_controller.event_controller.edit_event(layer_name, model_object)
 
     def click(self, event):

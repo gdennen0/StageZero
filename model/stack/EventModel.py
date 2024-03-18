@@ -18,10 +18,10 @@ from pprint import pprint
 
 
 class EventModel:
-    def __init__(self, name):
+    def __init__(self):
         self.objects = {}  # Dictionary to store event objects
-        self.name = name
-        self.layer_index = None
+        self.layer_name = None
+        self.layer_number = None
 
     def get_event(self, frame_number):
         if frame_number in self.objects:
@@ -38,10 +38,13 @@ class EventModel:
         event.plot_data_item.frame_num = new_frame
         event.plot_data_item.nudge_x_position(amount)
         self.objects[new_frame] = event
+        
+    def set_layer_name(self, layer_name):
+        self.layer_name = layer_name
 
-    def set_index(self, layer_index):
-        print(f"Setting layer index to {layer_index}")
-        self.layer_index = layer_index
+    def set_layer_number(self, number):
+        print(f"Setting layer index to {number}")
+        self.layer_number = number
 
     def delete(self, frame_number):
         if frame_number in self.objects:
@@ -60,9 +63,9 @@ class EventModel:
             )
             return
         event = EventItem()
-        event.parent_layer = self.name
-        event.parent_layer_index = self.layer_index
-        event.frame_number = frame_number
+        event.set_parent_layer_name(self.layer_name)
+        event.set_parent_layer_number(self.layer_number)
+        event.set_frame_number(frame_number)
         self.objects[frame_number] = event  # Add an event item to the dictionary
         print(f"adding event at frame {frame_number}")
         print(f"end list objects:")

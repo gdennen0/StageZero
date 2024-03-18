@@ -65,9 +65,8 @@ class MainModel:
 
     def add_events_to_layer(self, layer_name, events):
         # events should be a dictionary of frame numbers
-        layer_index = self.loaded_stack.get_layer_index(layer_name)
         for event in events:
-            self.loaded_stack.layers[layer_index].add(event)
+            self.loaded_stack.layers[layer_name].add(event)
 
     def add_filtered_data(self, filter_name, filtered_data):
         self.loaded_song.add_filtered_data(filter_name, filtered_data)
@@ -76,12 +75,12 @@ class MainModel:
         serialized_stacks = {}
         for stack_name, stack in self.stack.objects.items():
             serialized_layers = {}
-            for layer in stack.layers:
+            for layer_key, layer_item in stack.layers.items():
                 serialized_events = {}
-                for event_key, event in layer.objects.items():
+                for event_key, event in layer_item.objects.items():
                     # Serialize each event, excluding the plot_layer_item
                     serialized_events[event_key] = event.to_dict()
-                serialized_layers[layer.name] = {
+                serialized_layers[layer_key] = {
                     "frame_qty": stack.frame_qty,
                     "events": serialized_events,
                 }

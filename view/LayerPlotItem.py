@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import QToolTip
 class LayerPlotItem(ScatterPlotItem):
     sigPositionChanged = pyqtSignal(int, QPointF)  # Signal emitting the new position
     sigPositionDrag = pyqtSignal(QPointF)
-    sigMouseRightClicked = pyqtSignal(int, int)  # New signal for mouse click events
+    sigMouseRightClicked = pyqtSignal(str, int)  # New signal for mouse click events
     sigEventSelected = pyqtSignal(object)
     sigAdditionalEventSelected = pyqtSignal(object)
     sigEventDragStart = pyqtSignal()
@@ -35,8 +35,8 @@ class LayerPlotItem(ScatterPlotItem):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.layer_index = None
-        self.layer_name = None # Not implemented yet
+        self.parent_layer_index = None
+        self.parent_layer_name = None # Not implemented yet
         self.frame_num = None
         self.dragPoint = None
         self.dragOffset = None
@@ -56,7 +56,7 @@ class LayerPlotItem(ScatterPlotItem):
         return f"Pos: (x:{x} y:{y}), Size: {size}, Symbol {symbol}, Brush: {brush}, Pen: {pen} "
 
     def refresh_tooltip_text(self):
-        tooltip_text = f"Name: {self.name()} | Layer: {self.layer_index} | Frame: {self.layer_index}"
+        tooltip_text = f"Name: {self.name()} | Layer: {self.parent_layer_index} | Frame: {self.parent_layer_index}"
         self.setToolTip(tooltip_text)
 
     def set_frame_num(self, frame_num):
@@ -64,8 +64,12 @@ class LayerPlotItem(ScatterPlotItem):
         self.frame_num = int(frame_num)
         self.refresh_tooltip_text()
 
-    def set_layer_index(self, layer_index):
-        self.layer_index = int(layer_index)
+    def set_layer_number(self, layer_number):
+        self.layer_number = int(layer_number)
+        self.refresh_tooltip_text()
+    
+    def set_layer_name(self, layer_name):
+        self.parent_layer_name = layer_name
         self.refresh_tooltip_text()
 
     def mouseClickEvent(self, ev):
@@ -81,7 +85,7 @@ class LayerPlotItem(ScatterPlotItem):
         if ev.button() == Qt.RightButton:
             print("Right Click")
             self.sigMouseRightClicked.emit(
-                self.layer_index, self.frame_num
+                self.parent_layer_name, self.frame_num
             )  # Emit the signal with the click position
 
     def mouseDragEvent(self, ev):
