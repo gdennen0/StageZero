@@ -56,7 +56,7 @@ class EventController:
         print(f"update_event_name {new_name}")
         for event in self.selected_events:
             event.name = new_name
-            self.model.loaded_stack.layers[event.layer_index].objects[event.frame_num].name = new_name
+            self.model.loaded_stack.layers[event.parent_layer_name].objects[event.frame_num].name = new_name
 
     def update_event_color(self):
         print("update_event_color")
@@ -90,7 +90,6 @@ class EventController:
                 updated_plot_data_item = self.model.loaded_stack.layers[self.selected_layer_name].objects[event.frame_num].plot_data_item
                 self.layer_widget.add_plot_item(updated_plot_data_item)
             self.layer_selection_popup.close()
-
 
         self.layer_selection_popup.layer_list_widget.itemSelectionChanged.connect(on_layer_selected)
         self.layer_selection_popup.accept_button.clicked.connect(on_accept)

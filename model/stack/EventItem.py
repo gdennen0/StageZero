@@ -107,8 +107,9 @@ class EventItem:
             hoverable=True,
             hoverPen=pg.mkPen("orange"),
             size=12,
+            name=name
         )
         plot_point.set_frame_num(frame_num)
         plot_point.set_layer_name(parent_layer_name)
-        plot_point.set_layer_number(adj_layer_number)
+        plot_point.set_layer_number(parent_layer_number)
         return plot_point

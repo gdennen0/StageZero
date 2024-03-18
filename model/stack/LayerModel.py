@@ -106,15 +106,15 @@ class LayerModel:
         self.delete_event(layer_name, original_frame)
 
     def change_event_layer(self, original_layer, new_layer, frame_number):
-        # event = self.layers[original_layer].objects[frame_number]
-        # self.layers[new_layer].add(frame_number)
-        # event.parent_layer_name = self.layers[new_layer].name
-        # event.parent_layer_index = self.layers[new_layer].layer_index
-        # event.plot_data_item.layer_name = self.layers[new_layer].name
-        # event.plot_data_item.layer_index = self.layers[new_layer].layer_index
-        # event.plot_data_item.set_y_position(self.layers[new_layer].layer_index)
-        # self.layers[new_layer].objects[frame_number] = event
-        # self.layers[original_layer].delete(frame_number)
+        event = self.layers[original_layer].objects[frame_number]
+        self.layers[new_layer].add(frame_number)
+        event.parent_layer_name = self.layers[new_layer].layer_name
+        event.parent_layer_number = self.layers[new_layer].layer_number
+        event.plot_data_item.parent_layer_name = self.layers[new_layer].layer_name
+        event.plot_data_item.parent_layer_number = self.layers[new_layer].layer_number
+        event.plot_data_item.set_y_position(self.layers[new_layer].layer_number)
+        self.layers[new_layer].objects[frame_number] = event
+        self.layers[original_layer].delete(frame_number)
 
         # print(f"changing event {frame_number} from layer {original_layer} to layer {new_layer} \n event parent layer {event.parent_layer} parent layer index: {event.parent_layer_index},\n plotdataitem name {event.plot_data_item.layer_name}, layer_index {event.plot_data_item.layer_index}")
         pass

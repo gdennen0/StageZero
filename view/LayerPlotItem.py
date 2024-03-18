@@ -152,7 +152,7 @@ class LayerPlotItem(ScatterPlotItem):
         if self.points():
             print(f"set y pos {y_pos}")
             data = self.getData()
-            data[1][0] = y_pos  # Set the y position equal to y_pos
+            data[1][0] = y_pos + .5 # Set the y position equal to y_pos
             self.setData(*data)
 
     def event(self, event):

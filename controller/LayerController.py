@@ -15,7 +15,6 @@ import numpy as np
 from PyQt5.QtCore import Qt, QTimer
 from view import DialogWindow
 from view.LayerPlotItem import LayerPlotItem
-from view.PlotDataGroup import PlotDataGroup
 from .PlotClickHandler import PlotClickHandler
 
 
