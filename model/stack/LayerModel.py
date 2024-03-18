@@ -111,3 +111,16 @@ class LayerModel:
         self.layers[layer_index].update_data(new_frame, data)
 
         self.delete_event(layer_index, original_frame)
+
+    def change_event_layer(self, original_layer, new_layer, frame_number):
+        event = self.layers[original_layer].objects[frame_number]
+        self.layers[new_layer].add(frame_number)
+        event.parent_layer = self.layers[new_layer].name
+        event.parent_layer_index = new_layer
+        event.plot_data_item.layer_name = self.layers[new_layer].name
+        event.plot_data_item.layer_index = new_layer
+        event.plot_data_item.set_y_position(new_layer + .5)
+        self.layers[new_layer].objects[frame_number] = event
+        self.layers[original_layer].delete(frame_number)
+
+        print(f"changing event {frame_number} from layer {original_layer} to layer {new_layer} \n event parent layer {event.parent_layer} parent layer index: {event.parent_layer_index},\n plotdataitem name {event.plot_data_item.layer_name}, layer_index {event.plot_data_item.layer_index}")

@@ -77,6 +77,11 @@ class LayerWidget(QWidget):  # Widget for a layer
             self.layer_plot.removeItem(item)
             print(f"Removed plot item: {item}")
 
+    def remove_item(self, item):
+        """Remove a list of LayerPlotItem objects from the layer plot."""
+        self.layer_plot.removeItem(item)
+        print(f"Removed plot item: {item}")
+
     def update_layer_names(self, layer_names):  # Update the layer names
         # print(f"update layer names")
         for name in layer_names:

@@ -17,18 +17,20 @@ widgets, but their size will not change when the window is resized.
 
 The open() method sets the window title and shows the window, while the close() method closes the window.
 """
+
 from PyQt5.QtCore import Qt  # Add this line to import Qt
 from PyQt5.QtWidgets import (
     QWidget,  # Base class for all user interface objects
-    QVBoxLayout,  # Box layout with a vertical direction
-    QHBoxLayout,
-    QSizePolicy,  # Layout attribute describing horizontal and vertical resizing policy
     QMainWindow,
 )
 
 from ..widget.StageWidget import StageWidget
+from ..widget.EventPropertiesWidget import EventPropertiesWidget
+from ..widget.EventActionWidget import EventActionWidget
+from ..widget.EventToolsWidget import EventToolsWidget
 from ..UI_COLORS import UIColors
- 
+
+
 class MainWindow(QMainWindow):  # Class for the main window
     def __init__(self, main_menu):
         super().__init__()  # Call the constructor of the parent class
@@ -39,8 +41,7 @@ class MainWindow(QMainWindow):  # Class for the main window
     def initialize_ui_colors(self):
         # Define UI elements and their properties
         ui_elements = {
-            # self.song_select_menu: {"dropdown": True},
-            self.main_widget: {"widget": True},
+            self.stage_widget: {"widget": True},
             self.menuBar(): {"main-menu": True},
         }
 
@@ -55,16 +56,16 @@ class MainWindow(QMainWindow):  # Class for the main window
         self.close()  # Close the window
 
     def initialize(self):  # Initialize the main window
+        # Initialize and set the StageWidget as the central widget
+        self.stage_widget = StageWidget(self)  # Pass self to set MainWindow as the parent of StageWidget
+        self.setCentralWidget(self.stage_widget)
 
-        self.main_widget = QWidget()  # Create a central widget
-        self.main_layout = QHBoxLayout()  # Set the layout to vertical box layout
-        self.main_widget.setLayout(self.main_layout)  # Set the main_layout as the layout for the central widget
-        self.setCentralWidget(self.main_widget)  # Set the central widget for the QMainWindow
-        self.main_layout.setSpacing(0)  # Set the spacing between widgets to 0
+        # Initialize and dock the SidebarWidget
+        self.event_properties_widget = EventPropertiesWidget("Event Properties", self)
+        # self.event_tools_widget = EventToolsWidget("EventTools", self)
+        self.event_action_widget = EventActionWidget("Event Actions", self)
 
-        self.stage_widget= StageWidget()
-        self.main_layout.addWidget(self.stage_widget)  # add to the main_layout
-
-        # self.setLayout(
-        #     self.main_layout
-        # )  # Set the main_layout as the layout for the widget
+        
+        self.addDockWidget(Qt.RightDockWidgetArea, self.event_properties_widget)  # Dock the SidebarWidget to the right side
+        self.addDockWidget(Qt.RightDockWidgetArea, self.event_action_widget)
+        # self.addDockWidget(Qt.RightDockWidgetArea, self.event_tools_widget)  # Dock the SidebarWidget to the right side

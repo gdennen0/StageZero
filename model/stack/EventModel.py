@@ -23,6 +23,22 @@ class EventModel:
         self.name = name
         self.layer_index = None
 
+    def get_event(self, frame_number):
+        if frame_number in self.objects:
+            return self.objects[frame_number]
+        else:
+            print(f"could not locate event at frame; {frame_number}")
+        
+    def nudge_event(self, original_frame, amount):
+        event = self.objects[original_frame]
+        new_frame = original_frame + amount
+        self.delete(original_frame)
+        self.add(new_frame)
+        event.frame_number = new_frame
+        event.plot_data_item.frame_num = new_frame
+        event.plot_data_item.nudge_x_position(amount)
+        self.objects[new_frame] = event
+
     def set_index(self, layer_index):
         print(f"Setting layer index to {layer_index}")
         self.layer_index = layer_index

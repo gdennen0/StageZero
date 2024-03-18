@@ -36,6 +36,7 @@ class LayerPlotItem(ScatterPlotItem):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.layer_index = None
+        self.layer_name = None # Not implemented yet
         self.frame_num = None
         self.dragPoint = None
         self.dragOffset = None
@@ -60,11 +61,11 @@ class LayerPlotItem(ScatterPlotItem):
 
     def set_frame_num(self, frame_num):
         print(f"set frame number: {frame_num}")
-        self.frame_num = frame_num
+        self.frame_num = int(frame_num)
         self.refresh_tooltip_text()
 
     def set_layer_index(self, layer_index):
-        self.layer_index = layer_index
+        self.layer_index = int(layer_index)
         self.refresh_tooltip_text()
 
     def mouseClickEvent(self, ev):
@@ -134,9 +135,21 @@ class LayerPlotItem(ScatterPlotItem):
             data = self.getData()
             data[0][0] = x_pos  # Set the x position equal to x_pos
             self.setData(*data)
-            # self.frame_num = x_pos  # Update frame_num accordingly
-            # self.setPos(x_pos, self.pos().y())  # Update position
-            # self.update()  # Refresh the item
+
+    def nudge_x_position(self, amount):
+        print(f"nudge x pos {amount}")
+        data = self.getData()
+        original_pos = data[0][0] # Set the x position equal to x_pos
+        new_pos = original_pos + amount
+        data[0][0] = new_pos
+        self.setData(*data)
+            
+    def set_y_position(self, y_pos):
+        if self.points():
+            print(f"set y pos {y_pos}")
+            data = self.getData()
+            data[1][0] = y_pos  # Set the y position equal to y_pos
+            self.setData(*data)
 
     def event(self, event):
         # print(f"Event type: {event.type()}")
