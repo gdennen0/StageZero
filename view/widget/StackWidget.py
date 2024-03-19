@@ -37,26 +37,7 @@ class StackWidget(QWidget):  # Widget for displaying the stack of layers
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()  # Initialize the widget
-        self.initialize_ui_colors()
 
-    def initialize_ui_colors(self):
-        # Define UI elements and their properties
-        ui_elements = {
-            self.stack_content: {"layer-background": True},
-            self.layout: {"layer-background": True },
-            self.scroll_area: {"layer-background": True},
-        }
-
-        # Apply colors to all UI elements
-        UIColors.initialize_ui_colors(ui_elements)
-
-        style_sheet = (
-            f"StackWidget {{ background-color: {UIColors.BLACK}; }}"  
-            f"QWidget {{ background-color: {UIColors.BLACK}; }}"
-        )
-
-        # Apply the concatenated style sheet
-        self.setStyleSheet(style_sheet)
 
     def initialize(self):  # Initialize the widget
         self.layout = QVBoxLayout(self)  # Set the layout to vertical box layout

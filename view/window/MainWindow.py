@@ -36,17 +36,6 @@ class MainWindow(QMainWindow):  # Class for the main window
         super().__init__()  # Call the constructor of the parent class
         self.setMenuBar(main_menu)  # Set the custom menu bar
         self.initialize()  # Initialize the main window
-        self.initialize_ui_colors()
-
-    def initialize_ui_colors(self):
-        # Define UI elements and their properties
-        ui_elements = {
-            self.stage_widget: {"widget": True},
-            self.menuBar(): {"main-menu": True},
-        }
-
-        # Apply colors to all UI elements
-        UIColors.initialize_ui_colors(ui_elements)
 
     def open(self):  # Open the main window with a given title
         self.setWindowTitle("StageZero Dev")  # Set the window title

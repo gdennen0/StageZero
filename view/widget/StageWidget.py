@@ -8,28 +8,11 @@ from .LayerControlWidget import LayerControlWidget
 from .StackWidget import StackWidget
 from .PlaybackModeWidget import PlaybackModeWidget
 
-from ..UI_COLORS import UIColors
-
 
 class StageWidget(QWidget):  # Inherit from QWidget
     def __init__(self, parent=None):
         super().__init__(parent)  # Call the constructor of QWidget
         self.initialize()  # Initialize the widget as before
-        self.initialize_ui_colors()
-
-    def initialize_ui_colors(self):
-        # Define UI elements and their properties
-        ui_elements = {
-            # self.song_select_menu: {"dropdown": True},
-            self.song_overview: {"widget": True},
-            self.layer_control: {"widget": True},
-            self.stack: {"widget": True},
-            self.playback_mode: {"widget": True},
-            self.audio_playback_command: {"widget": True},
-        }
-
-        # Apply colors to all UI elements
-        UIColors.initialize_ui_colors(ui_elements)
 
     def initialize(self):
 
