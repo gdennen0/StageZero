@@ -32,16 +32,6 @@ class EventController:
         self.selected_events = []
         self.connect_event_properties_widget_signals()
 
-    def connect_point_signals(self, plot_data_item):
-        plot_data_item.sigClicked.connect(self.main_controller.layer_controller.click)
-        plot_data_item.sigMouseRightClicked.connect(self.main_controller.layer_controller.handle_right_click)
-        self.view.main_window.stage_widget.stack.layer_widget.connectCustomViewBoxSignal("sigItemsSelected", self.select_roi_events)
-        plot_data_item.sigPositionDrag.connect(self.drag_selected_events)
-        plot_data_item.sigEventSelected.connect(self.select_event)
-        plot_data_item.sigAdditionalEventSelected.connect(self.select_additional_event)
-        plot_data_item.sigEventDragStart.connect(self.start_drag)
-        plot_data_item.sigEventDragEnd.connect(self.end_drag)
-
     def connect_event_properties_widget_signals(self):
         self.view.main_window.event_properties_widget.line_items["Name"].textChanged.connect(self.update_event_name)
         self.view.main_window.event_properties_widget.line_items["Color"].textChanged.connect(self.update_event_color)
@@ -86,9 +76,6 @@ class EventController:
             for event in self.selected_events:
                 original_layer_name = event.parent_layer_name
                 self.model.loaded_stack.change_event_layer(original_layer_name, self.selected_layer_name, event.frame_num)
-                self.layer_widget.remove_item(event)
-                updated_plot_data_item = self.model.loaded_stack.layers[self.selected_layer_name].objects[event.frame_num].plot_data_item
-                self.layer_widget.add_plot_item(updated_plot_data_item)
             self.layer_selection_popup.close()
 
         self.layer_selection_popup.layer_list_widget.itemSelectionChanged.connect(on_layer_selected)
@@ -129,12 +116,12 @@ class EventController:
             .objects[frame_number]
             .plot_data_item
         )
-        self.connect_point_signals(plot_data_item)
+        self.main_controller.action.stack.connect_event_signal(plot_data_item)
         self.layer_plot.addItem(plot_data_item)
         # self.main_controller.layer_controller.replot_layer(layer_name)
 
     def add_event_to_plot(self, event):
-        self.connect_point_signals(event)
+        self.main_controller.action.stack.connect_event_signal(event)
         self.layer_plot.addItem(event)
 
     def add_plot_layer_data(self, plot_layer_data):
@@ -183,7 +170,6 @@ class EventController:
 
     def handle_position_change(self, current_frame, event):
         new_frame_x = int(event.x())
-        # new_frame_y = int(event.y())
         layer_name = event.parent_layer_name
         print(
             f"handle_pos_change | start position: {current_frame} | new x position: {new_frame_x}"
@@ -192,37 +178,39 @@ class EventController:
             layer_name, current_frame, new_frame_x
         )  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
 
-    def select_event(self, event):
+    def clear_selection(self):
         for selected_event in self.selected_events:
-            print(f"event {selected_event.frame_num}")
-            selected_event.unselect()
+            selected_event.unselect() 
 
+    def select_event(self, event):
+        self.clear_selection()
         self.selected_events = []
         if event is not None:
             self.selected_events.append(event)
             event.select()
             layer_key = event.parent_layer_name
-            print(f"layer '{layer_key}' frame number: {event.frame_num}")
+            print(f"Selected event:\n-->layer '{layer_key}'\n-->frame number: {event.frame_num}")
             event_item = self.model.loaded_stack.layers[layer_key].get_event(event.frame_num)
             self.view.main_window.event_properties_widget.update(event_item)
 
 
-    def select_additional_event(self, event):
+    def add_event_to_selection(self, event):
         if event not in self.selected_events:
             self.selected_events.append(event)
+            event.select()
             layer_key = event.parent_layer_name
-            print(f"layer '{layer_key}' frame number: {event.frame_num}")
+            print(f"Added event to selection:\n-->layer '{layer_key}'\n-->frame number: {event.frame_num}")
             event_item = self.model.loaded_stack.layers[layer_key].get_event(event.frame_num)
             self.view.main_window.event_properties_widget.update(event_item)
 
     def select_roi_events(self, events):
         for event in events:
-            self.select_additional_event(event)
+            self.add_event_to_selection(event)
 
-    def edit_event(self, layer_name, model_object):
+    def edit_event(self, layer_name, frame_number):
         # This function edits an event
         print(f"edit_event \n layer:{layer_name}")
-        model_object
+        model_object = self.model.loaded_stack.get_event_data(layer_name, frame_number)
         self.editor = EventEditorWidget(model_object)
         self.editor.changes_saved.connect(
             self.main_controller.layer_controller.refresh_plot_data_item

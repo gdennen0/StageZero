@@ -35,30 +35,18 @@ class EventEditorWidget(QDialog):  # Widget for editing events
         self.layout = QVBoxLayout(self)  # Set the layout to vertical box layout
 
         self.name_edit = QLineEdit(self)  # Line edit for editing the name
-        self.name_edit.setText(
-            str(self.model_object.name)
-        )  # Set the text of the line edit to the name of the event
+        self.name_edit.setText(str(self.model_object.event_name))  # Set the text of the line edit to the name of the event
         self.layout.addWidget(self.name_edit)  # Add the name edit to the layout
-
-        # Create a horizontal layout to place attributes in their own column
         self.attributes_layout = QHBoxLayout()
-
-        # Separate QLineEdit widgets for each attribute type
-        # Name attribute display
         self.name_display = QLineEdit(self)
         self.name_display.setReadOnly(True)
-        self.name_display.setText(f"Name: {self.model_object.name}")
+        self.name_display.setText(f"Name: {self.model_object.event_name}")
         self.attributes_layout.addWidget(self.name_display)
-
-        # Color attribute display
         self.color_display = QLineEdit(self)
         self.color_display.setReadOnly(True)
         self.color_display.setText(f"Color: {self.model_object.color}")
         self.attributes_layout.addWidget(self.color_display)
 
-        # Assuming there are other attributes, add them here in a similar fashion
-        # For example, frame_number attribute display (if exists)
-        # This is a placeholder and should be replaced with actual attribute displays
         if hasattr(self.model_object, "frame_number"):
             self.frame_number_display = QLineEdit(self)
             self.frame_number_display.setReadOnly(True)
@@ -71,37 +59,28 @@ class EventEditorWidget(QDialog):  # Widget for editing events
         self.layout.addLayout(self.attributes_layout)
 
         # Create a button for opening the color dialog
-        self.color_button = QPushButton(
-            "Choose color", self
-        )  # Button for choosing the color
-        self.color_button.clicked.connect(
-            self.open_color_dialog
-        )  # Connect the button click to the open_color_dialog method
+        self.color_button = QPushButton("Choose color", self)  # Button for choosing the color
+        self.color_button.clicked.connect(self.open_color_dialog)  # Connect the button click to the open_color_dialog method
         self.layout.addWidget(self.color_button)  # Add the color button to the layout
 
         # Create a save button
         self.save_button = QPushButton("Save", self)  # Button for saving the changes
-        self.save_button.clicked.connect(
-            self.save_changes
-        )  # Connect the button click to the save_changes method
+        self.save_button.clicked.connect(self.save_changes)  # Connect the button click to the save_changes method
         self.layout.addWidget(self.save_button)  # Add the save button to the layout
 
     def open_color_dialog(self):  # Open the color dialog
         # Open the color dialog and get the selected color
         color = QColorDialog.getColor()
-
         # If a color was selected (the user didn't cancel the dialog), temporarily store the color
         if color.isValid():
             print(f"PDI color: {color}, {color.name()}")
             self.temp_color = color.name()  # Temporarily store the selected color
 
     def save_changes(self):  # Save the changes
-        self.model_object.name = self.name_edit.text()
+        self.model_object.event_name = self.name_edit.text()
         if hasattr(self, "temp_color"):  # Check if a new color was selected
             try:
-                # If successful, update the model_object color
                 self.model_object.set_color(self.temp_color)
             except ValueError as e:
                 print(f"Error setting color: {e}")
-                # Handle the invalid color (e.g., revert to a default color or notify the user)
         self.accept()

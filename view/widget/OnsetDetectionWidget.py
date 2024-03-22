@@ -17,26 +17,16 @@ class OnsetDetectionWidget(QWidget):
     def initialize(self):
         self.layout = QVBoxLayout(self)
 
-        self.paint_to_song_overview_button = QPushButton(
-            "Paint Onsets to SongOverview", self
-        )
-        self.remove_from_song_overview_button = QPushButton(
-            "Remove Onsets from SongOverview", self
-        )
-
+        self.paint_to_song_overview_button = QPushButton("Paint Onsets to SongOverview", self)
+        self.remove_from_song_overview_button = QPushButton("Remove Onsets from SongOverview", self)
         self.layout.addWidget(self.paint_to_song_overview_button)
         self.layout.addWidget(self.remove_from_song_overview_button)
-
         self.filter_type_dropdown = QComboBox(self)
         self.filter_type_dropdown.addItem("hi-pass")
         self.filter_type_dropdown.addItem("lo-pass")
         self.filter_type_dropdown.addItem("mid-pass")
-
         self.layout.addWidget(self.filter_type_dropdown)
 
     def add_filter(self, filter_type):
-        # Create a new OnsetFilterWidget instance and add it to the dictionary
         self.onset_filter_widgets[filter_type] = OnsetFilterWidget(filter_type)
-
-        # Add the new OnsetFilterWidget instance to the layout
         self.layout.addWidget(self.onset_filter_widgets[filter_type])

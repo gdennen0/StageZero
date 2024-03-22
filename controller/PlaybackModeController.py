@@ -14,8 +14,6 @@ Returns:
     None. This module is used for controlling the playback modes and does not return any value.
 """
 
-
-
 class PlaybackModeController:
     def __init__(self, main_controller):
         self.main_controller = main_controller  # Main controller reference

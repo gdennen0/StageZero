@@ -30,7 +30,6 @@ from PyQt5.QtWidgets import (
 )
 
 from .LayerWidget import LayerWidget
-from ..UI_COLORS import UIColors
 
 
 class StackWidget(QWidget):  # Widget for displaying the stack of layers

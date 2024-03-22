@@ -17,45 +17,18 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,  # Box layout with a horizontal direction
     QPushButton,  # Command button
 )
-from ..UI_COLORS import UIColors
 
 
 class LayerControlWidget(QWidget):  # Widget for controlling layers
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initialize()  # Initialize the widget
-        self.initialize_ui_colors()
-
-    def initialize_ui_colors(self):
-        # Define UI elements and their properties
-        ui_elements = {
-            self.label: {"text": True},
-            self.btnRemove: {"button": True},
-            self.btnAdd: {"button": True},
-        }
-
-        # Apply colors to all UI elements
-        UIColors.initialize_ui_colors(ui_elements)
-
-        style_sheet = (
-            f"background-color: {UIColors.BACKGROUND_COLOR};"
-            f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
-            f"QPushButton {{ background-color: {UIColors.BUTTON_COLOR}; }}"
-            f"QWidget {{ background-color: {UIColors.WIDGET_COLOR}; }}"
-        )
-
-        # Apply the concatenated style sheet
-        self.setStyleSheet(style_sheet)
 
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
-        # self.layout.setContentsMargins(1, 0.5, 0.5, 1)  # Set half as much padding
-
         self.label = QLabel(f"Layer Controls")  # Label for the layer controls
         self.layout.addWidget(self.label)  # Add the label to the layout
-
         self.btnRemove = QPushButton("Remove", self)  # Button for removing a layer
         self.btnAdd = QPushButton("Add", self)  # Button for adding a layer
-
         self.layout.addWidget(self.btnAdd)  # Add the add button to the layout
         self.layout.addWidget(self.btnRemove)  # Add the remove button to the layout

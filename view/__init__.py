@@ -21,5 +21,4 @@ from .LayerSelectPopup import *
 from .window.FilterEditorWindow import *
 from .window.FilterAudioWindow import *
 from .window.SongDataPreviewWindow import *
-from .UI_COLORS import *
 from .LayerPlotItem import *

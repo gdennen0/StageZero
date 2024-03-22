@@ -22,8 +22,6 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,  # Box layout with a horizontal direction
     QPushButton,  # Command button
 )
-from ..UI_COLORS import UIColors
-
 
 class AudioPlaybackCommandWidget(QWidget):  # Widget for controlling audio playback
     def __init__(self):

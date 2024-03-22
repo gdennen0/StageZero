@@ -38,6 +38,7 @@ from .FilterEditorController import FilterEditorController
 from .FilterAudioController import FilterAudioController
 from .PluginWindowController import PluginWindowController
 from .EventPropertiesController import EventPropertiesController
+from click.ActionEngine import Action
 
 
 class MainController:
@@ -64,6 +65,7 @@ class MainController:
         self.filter_audio_controller = FilterAudioController(self)
         self.plugin_window_controller = PluginWindowController(self)
         self.event_properties_controller = EventPropertiesController(self)
+        self.action = Action(self)
 
     def initialize_app(self):
         # Open the main window

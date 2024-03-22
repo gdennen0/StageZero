@@ -13,14 +13,9 @@ class OnsetFilterWidget(QWidget):
 
     def initialize(self):
         self.layout = QVBoxLayout(self)    
-        # Label / Title
         self.filter_type_label = QLabel(str(self.filter_type))
-
-        # Buttons
         self.paint_to_song_overview_button = QPushButton(f"Paint {self.filter_type} Onsets to SongOverview", self)
         self.remove_from_song_overview_button = QPushButton(f"Remove {self.filter_type} Onsets from SongOverview", self)
-
-        #add to layout
         self.layout.addWidget(self.filter_type_label)
         self.layout.addWidget(self.paint_to_song_overview_button)
         self.layout.addWidget(self.remove_from_song_overview_button)

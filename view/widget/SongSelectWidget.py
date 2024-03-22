@@ -23,8 +23,6 @@ from PyQt5.QtWidgets import (
     QComboBox,  # Drop down selection box
 )
 
-from ..UI_COLORS import UIColors
-
 
 class SongSelectWidget(QWidget):  # Widget for song selection
     def __init__(self):
@@ -34,17 +32,8 @@ class SongSelectWidget(QWidget):  # Widget for song selection
     def initialize(self):  # Initialize the widget
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
         self.label = QLabel(f"Select Song")  # Label for song selection
-        self.add_new_song = QPushButton(
-            "Add New Song", self
-        )  # Button for adding a new song
+        self.add_new_song = QPushButton("Add New Song", self)  # Button for adding a new song
         self.song_selector = QComboBox(self)  # Combo box for selecting a song
-        # self.song_selector.setContentsMargins(
-        #     0, 0, 0, 0
-        # )  # Set 0 padding for song selector
-
-        # Place the child widgets within the SongSelectWidget layout
         self.layout.addWidget(self.label)  # Add the label to the layout
         self.layout.addWidget(self.song_selector)  # Add the song selector to the layout
-        self.layout.addWidget(
-            self.add_new_song
-        )  # Add the add new song button to the layout
+        self.layout.addWidget(self.add_new_song)  # Add the add new song button to the layout

@@ -29,6 +29,7 @@ widget_stylesheet = f"""
     QWidget {{
         background-color: {WIDGET_COLOR};
         color: {TEXT_COLOR};
+        border-radius: 0px;
     }}
 """
 
@@ -36,8 +37,8 @@ push_button_stylesheet = f"""
     QPushButton {{
         background-color: {BUTTON_COLOR};
         color: {BUTTON_TEXT_COLOR};
-        border: 1px solid {INPUT_BOX_BORDER_COLOR};
-        border-radius: 1px;
+        border: 0px solid {INPUT_BOX_BORDER_COLOR};
+        border-radius: 0px;
         padding: 3px;
         font: normal 11px;
         min-width: 6em;
@@ -86,11 +87,26 @@ combo_box_stylesheet = f"""
     QComboBox {{
         background-color: {DROPDOWN_COLOR};
         color: {DROPDOWN_TEXT_COLOR};
-        border: 1px solid {INPUT_BOX_BORDER_COLOR};
-        border-radius: 1px;
-        padding: 2px 8px;
+        border-style: outset;
+        border-width: 0px;
+        border-radius: 0px;
+        border-color: {DROPDOWN_COLOR};
+        padding: 2px 8px 2px 8px;
         font: normal 11px;
         min-width: 6em;
+    }}
+    QComboBox:on {{
+    }}
+
+    QComboBox::drop-down {{
+        background-color: {DROPDOWN_COLOR};
+
+    }}
+    QComboBox QAbstractItemView {{
+        background-color: {DROPDOWN_COLOR};
+    }}
+    QComboBox::item {{
+        background-color: {DROPDOWN_COLOR};
     }}
 """
 
@@ -98,6 +114,11 @@ line_edit_stylesheet = f"""
     QLineEdit {{
         background-color: {INPUT_BOX_COLOR};
         color: {INPUT_BOX_TEXT_COLOR};
+        border: 0px solid {INPUT_BOX_BORDER_COLOR};
+        border-radius: 0px;
+        padding: 2px 8px;
+        font: normal 11px;
+        min-width: 6em;
     }}
 """
 

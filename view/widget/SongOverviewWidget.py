@@ -69,41 +69,29 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
         self.playhead.setPos(0)
 
     def reset_playhead(self):
-        self.song_plot.removeItem(
-            self.playhead
-        )  # Remove the playhead from the song plot
+        self.song_plot.removeItem(self.playhead)  # Remove the playhead from the song plot
         self.init_playhead()
 
     def paint_beat_line(self, frame_number):
         line_specs = mkPen(color="b", width=1)  # Define the specifications for the line
-        beat_line = InfiniteLine(
-            angle=90, movable=False, pen=line_specs
-        )  # Create an infinite line for beat
-        beat_line.setPos(
-            frame_number
-        )  # Set the position of the line at specific tick number
+        beat_line = InfiniteLine(angle=90, movable=False, pen=line_specs)  # Create an infinite line for beat
+        beat_line.setPos(frame_number)  # Set the position of the line at specific tick number
         beat_line.beat = True  # Mark this line as a beat line
         self.song_plot.addItem(beat_line)  # Add the beat line to the song plot
 
     def remove_beat_lines(self):
         for item in self.song_plot.items():
             if isinstance(item, InfiniteLine) and getattr(item, "beat", False):
-                self.song_plot.removeItem(
-                    item
-                )  # Remove the beat line from the song plot
+                self.song_plot.removeItem(item)  # Remove the beat line from the song plot
 
     def paint_onset_line(self, frame_number, onset_type, color):
-        line_specs = mkPen(
-            color=color, width=1
-        )  # Define the specifications for the line
+        line_specs = mkPen(color=color, width=1)  # Define the specifications for the line
 
     def remove_onset_lines(self, onset_type):
         for item in self.song_plot.items():
             if isinstance(item, InfiniteLine):
                 if item.type == onset_type:
-                    self.song_plot.removeItem(
-                        item
-                    )  # Remove the beat line from the song plot
+                    self.song_plot.removeItem(item)  # Remove the beat line from the song plot
 
     def plot_events(self, ticks, song_data):
         self.song_plot.setLimits(  # Set the limits for the song plot
@@ -131,9 +119,7 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
 
         y_axis = self.song_plot.getAxis("left")  # Get the y-axis
         y_axis.setWidth(Y_AXIS_OFFSET)
-        y_axis.setTicks(
-            [tick_spacing(range(-10, 11), 1)]
-        )  # Apply the custom tick formatting
+        y_axis.setTicks([tick_spacing(range(-10, 11), 1)])  # Apply the custom tick formatting
 
     def update_plot(self, ticks, song_data):
         # logic to update plot

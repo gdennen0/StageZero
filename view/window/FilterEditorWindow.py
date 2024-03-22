@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import pyqtSlot
 
-from ..UI_COLORS import UIColors
 
 
 class FilterEditorWindow(QDialog):
@@ -21,52 +20,6 @@ class FilterEditorWindow(QDialog):
         self.setWindowTitle("Audio Filter Presets")
         self.setGeometry(300, 300, 500, 300)  # Adjusted size to accommodate new layout
         self.initialize_window_elements()
-        self.initialize_ui_colors()
-
-    def initialize_ui_colors(self):
-        # Define UI elements and their properties
-        ui_elements = {
-            self.filter_type_combo_box: {"list": True},
-            self.filter_name_label: {"text": True},
-            self.filter_name_input: {"inputbox": True},
-            self.filter_type_label: {"text": True},
-            self.filter_list_widget: {"list": True},
-            self.save_button: {"button": True},
-            self.delete_button: {"button": True},
-            self.cutoff_frequency_input: {"inputbox": True},
-            self.filter_cutoff_frequency_label: {"text": True},
-        }
-
-        # Apply colors to all UI elements
-        UIColors.initialize_ui_colors(ui_elements)
-
-        style_sheet = (
-            f"background-color: {UIColors.BACKGROUND_COLOR};"
-            f"QLabel {{ color: {UIColors.TEXT_COLOR}; }}"
-            f"QPushButton {{ "
-            f"background-color: {UIColors.BUTTON_COLOR}; "
-            f"color: {UIColors.BUTTON_TEXT_COLOR}; "  # Set the text color for buttons
-            f"}}"
-            f"QListWidget {{"
-            f"background-color: {UIColors.LIST_COLOR}; "
-            f"color: {UIColors.LIST_TEXT_COLOR}; "  # Set the text color for buttons
-            f"border-top-color: {UIColors.LIST_BORDER_COLOR}; "  # Set the top border color for QListWidget
-            f"border-bottom-color: {UIColors.LIST_BORDER_COLOR}; "  # Set the bottom border color for QListWidget
-            f"}}"
-            f"QComboBox {{"
-            f"background-color: {UIColors.LIST_COLOR}; "
-            f"color: {UIColors.LIST_TEXT_COLOR}; "  # Set the text color for buttons
-            f"border: 1px solid {UIColors.LIST_BORDER_COLOR}; "  # Set the border color for QComboBox
-            f"}}"
-            f"QLineEdit {{"
-            f"background-color: {UIColors.INPUT_BOX_COLOR}; "
-            f"color: {UIColors.INPUT_BOX_TEXT_COLOR}; "  # Set the text color for input box
-            f"border: 1px solid {UIColors.INPUT_BOX_BORDER_COLOR}; "  # Set the border color for input box
-            f"}}"
-        )
-
-        # Apply the concatenated style sheet
-        self.setStyleSheet(style_sheet)
 
     def initialize_window_elements(self):
         main_layout = QHBoxLayout(self)

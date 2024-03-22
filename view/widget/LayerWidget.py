@@ -16,20 +16,14 @@ The LayerWidget class follows the Zen of Python by being simple and readable, wi
 It also leverages the power of the PyQt5 and pyqtgraph libraries to provide a rich and interactive user interface.
 """
 
-from ..UI_COLORS import UIColors
 import pyqtgraph as pg  # For plotting
-from pyqtgraph import AxisItem, InfiniteLine, mkPen  # For customizing plots
-from PyQt5.QtCore import Qt, QPointF
+from pyqtgraph import InfiniteLine, mkPen  # For customizing plots
 from PyQt5.QtWidgets import (
     QWidget,  # Base class for all user interface objects
     QHBoxLayout,  # Box layout with a horizontal direction
 )
-from pyqtgraph.Qt import QtCore
 from ..CustomAxis import CustomAxis
-from pyqtgraph import RectROI
-from view.LayerPlotItem import LayerPlotItem
-from pyqtgraph import ViewBox, RectROI
-from PyQt5.QtCore import Qt
+from pyqtgraph import ViewBox
 from PyQt5.QtCore import pyqtSignal
 
 
@@ -38,26 +32,17 @@ class LayerWidget(QWidget):  # Widget for a layer
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.plot_items = None
-        self.setStyleSheet(
-            f"QToolTip {{ background-color: {UIColors.TOOL_TIP_BACKGROUND_COLOR}; color: {UIColors.TOOL_TIP_TEXT_COLOR}; border: 1px solid {UIColors.TOOL_TIP_BORDER_COLOR}; }}"
-        )
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
         self.layout.setContentsMargins(0, 0, 12, 0)  # Set the margins for the layout
         self.custom_axis = CustomAxis(orientation="left")  # Custom axis for the layer
-        self.layer_plot = pg.PlotWidget(
-            viewBox=CustomViewBox(), axisItems={"left": self.custom_axis}
-        )
+        self.layer_plot = pg.PlotWidget(viewBox=CustomViewBox(), axisItems={"left": self.custom_axis})
         self.layout.addWidget(self.layer_plot)  # Add the plot widget to the layout
+        
         self.layer_plot.setAcceptHoverEvents(True)
         self.layer_plot.setMouseTracking(True)
-
         self.layer_plot.setFixedHeight(0)  # Set the fixed height for the plot widget
-        self.layer_plot.showGrid(
-            x=True, y=True, alpha=1
-        )  # Show the grid for the plot widget
-        self.layer_plot.getViewBox().setMouseEnabled(
-            x=True, y=False
-        )  # Disable mouse interaction for the y-axis
+        self.layer_plot.showGrid(x=True, y=True, alpha=1)  # Show the grid for the plot widget
+        self.layer_plot.getViewBox().setMouseEnabled(x=True, y=False)  # Disable mouse interaction for the y-axis
         self.layer_plot.setMenuEnabled(False)  # Disable the right-click plot options
         self.init_playhead()
 
@@ -67,9 +52,6 @@ class LayerWidget(QWidget):  # Widget for a layer
     def add_plot_item(self, plot_layer_item):  # Add a plot layer to the layer widget
         plot_layer_item.setZValue(10)
         self.layer_plot.addItem(plot_layer_item)
-
-    def clicked(x, y, z):
-        print(f"Clicked! {x} {y} {z}")
 
     def remove_items(self, items):
         """Remove a list of LayerPlotItem objects from the layer plot."""
@@ -110,66 +92,16 @@ class LayerWidget(QWidget):  # Widget for a layer
 
 
 class CustomViewBox(ViewBox):
-    sigItemsSelected = pyqtSignal(list)  # Signal to emit when items are selected
+    sigLayerDrag = pyqtSignal(object, object)  # Signal to emit when items are selected
+    sigLayerClick = pyqtSignal(object, object) # 
 
     def __init__(self, *args, **kwargs):
         super(CustomViewBox, self).__init__(*args, **kwargs)
         self.roi = None
         self.dragStartPos = None
 
-    def mouseDragEvent(self, ev, axis=None):
-        if ev.button() == Qt.LeftButton and ev.modifiers() == Qt.ShiftModifier:
-            ev.accept()
-            pos = ev.scenePos()
-            if ev.isStart():
-                # Drag start
-                print(f"unmapped:{pos}")
-                self.dragStartPos = self.mapSceneToView(pos)
-                print(f"mapped: {self.dragStartPos}")
-                self.roi = RectROI(
-                    [self.dragStartPos.x(), self.dragStartPos.y()], [1, 1], pen="w"
-                )
-                self.addItem(self.roi)
-            elif ev.isFinish():
-                # Drag finish, select items within ROI
-                self.get_items_in_roi()
-                self.removeItem(self.roi)
-                self.roi = None
-                self.dragStartPos = None
-            else:
-                # Drag update
-                if self.roi and self.dragStartPos:
-                    currentPos = self.mapSceneToView(pos)
-                    self.roi.setSize(
-                        [
-                            currentPos.x() - self.dragStartPos.x(),
-                            currentPos.y() - self.dragStartPos.y(),
-                        ]
-                    )
-        else:
-            super(CustomViewBox, self).mouseDragEvent(ev, axis)
+    def mouseDragEvent(self, ev):
+        self.sigLayerDrag.emit(ev, self)
 
-    def get_items_in_roi(self):
-        # Get the bounds of the ROI
-        roi_bounds = self.roi.mapRectToParent(self.roi.boundingRect())
-        print(f"ROI BOUNDS: {roi_bounds}")
-        # List to hold items within the ROI
-        selected_items = []
-
-        # Iterate over all items in the ViewBox
-        for item in self.allChildren():
-            # Check if the item is an instance of LayerPlotItem
-            if isinstance(item, LayerPlotItem):
-                data = item.getData()
-                x_data, y_data = data
-                if roi_bounds.contains(QPointF(x_data[0], y_data[0])):
-                    # item.set_selected(True)
-                    selected_items.append(item)
-
-        print(f"Selected items: {selected_items}")
-        self.sigItemsSelected.emit(selected_items)
-
-    def clear_selection(self):
-        for item in self.allChildren():
-            if isinstance(item, LayerPlotItem):
-                item.set_selected(False)
+    def mouseClickEvent(self, ev):
+        self.sigLayerClick.emit(ev, self)

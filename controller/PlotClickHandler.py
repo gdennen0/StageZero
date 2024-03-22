@@ -16,7 +16,6 @@ For example, if the playback mode is "Record", it calls the handle_record_click 
 """
 
 import math
-from view import DialogWindow
 
 
 class PlotClickHandler:
@@ -60,23 +59,6 @@ class PlotClickHandler:
         )
 
     def handle_edit_click(self, scene_pos, plot_pos_raw):
-        # This function handles the click when the playback mode is "Edit"
-        # matched_layer_index = math.floor(plot_pos_raw.y())
-        # matched_frame = self.match_click_to_frame(scene_pos, plot_pos_raw)
-        # matched_layer_name = self.model.loaded_stack.layers[matched_layer_index].name
-
-        # print(f"User Click: {matched_layer_name} | frame: {matched_frame}")
-        # try:
-        #     event_object = self.model.loaded_stack.layers[matched_layer_index].objects[
-        #         matched_frame
-        #     ]
-        # except KeyError:
-        #     DialogWindow.error(
-        #         f"Error: Event at frame {matched_frame} does not exist within {matched_layer_index}."
-        #     )
-        #     return
-
-        # self.main_controller.event_controller.edit_event(event_object)
         pass
 
     def match_click_to_layer(self, scene_pos, plot_pos_raw):

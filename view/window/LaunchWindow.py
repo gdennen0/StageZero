@@ -17,7 +17,6 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtWidgets import QApplication  # Import QApplication for screen size
 from PyQt5.QtCore import QSize, Qt  # Import QSize for setting window size
-from ..UI_COLORS import UIColors
 
 
 class LaunchWindow(QWidget):  # Class for the launch window
@@ -29,34 +28,22 @@ class LaunchWindow(QWidget):  # Class for the launch window
     def initialize(self):  # Initialize the launch window
         self.layout = QVBoxLayout(self)  # Set the layout to vertical box layout
         self.layout.setAlignment(Qt.AlignCenter)  # Align the layout to center the buttons
-
-
         screen_size = QApplication.primaryScreen().size()  # Get the size of the screen
-        button_size = QSize(
-            screen_size.width() // 8, screen_size.height() // 48
-        )  # Calculate the new button size
+        button_size = QSize(screen_size.width() // 8, screen_size.height() // 48)  # Calculate the new button size
         # self.layout.addSpacing(screen_size.height() /64)
 
-        self.new_project_button = QPushButton(
-            "New Project", self
-        )  # Button for creating a new project
+        self.new_project_button = QPushButton("New Project", self)  # Button for creating a new project
         self.new_project_button.setFixedSize(button_size)  # Set the fixed size for the new project button
         
         
 
-        self.load_project_button = QPushButton(
-            "Load Project", self
-        )  # Button for loading an existing project
+        self.load_project_button = QPushButton("Load Project", self)  # Button for loading an existing project
         self.load_project_button.setFixedSize(button_size)  # Set the fixed size for the load project button
 
-        self.layout.addWidget(
-            self.new_project_button
-        )  # Add the new project button to the layout
+        self.layout.addWidget(self.new_project_button)  # Add the new project button to the layout
 
         self.layout.addSpacing(screen_size.height() // 128)  # Add some space between the buttons for better UI
-        self.layout.addWidget(
-            self.load_project_button
-        )  # Add the load project button to the layout
+        self.layout.addWidget(self.load_project_button)  # Add the load project button to the layout
 
     # Launch Window Structure
     def open(self):  # Open the launch window

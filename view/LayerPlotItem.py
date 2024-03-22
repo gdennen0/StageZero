@@ -25,6 +25,9 @@ from PyQt5.QtWidgets import QToolTip
 
 
 class LayerPlotItem(ScatterPlotItem):
+    sigEventClick = pyqtSignal(object, object)
+    sigEventDrag = pyqtSignal(object, object)
+    
     sigPositionChanged = pyqtSignal(int, QPointF)  # Signal emitting the new position
     sigPositionDrag = pyqtSignal(QPointF)
     sigMouseRightClicked = pyqtSignal(str, int)  # New signal for mouse click events
@@ -73,47 +76,10 @@ class LayerPlotItem(ScatterPlotItem):
         self.refresh_tooltip_text()
 
     def mouseClickEvent(self, ev):
-        if ev.button() == Qt.LeftButton and not ev.modifiers():
-            print("LayerPlotItem Left Click")
-            self.sigEventSelected.emit(self)
-            ev.accept()
-        if ev.button() == Qt.LeftButton and ev.modifiers() == Qt.ShiftModifier:
-            print("LayerPlotItem Left Click + Shift")
-            self.sigAdditionalEventSelected.emit(self)
-            ev.accept()
-
-        if ev.button() == Qt.RightButton:
-            print("Right Click")
-            self.sigMouseRightClicked.emit(
-                self.parent_layer_name, self.frame_num
-            )  # Emit the signal with the click position
+        self.sigEventClick.emit(ev, self)
 
     def mouseDragEvent(self, ev):
-        if ev.button() == Qt.LeftButton:
-            if ev.isStart():
-                # This block will only execute at the start of the drag
-                print("Drag Start")
-                self.dragOffset = self.points()[0].pos() - ev.buttonDownPos(
-                    Qt.LeftButton
-                )
-                self.dragPoint = True
-                self.dragStart = ev.buttonDownPos()
-                self.sigEventDragStart.emit()
-                ev.accept()
-
-            if self.dragPoint:
-                new_pos = ev.pos() + self.dragOffset
-                pos_delta = new_pos - self.dragStart
-
-                print(f"New Pos {new_pos}, pos delta {pos_delta}")
-                self.sigPositionDrag.emit(pos_delta)
-                ev.accept()
-
-            if ev.isFinish():
-                self.sigEventDragEnd.emit()
-                pass
-        else:
-            ev.ignore()
+        self.sigEventDrag.emit(ev, self)
 
     def select(self, selected=True):
         """Mark this item as selected and change the border color."""

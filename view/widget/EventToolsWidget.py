@@ -8,7 +8,6 @@ class EventToolsWidget(QDockWidget):
         self.widget = QWidget()
         self.setWidget(self.widget)
         self.initialize()
-        self.topLevelChanged.connect(self.collapseDockWidget)
 
     def initialize(self):
         # Initialize the main layout for this widget
@@ -40,9 +39,3 @@ class EventToolsWidget(QDockWidget):
 
         # Add the nudge layout to the main layout
         self.main_layout.addLayout(nudge_layout)
-
-    def collapseDockWidget(self, topLevel):
-        if topLevel:
-            self.setFeatures(QDockWidget.DockWidgetClosable | QDockWidget.DockWidgetFloatable)
-        else:
-            self.setFeatures(QDockWidget.AllDockWidgetFeatures)

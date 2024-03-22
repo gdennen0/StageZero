@@ -30,19 +30,13 @@ class LayerController:
         self.layer_widget = self.view.main_window.stage_widget.stack.layer_widget
         self.layer_plot = self.view.main_window.stage_widget.stack.layer_widget.layer_plot
         self.song_overview_plot = self.view.main_window.stage_widget.song_overview.song_plot
-
         self.layer_plot.setXLink(self.song_overview_plot)
-
         self.connect_signals()
-        self.connect_layer_plot_signals()
 
     def connect_signals(self):
         # Connect the remove and add layer buttons to their respective functions
         self.view.main_window.stage_widget.layer_control.btnRemove.clicked.connect(self.remove_layer)
         self.view.main_window.stage_widget.layer_control.btnAdd.clicked.connect(self.add_layer)
-
-    def connect_layer_plot_signals(self):
-        self.layer_plot.scene().sigMouseClicked.connect(self.click)
 
     def refresh(self):
         # Clear the layer plot and reinitialize it
@@ -184,14 +178,6 @@ class LayerController:
             )
             return
         self.main_controller.event_controller.edit_event(layer_name, model_object)
-
-    def click(self, event):
-        scene_pos = event.scenePos()
-        plot_pos = self.layer_plot.plotItem.vb.mapSceneToView(scene_pos)
-        print(f"[PLOT CLICK] scene: {scene_pos} | plot: {plot_pos} ")
-        # self.main_controller.event_controller.select_event(None)
-        self.plot_click_handler = PlotClickHandler(self.main_controller)
-        self.plot_click_handler.handle_click(scene_pos, plot_pos)
 
     def update_playhead_position(self, frame_number):
         # Update the position of the vertical line

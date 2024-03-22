@@ -25,7 +25,7 @@ class EventItem:
         self.frame_number = None
         self.parent_layer_name = None
         self.parent_layer_number = None
-        self.name = event_name  # The name of the event
+        self.event_name = event_name  # The name of the event
         self.color = color  # The color of the event
         self.plot_data_item = None
 
@@ -34,7 +34,7 @@ class EventItem:
             "frame_number": self.frame_number,
             "parent_layer_name": self.parent_layer_name,
             "parent_layer_number": self.parent_layer_number,
-            "name": self.name,
+            "name": self.event_name,
             "color": str(self.color),
             # Exclude "plot_data_item" from serialization
         }
@@ -43,7 +43,7 @@ class EventItem:
         self.frame_number = data.get("frame_number")
         self.parent_layer_name = data.get("parent_layer_name")
         self.parent_layer_number = data.get("parent_layer_number")
-        self.name = data.get("name")
+        self.event_name = data.get("name")
         self.generate_layer_plot_item()
         color_str = data.get("color", "(100, 100, 100)")
         self.set_color(color_str)
@@ -92,10 +92,11 @@ class EventItem:
     def generate_layer_plot_item(self):
         # translates model data to layerPlotItem
         self.plot_data_item = self.create_point(
-            self.name, self.frame_number, self.parent_layer_name, self.parent_layer_number, self.color
+            self.event_name, self.frame_number, self.parent_layer_name, self.parent_layer_number, self.color
         )
 
-    def create_point(self, name, frame_num, parent_layer_name, parent_layer_number, color):
+
+    def create_point(self, event_name, frame_num, parent_layer_name, parent_layer_number, color):
         adj_layer_number = parent_layer_number + 0.5
         print(f"create_point, color {color}")
         plot_point = LayerPlotItem(
@@ -107,7 +108,7 @@ class EventItem:
             hoverable=True,
             hoverPen=pg.mkPen("orange"),
             size=12,
-            name=name
+            name=event_name,
         )
         plot_point.set_frame_num(frame_num)
         plot_point.set_layer_name(parent_layer_name)

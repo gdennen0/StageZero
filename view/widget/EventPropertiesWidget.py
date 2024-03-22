@@ -25,26 +25,18 @@ class EventPropertiesWidget(QDockWidget):
         self.main_layout.addStretch(1)
 
     def create_property_field(self, property_name):
-        # Create a horizontal layout for the property
         property_layout = QHBoxLayout()
-
-        # Create a label for the property
         property_label = QLabel(property_name)
         property_layout.addWidget(property_label)
-
-        # Create an editable line item for the property
         property_edit = QLineEdit()
         property_layout.addWidget(property_edit)
-
-        # Add the property layout to the main layout
         self.main_layout.addLayout(property_layout)
 
         return property_edit
-
-
+    
     def update(self, event_item):
         # Update the line items with the properties of the LayerPlotItem instance
-        self.line_items["Name"].setText(event_item.name)
+        self.line_items["Name"].setText(event_item.event_name)
         self.line_items["Color"].setText(str(event_item.color))
         self.line_items["Layer"].setText(event_item.parent_layer_name)
         self.line_items["Frame"].setText(str(event_item.frame_number))

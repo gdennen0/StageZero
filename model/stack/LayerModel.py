@@ -64,26 +64,8 @@ class LayerModel:
     def remove_layer_from_model(self, layer_name):
         del self.layers[layer_name]  # Delete the layer
 
-    # def move_layer_to_index(self, layer_name, new_layer_name):
-    #     # Find the layer with the given layer_name
-    #     layer_to_move = next(
-    #         (layer for layer in self.layers if layer["layer_name"] == layer_name), None
-    #     )  # Find the layer with the specified name
-    #     # If the layer exists, proceed
-    #     if layer_to_move is not None:
-    #         # Remove the layer from its current position
-    #         self.remove_layer_from_model(layer_to_move)
-    #         # Insert the layer at the new index
-    #         self.layers[new_layer_name] = layer_to_move
-    #         # Update the indices of all layers
-    #         self.update_layer_indices()
-
     def get_layer_raw_data(self, layer_name):
         return self.layers[layer_name].objects  # Return the raw data of the layer
-
-    # def update_layer_indices(self):
-    #     for i, layer in enumerate(self.layers):
-    #         layer.index = i  # Update the index of the layer
 
     def set_frame_qty(self, qty):
         self.frame_qty = qty  # Set the quantity of frames
@@ -106,15 +88,17 @@ class LayerModel:
         self.delete_event(layer_name, original_frame)
 
     def change_event_layer(self, original_layer, new_layer, frame_number):
-        event = self.layers[original_layer].objects[frame_number]
-        self.layers[new_layer].add(frame_number)
-        event.parent_layer_name = self.layers[new_layer].layer_name
-        event.parent_layer_number = self.layers[new_layer].layer_number
-        event.plot_data_item.parent_layer_name = self.layers[new_layer].layer_name
-        event.plot_data_item.parent_layer_number = self.layers[new_layer].layer_number
-        event.plot_data_item.set_y_position(self.layers[new_layer].layer_number)
-        self.layers[new_layer].objects[frame_number] = event
-        self.layers[original_layer].delete(frame_number)
-
+        if original_layer == new_layer:
+            print(f"passing for frame {frame_number}")
+            pass
+        else:
+            event = self.layers[original_layer].objects[frame_number] #get the event object
+            self.layers[new_layer].add(frame_number)    # adding new frame on new layer
+            event.parent_layer_name = self.layers[new_layer].layer_name
+            event.parent_layer_number = self.layers[new_layer].layer_number
+            event.plot_data_item.parent_layer_name = self.layers[new_layer].layer_name
+            event.plot_data_item.parent_layer_number = self.layers[new_layer].layer_number
+            event.plot_data_item.set_y_position(self.layers[new_layer].layer_number)
+            self.layers[new_layer].objects[frame_number] = event # add data to new frame 
+            self.layers[original_layer].delete(frame_number) # delete frame data from original layer
         # print(f"changing event {frame_number} from layer {original_layer} to layer {new_layer} \n event parent layer {event.parent_layer} parent layer index: {event.parent_layer_index},\n plotdataitem name {event.plot_data_item.layer_name}, layer_index {event.plot_data_item.layer_index}")
-        pass

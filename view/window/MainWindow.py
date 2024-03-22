@@ -28,7 +28,6 @@ from ..widget.StageWidget import StageWidget
 from ..widget.EventPropertiesWidget import EventPropertiesWidget
 from ..widget.EventActionWidget import EventActionWidget
 from ..widget.EventToolsWidget import EventToolsWidget
-from ..UI_COLORS import UIColors
 
 
 class MainWindow(QMainWindow):  # Class for the main window
