@@ -60,8 +60,8 @@ class FilterAudioController:
             filtered_data = filter.apply_filter(
                 filter_type,
                 cutoff_frequency,
-                self.model.loaded_song.original_song_data,
-                self.model.loaded_song.original_sample_rate,
+                self.model.loaded_song.song_data,
+                self.model.loaded_song.sample_rate,
             )
             # function to add filtered data to song
             self.model.add_filtered_data(filter_name, filtered_data)

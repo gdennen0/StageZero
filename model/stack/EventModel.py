@@ -27,7 +27,7 @@ class EventModel:
         if frame_number in self.objects:
             return self.objects[frame_number]
         else:
-            print(f"could not locate event at frame; {frame_number}")
+            print(f"[EventModel][get_event] | could not locate event at frame '{frame_number}'")
         
     def nudge_event(self, original_frame, amount):
         event = self.objects[original_frame]
@@ -43,33 +43,32 @@ class EventModel:
         self.layer_name = layer_name
 
     def set_layer_number(self, number):
-        print(f"Setting layer index to {number}")
+        print(f"[EventModel][set_layer_number] | Setting layer number to {number}")
         self.layer_number = number
 
     def delete(self, frame_number):
         if frame_number in self.objects:
             del self.objects[frame_number]
-            print(f"Frame number {frame_number} deleted from event objects.")
+            print(f"[EventModel][delete] | Frame number {frame_number} deleted from event objects.")
         else:
-            print(f"No event object found for frame number {frame_number}. for delete")
+            print(f"[EventModel][delete] | No event object found for frame number {frame_number}. for delete")
 
-    def add(self, frame_number):
-        # adds an instance of EventItem to self.objects
-        print(f"start list objects:")
-        pprint(self.objects)
-        if frame_number in self.objects and not None:
-            print(
-                f"Data already exists for frame number {frame_number}, frame not added"
-            )
-            return
-        event = EventItem()
-        event.set_parent_layer_name(self.layer_name)
-        event.set_parent_layer_number(self.layer_number)
-        event.set_frame_number(frame_number)
-        self.objects[frame_number] = event  # Add an event item to the dictionary
-        print(f"adding event at frame {frame_number}")
-        print(f"end list objects:")
-        pprint(self.objects)
+    def add(self, frame_number, color=None, name=None, type="event"):
+        if type=="event":
+            if frame_number in self.objects and not None:
+                print(f"[EventModel][add] | Data already exists for frame number '{frame_number}', frame not added")
+                return
+            event = EventItem()
+            event.set_parent_layer_name(self.layer_name)
+            event.set_parent_layer_number(self.layer_number)
+            event.set_frame_number(frame_number)
+            if color:
+                event.set_color(color)
+            if name:
+                event.set_name(name)
+
+            self.objects[frame_number] = event  # Add an event item to the dictionary
+            print(f"[EventModel][add] | Adding EventItem instance at frame '{frame_number}'")
 
     def update_data(self, frame_number, data):
         if frame_number not in self.objects:

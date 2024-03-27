@@ -9,3 +9,4 @@ from .SongOverviewWidget import *
 from .SongSelectWidget import *
 from .StackWidget import *
 from .STFTLinearSpectrogramWidget import *
+from .EventCreatorWidget import *

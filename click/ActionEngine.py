@@ -46,12 +46,9 @@ class EventAction:
     def drag(self, ev, object):
         if object in self.main_controller.event_controller.selected_events:
             if ev.button() == Qt.LeftButton:
-                if ev.isStart():
-                    # This block will only execute at the start of the drag
+                if ev.isStart(): # This block will only execute at the start of the drag
                     print("Drag Start")
-                    object.dragOffset = object.points()[0].pos() - ev.buttonDownPos(
-                        Qt.LeftButton
-                    )
+                    object.dragOffset = object.points()[0].pos() - ev.buttonDownPos(Qt.LeftButton)
                     object.dragPoint = True
                     object.dragStart = ev.buttonDownPos()
                     self.main_controller.event_controller.start_drag()

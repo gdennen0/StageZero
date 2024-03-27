@@ -15,7 +15,7 @@ import numpy as np
 from PyQt5.QtCore import Qt, QTimer
 from view import DialogWindow
 from view.LayerPlotItem import LayerPlotItem
-from .PlotClickHandler import PlotClickHandler
+from constants import LAYER_HEIGHT
 
 
 class LayerController:
@@ -31,6 +31,7 @@ class LayerController:
         self.layer_plot = self.view.main_window.stage_widget.stack.layer_widget.layer_plot
         self.song_overview_plot = self.view.main_window.stage_widget.song_overview.song_plot
         self.layer_plot.setXLink(self.song_overview_plot)
+        self.add_playhead()
         self.connect_signals()
 
     def connect_signals(self):
@@ -39,49 +40,51 @@ class LayerController:
         self.view.main_window.stage_widget.layer_control.btnAdd.clicked.connect(self.add_layer)
 
     def refresh(self):
-        # Clear the layer plot and reinitialize it
-        self.layer_plot.clear()
-        x_axis = self.model.loaded_song.x_axis
-        self.update_layer_names()
-        y_values = np.zeros(self.model.loaded_song.frame_qty)
-        num_layers = len(self.model.loaded_stack.layers)
-        self.layer_plot.plot(x_axis, y_values, pen=None)
-        self.set_layer_plot_limits(0, self.model.loaded_song.frame_qty, 0, num_layers)
+        self.refresh_layers()
+
+    def refresh_layers(self):
         self.add_layers_to_plot()
-        self.reload_playhead()
-        self.update_layer_plot_height()
+        self.reset_y_axis_ticks()
+        self.reset_x_axis_max_length()
+
+    def reset_x_axis_max_length(self):
+        x_axis = self.model.loaded_song.x_axis
+        self.layer_widget.set_plot_x_max(x_axis[-1])
+
+    def reset_y_axis_ticks(self):
+        ticks = self.generate_ticks()           
+        self.layer_widget.y_axis.setTicks([[value for value in ticks ]])
 
     def add_layers_to_plot(self):
         layer_names = [layer_item.layer_name for layer_key, layer_item in self.model.loaded_stack.layers.items()]
         for layer_name in layer_names:
             self.add_plot_layer(layer_name)
 
-    def replot_layer_plot(self):
-        print(f"replot layer plot")
-        # Replot the layer plot
-        self.layer_plot = self.view.main_window.stage_widget.stack.layer_widget.layer_plot
-        self.layer_plot.replot()
+    def add_plot_layer(self, layer_name):
+        print(f"[LayerController][add_plot_layer] | name: {layer_name}")
+        self.load_plot_layer_data(layer_name)
+        self.reset_y_axis_ticks()
+        self.update_layer_plot_height()
 
-    def init_playhead(self):
-        # Initialize the vertical line in the layer widget
-        self.layer_widget.init_playhead()
+    def load_plot_layer_data(self, layer_name):
+        layer_object = self.model.loaded_stack.layers[layer_name]
+        plot_layer_data = layer_object.get_plot_layer_data()
+        self.main_controller.event_controller.add_plot_layer_data(plot_layer_data)
+        layer_qty = self.model.loaded_stack.get_layer_qty()
+        self.set_layer_plot_limits(yMax=layer_qty)
 
-    def reload_playhead(self):
-        self.layer_widget.reload_playhead()
+    def add_playhead(self):
+        self.layer_widget.add_playhead(self.model.stack.playhead)
 
-    def refresh_plot_data_item(self):
-        # item = self.model.loaded_stack.layers[layer_name].objects[frame_number].plot_data_item
-        # self.replot_layer_plot()
-        pass
+    def add_line(self, layer_name, frame_number): #TODO Implement this feature further in the future
+        self.model.loaded_stack.layers[layer_name].add(frame_number, color=None, name=None, type="line")
 
     def add_layer(self):
         # Add a new layer to the stack
         if self.model.stack.objects != None:
-            layer_name = DialogWindow.input_text("Enter Layer Name", "Layer Name")
+            layer_name = DialogWindow.input_text("[Layer_Controller][add_layer] | Enter Layer Name", "Layer Name")
             while len(layer_name) > 20:
-                layer_name = DialogWindow.input_text(
-                    "Name too long. Enter up to 20 characters", "Layer Name"
-                )
+                layer_name = DialogWindow.input_text("[Layer_Controller][add_layer] | Name too long. Enter up to 20 characters", "Layer Name")
             self.add_model_layer(layer_name)
             self.add_plot_layer(layer_name)
 
@@ -92,47 +95,18 @@ class LayerController:
         stack.remove_layer_from_model(layer_name)
         self.refresh()
 
-    def add_model_layer(self, layer_name):
-        # Add a new layer to the model
+    def add_model_layer(self, layer_name): # Add a new layer to the model
         self.model.loaded_stack.create_layer(layer_name)
 
-    def add_plot_layer(self, layer_name):
-        # Add a new layer to the plot
-        print(f"add plot layer {layer_name}")
-        self.load_plot_layer_data(layer_name)
-        self.update_layer_names()
-        self.update_layer_plot_height()
-        # self.refresh_plot_widget_layer(layer_name)
-
-    def load_plot_layer_data(self, layer_name):
-        # Refresh a single layer in the layer plot by name
-        # layer_index = self.model.loaded_stack.get_layer_index(layer_name)
-        layer_object = self.model.loaded_stack.layers[layer_name]
-        plot_layer_data = layer_object.get_plot_layer_data()
-
-        self.layer_widget.remove_items(plot_layer_data)
-        self.main_controller.event_controller.add_plot_layer_data(plot_layer_data)
-        layer_qty = self.model.loaded_stack.get_layer_qty()
-        self.set_layer_plot_limits(yMax=layer_qty)
-
-    def update_layer_names(self):
-        # Update the names of the layers
-        loaded_stack = self.model.loaded_stack
-        # loaded_stack = self.model.stack.objects[self.model.stack.loaded_stack]
-        print(
-            f"update layer name loaded stack {loaded_stack} type {type(loaded_stack)}"
-        )
-        # layer_names = [layer.name for layer in loaded_stack]
+    def update_y_axis_layer_names(self):
         layer_names = []
-        for layer_key, layer_item in loaded_stack.layers.items():
-            print(f"layer key: {layer_key} layer item: {layer_item}")
+        for layer_key, layer_item in self.model.loaded_stack.layers.items():
             layer_names.append(layer_key)
 
         self.layer_widget.update_layer_names(layer_names)
 
-    def update_layer_plot_height(self):
-        # Update the height of the layer plot
-        layer_height = 50  # You can adjust this value as needed
+    def update_layer_plot_height(self): # Update the height of the layer plot
+        layer_height = LAYER_HEIGHT  # You can adjust this value in the constants file
         offset = 18  # This encompasses the x axis height
         num_layers = len(self.model.loaded_stack.layers)
         total_height = num_layers * layer_height + offset
@@ -152,38 +126,33 @@ class LayerController:
             limits["yMax"] = yMax
 
         self.layer_plot.setLimits(**limits)
-        # Auto re-zoom the plot to fit the new changed limits
-        # But only zoom out the y axis 100%
         self.layer_plot.getViewBox().setRange(yRange=(yMin, yMax), padding=0)
 
     def handle_position_change(self, current_frame, event):
         new_frame_x = int(event.x())
         new_frame_y = int(event.y())
         layer_name = event.parent_layer_name
-        print(
-            f"handle_pos_change | start position: {current_frame} | new x position: {new_frame_x}"
-        )
-        self.model.loaded_stack.move_event(
-            layer_name, current_frame, new_frame_x
-        )
+        self.model.loaded_stack.move_event(layer_name, current_frame, new_frame_x)
+        print(f"[LayerController][handle_pos_change] | start position: {current_frame} | new x position: {new_frame_x}")
+
 
     def handle_right_click(self, layer_name, frame_num):
         try:
-            model_object = self.model.loaded_stack.layers[layer_name].objects[
-                frame_num
-            ]
+            model_object = self.model.loaded_stack.layers[layer_name].objects[frame_num]
         except KeyError:
-            DialogWindow.error(
-                f"Model Error: Event at frame {frame_num} does not exist in layer {layer_name}."
-            )
+            DialogWindow.error(f"Model Error: Event at frame {frame_num} does not exist in layer {layer_name}.")
             return
         self.main_controller.event_controller.edit_event(layer_name, model_object)
 
-    def update_playhead_position(self, frame_number):
-        # Update the position of the vertical line
-        self.playhead = self.layer_widget.playhead
-        self.playhead.setPos(float(frame_number))
+    def generate_ticks(self):
+        layer_keys = list(self.model.loaded_stack.layers.keys())
+        ticks = []
+        counter = 0
+        for layer_key in layer_keys:
+            ticks.append((counter, ""))
+            counter += 0.5
+            ticks.append((counter, str(layer_key)))
+            counter += 0.5
+            ticks.append((counter, ""))
 
-    def tally_events(event_data):
-        # Count the number of events in the event data
-        return sum(1 for value in event_data.values() if value is not None)
+        return ticks

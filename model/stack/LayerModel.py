@@ -26,6 +26,14 @@ class LayerModel:
         self.layers = {}  # List to store layer objects
         self.frame_qty = None  # The quantity of frames
 
+    def add_event_to_layer(self, layer_name, frame_number, event_name=None, event_color=None):
+        self.layers[layer_name].add(frame_number)
+        self.layers[layer_name].objects[frame_number].generate_layer_plot_item()
+        if event_name:
+            self.layers[layer_name].objects[frame_number].set_name(event_name)
+        if event_color:
+            self.layers[layer_name].objects[frame_number].set_color(event_color)
+
     def generate_plot_data_items(self):
         for layer_key, layer_item in self.layers.items():
             layer_item.generate_plot_layer_data_items()
@@ -44,9 +52,9 @@ class LayerModel:
         # Add a layer item to the layers dict
         if layer_name not in self.layers:
             self.layers[layer_name] = layer # Append the layer to the list
-            print(f"[MODEL] Added Layer Object {layer_name}")  # Print a message
+            print(f"[LayerModel][add_layer_to_model] | Added Layer Object {layer_name}")  # Print a message
         else:
-            print(f"error layer with that name already exists")
+            print(f"[LayerModel][add_layer_to_model] | error layer with that name already exists")
     
     def get_next_free_layer_number(self):
         used_numbers = [self.layers[layer].layer_number for layer in self.layers]
@@ -54,7 +62,7 @@ class LayerModel:
         while next_free_number in used_numbers:
             next_free_number += 1
         
-        print(f"Next open index: {next_free_number}")
+        print(f"[LayerModel][get_next_free_layer_number] | Next open number: {next_free_number}")
         return next_free_number
     
     # Sets the layers objects to object_data arg

@@ -44,7 +44,7 @@ class ProjectController:
         else:
             return
         self.model.load(path)
-        print(f"Project Loaded from {path}")
+        print(f"[ProjectController][load_project] | Project Loaded from {path}")
         self.view.open_main_window()
         self.view.close_launch_window()
 

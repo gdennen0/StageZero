@@ -1,6 +1,6 @@
-from pyqtgraph import PlotDataItem, mkPen
-from PyQt5.QtCore import Qt, QPointF, pyqtSignal
-from PyQt5.QtGui import QMouseEvent, QPen, QHelpEvent, QColor
+from pyqtgraph import mkPen
+from PyQt5.QtCore import QPointF, pyqtSignal
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QGraphicsItem
 
 
@@ -63,7 +63,7 @@ class LayerPlotItem(ScatterPlotItem):
         self.setToolTip(tooltip_text)
 
     def set_frame_num(self, frame_num):
-        print(f"set frame number: {frame_num}")
+        # print(f"set frame number: {frame_num}")
         self.frame_num = int(frame_num)
         self.refresh_tooltip_text()
 

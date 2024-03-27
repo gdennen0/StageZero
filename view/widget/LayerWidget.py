@@ -19,13 +19,14 @@ It also leverages the power of the PyQt5 and pyqtgraph libraries to provide a ri
 import pyqtgraph as pg  # For plotting
 from pyqtgraph import InfiniteLine, mkPen  # For customizing plots
 from PyQt5.QtWidgets import (
-    QWidget,  # Base class for all user interface objects
-    QHBoxLayout,  # Box layout with a horizontal direction
+    QWidget,
+    QHBoxLayout,
 )
-from ..CustomAxis import CustomAxis
-from pyqtgraph import ViewBox
+from pyqtgraph import ViewBox, PlotWidget
 from PyQt5.QtCore import pyqtSignal
-
+import math  # For mathematical operations
+import numpy as np  # For array operations
+from pyqtgraph import AxisItem  # For customizing plots
 
 class LayerWidget(QWidget):  # Widget for a layer
 
@@ -34,8 +35,8 @@ class LayerWidget(QWidget):  # Widget for a layer
         self.plot_items = None
         self.layout = QHBoxLayout(self)  # Set the layout to horizontal box layout
         self.layout.setContentsMargins(0, 0, 12, 0)  # Set the margins for the layout
-        self.custom_axis = CustomAxis(orientation="left")  # Custom axis for the layer
-        self.layer_plot = pg.PlotWidget(viewBox=CustomViewBox(), axisItems={"left": self.custom_axis})
+        self.y_axis = CustomAxis(orientation="left")  # Custom axis for the layer
+        self.layer_plot = LayerPlot(viewBox=CustomViewBox(), axisItems={"left": self.y_axis})
         self.layout.addWidget(self.layer_plot)  # Add the plot widget to the layout
         
         self.layer_plot.setAcceptHoverEvents(True)
@@ -44,7 +45,6 @@ class LayerWidget(QWidget):  # Widget for a layer
         self.layer_plot.showGrid(x=True, y=True, alpha=1)  # Show the grid for the plot widget
         self.layer_plot.getViewBox().setMouseEnabled(x=True, y=False)  # Disable mouse interaction for the y-axis
         self.layer_plot.setMenuEnabled(False)  # Disable the right-click plot options
-        self.init_playhead()
 
     def get_all_plot_items(self):
         return self.layer_plot.getViewBox().allChildren()
@@ -54,22 +54,16 @@ class LayerWidget(QWidget):  # Widget for a layer
         self.layer_plot.addItem(plot_layer_item)
 
     def remove_items(self, items):
-        """Remove a list of LayerPlotItem objects from the layer plot."""
         for item in items:
             self.layer_plot.removeItem(item)
-            print(f"Removed plot item: {item}")
+            print(f"[LayerWidget][remove_items] | Removed plot item: {item}")
 
     def remove_item(self, item):
-        """Remove a list of LayerPlotItem objects from the layer plot."""
         self.layer_plot.removeItem(item)
-        print(f"Removed plot item: {item}")
+        print(f"[LayerWidget][remove_item] | Removed plot item: {item}")
 
     def update_layer_names(self, layer_names):  # Update the layer names
-        # print(f"update layer names")
-        for name in layer_names:
-            print(name)
-        self.custom_axis.setLayers(layer_names)  # Set the layers for the custom axis
-        self.layer_plot.update()  # Update the plot widget
+        self.y_axis.setLayers(layer_names)  # Set the layers for the custom axis
 
     def init_playhead(self):  # Initialize the vertical line
         line_specs = mkPen(color="w", width=2)  # Specifications for the line
@@ -77,9 +71,9 @@ class LayerWidget(QWidget):  # Widget for a layer
         self.layer_plot.addItem(self.playhead)  # Add the line to the plot widget
         self.playhead.setPos(0)
 
-    def reload_playhead(self):
-        self.layer_plot.removeItem(self.playhead)
-        self.init_playhead()
+    def add_playhead(self, playhead):  # Initialize the vertical line
+        print(f"adding playhead to layer plot")
+        self.layer_plot.addItem(playhead)  # Add the line to the plot widget
 
     def remove_group(self, plot_data_group):
         for plot_data_item in plot_data_group:
@@ -89,6 +83,14 @@ class LayerWidget(QWidget):  # Widget for a layer
     def connectCustomViewBoxSignal(self, signal, slot):
         if signal == "sigItemsSelected":
             self.layer_plot.getViewBox().sigItemsSelected.connect(slot)
+
+    def set_plot_x_max(self, x_max):
+        self.layer_plot.setLimits(xMax=x_max)
+        # self.layer_plot.autoRange(padding=0)
+
+class LayerPlot(PlotWidget):
+    def __init__(self, *args, **kwargs):
+        super(LayerPlot, self).__init__(*args, **kwargs)
 
 
 class CustomViewBox(ViewBox):
@@ -105,3 +107,22 @@ class CustomViewBox(ViewBox):
 
     def mouseClickEvent(self, ev):
         self.sigLayerClick.emit(ev, self)
+
+
+class CustomAxis(AxisItem):  # Custom axis class
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)  # Call the constructor of the parent class
+        # self.layers = []  # Initialize the layers
+        self.fixedWidth = 100  # Set a fixed width for the Y-axis
+
+    def width(self):
+        # Override the width method to return a fixed width
+        return self.fixedWidth
+    
+    def resetLayers(self):
+        self.layers = []
+        self.update()
+
+    def setLayers(self, layers):  # Set the layers
+        self.layers = layers  # Set the layers
+        self.update()

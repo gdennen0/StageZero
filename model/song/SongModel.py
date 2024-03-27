@@ -18,24 +18,31 @@ The add_song_object_to_model method takes a SongItem object and adds it to the d
 """
 
 from .SongItem import SongItem
-
+from pyqtgraph import InfiniteLine, mkPen  # For customizing plots
 
 class SongModel:
     # Manage Song Item Instances
     def __init__(self):
         self.objects = {}  # Dictionary to store song objects
         self.loaded_song = None  # The loaded song
+        self.playhead = InfiniteLine(angle=90, movable=True, pen=mkPen(color="w", width=2))
 
-    def load_model(song_model):
-        # songs = song_model.objects
-        # for song in
-        pass
+    def deserialize_songs(self, song_data):
+        for song_name, song in song_data.items():
+            self.objects[song_name] = SongItem()
+            self.objects[song_name].deserialize(song)
 
     # Method to take a file path and name and ingest the rest of the song item data
     @staticmethod
     def build_song_object(file_path, song_name):
-        song_object = SongItem(song_name, file_path)  # Create a song object
+        song_object = SongItem()  # Create a song object
+        song_object.build_data(song_name, file_path)
+
         return song_object
+    
+    def add_new_song(self, file_path, song_name):
+        song_object = self.build_song_object(file_path, song_name)
+        self.add_song_object_to_model(song_object)
 
     # Method to add song object to song dict
     def add_song_object_to_model(self, song_object):

@@ -17,49 +17,12 @@ This includes generating ticks for the song, initializing the playhead, painting
 
 import math
 import numpy as np
-import constants
-
 
 class SongOverviewController:
     def __init__(self, main_controller):
-        self.model = main_controller.model  # Model reference
-        self.song_overview_widget = (
-            main_controller.view.main_window.stage_widget.song_overview
-        )  # Song overview widget reference
-        self.main_controller = main_controller  # Main controller reference
-        self.view = main_controller.view  # View reference
-        self.init_playhead()
-
-    def init_playhead(self):
-        # Initialize the vertical line
-        self.view.main_window.stage_widget.song_overview.init_playhead()
-
-    def paint_beat_lines(self, beats):
-        for beat in beats:
-            song_overview_widget = self.view.main_window.song_overview
-            song_overview_widget.paint_beat_line(beat)
-
-    def remove_beat_lines(self):
-        song_overview_widget = self.view.main_window.stage_widget.song_overview
-        song_overview_widget.remove_beat_lines()
-
-    def paint_onset_lines(self, onsets, onset_type):
-        song_overview_widget = self.view.main_window.stage_widget.song_overview
-
-        if onset_type == "all-pass":
-            for onset in onsets:
-                song_overview_widget.paint_onset_line(onset, "all-pass", "r")
-        if onset_type == "lo-pass":
-            for onset in onsets:
-                song_overview_widget.paint_onset_line(onset, "lo-pass", "g")
-
-    def remove_onset_lines(self, onset_type):
-        song_overview_widget = self.view.main_window.stage_widget.song_overview
-        song_overview_widget.remove_onset_lines(onset_type)
-
-    def update_playhead_position(self, frame_number):
-        # Update the position of the vertical line
-        self.view.main_window.stage_widget.song_overview.playhead.setPos(float(frame_number))
+        self.model = main_controller.model
+        self.song_overview_widget = (main_controller.view.main_window.stage_widget.song_overview)
+        self.view = main_controller.view
 
     def calculate_frame_quantity(self, length_ms, fps):
         # Calculate the frame quantity and round up to the nearest whole frame
@@ -72,11 +35,20 @@ class SongOverviewController:
         return np.arange(frame_qty)
 
     def refresh(self):
-        # Update the plot
         x_axis = self.model.loaded_song.x_axis
-        song_data = self.model.loaded_song.song_data
-        self.song_overview_widget.update_plot(x_axis, song_data)
+        waveform_plot_item = self.model.loaded_song.waveform_plot_item
+        self.song_overview_widget.reload_plot(x_axis, waveform_plot_item)
+        
+    def clear_plot_waveforms(self):
+        self.song_overview_widget.remove_waveform_data(self.model.loaded_song.waveform_plot_item)
 
-    def update_playhead_position(self, frame_number):
-        # Update the position of the vertical line
-        self.view.main_window.stage_widget.song_overview.playhead.setPos(float(frame_number))
+    def show_lines(self, type):
+        for line in self.model.loaded_song.lines:
+            if line.type == type:
+                self.song_overview_widget.song_plot.addItem(line)
+
+    def remove_lines(self, type):
+        for line in self.model.loaded_song.lines:
+            print(f"[SongOverviewController][remove_lines] (type:{type}| line type: {line.type}")
+            if line.type == type:
+                self.song_overview_widget.song_plot.removeItem(line)

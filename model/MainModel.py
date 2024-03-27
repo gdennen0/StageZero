@@ -49,12 +49,9 @@ class MainModel:
     @property
     def loaded_stack(self):
         if self.stack.loaded_stack:
-            # print(
-            #     f"accessed loaded stack property method trying to get object {self.stack.loaded_stack} {type(self.stack.objects[self.stack.loaded_stack])}"
-            # )
             return self.stack.objects[self.stack.loaded_stack]
         else:
-            print(f"ERROR: No stack loaded yet")  # Error message if no song is loaded]
+            return None
 
     def get_song(self, song_name):
         try:
@@ -63,15 +60,18 @@ class MainModel:
             print(f"ERROR: Song '{song_name}' not found")
             return None
 
-    def add_events_to_layer(self, layer_name, events):
-        # events should be a dictionary of frame numbers
-        for event in events:
-            self.loaded_stack.layers[layer_name].add(event)
-
     def add_filtered_data(self, filter_name, filtered_data):
         self.loaded_song.add_filtered_data(filter_name, filtered_data)
 
-    def serialize_stack(self):
+    def serialize_songs(self):
+        serialized_songs = {}
+        for song_name, song in self.song.objects.items():
+            serialized_songs[song_name] = song.to_dict()
+        
+        print(f"serialized songs: {serialized_songs}")
+        return serialized_songs
+
+    def serialize_stacks(self):
         serialized_stacks = {}
         for stack_name, stack in self.stack.objects.items():
             serialized_layers = {}
@@ -97,11 +97,11 @@ class MainModel:
         # self.prepare_stack_data_for_saving()
         model_data = {
             "song_model": {
-                "objects": self.song.objects,
+                "objects": self.serialize_songs(),
                 "loaded_song": self.song.loaded_song,
             },
             "stack_model": {
-                "objects": self.serialize_stack(),
+                "objects": self.serialize_stacks(),
                 "loaded_stack": self.stack.loaded_stack,
             },
             "main_model": {
@@ -109,7 +109,7 @@ class MainModel:
             },
         }
 
-        print(self.serialize_stack())
+        print(self.serialize_stacks())
 
         if self.save_path:
             with open(self.save_path, "wb") as file:
@@ -127,7 +127,7 @@ class MainModel:
 
         with open(path, "rb") as file:
             data_loaded = pickle.load(file)
-        self.song.objects = data_loaded["song_model"]["objects"]
+        self.song.deserialize_songs(data_loaded["song_model"]["objects"])
         self.song.loaded_song = data_loaded["song_model"]["loaded_song"]
         # self.stack.objects = data_loaded["stack_model"]["objects"]
         self.stack.set_loaded_stack(data_loaded["stack_model"]["loaded_stack"])

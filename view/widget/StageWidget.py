@@ -32,15 +32,22 @@ class StageWidget(QWidget):  # Inherit from QWidget
 
         # playback layout
         self.playback_layout = QHBoxLayout()
-        self.playback_layout.addWidget(self.playback_mode)  # Add the playback_mode to the playback_layout
-        self.playback_layout.addWidget(self.audio_playback_command)  # Add the audio_playback_command to the playback_layout
+        # self.playback_layout.addWidget(self.playback_mode)  # Add the playback_mode to the playback_layout
+        
+        self.playback_layout.addWidget(self.audio_playback_command)
+        self.playback_layout.addStretch(1)  # Add the audio_playback_command to the playback_layout
+
+        self.bottom_row_layout = QHBoxLayout()
+        self.bottom_row_layout.addWidget(self.audio_playback_command)
+        self.bottom_row_layout.addWidget(self.layer_control)
 
         # Stage layout
         self.stage_layout.addWidget(self.song_select_menu)  # Add the song_overview to the layout
-        self.stage_layout.addLayout(self.playback_layout)  # Add the playback_layout to the layout
         self.stage_layout.addWidget(self.song_overview)  # Add the song_overview to the layout
+        self.stage_layout.addLayout(self.bottom_row_layout)
         self.stage_layout.addWidget(self.stack)  # Add the stack to the layout
-        self.stage_layout.addWidget(self.layer_control)  # Add the layer_control to the layout
+        # self.stage_layout.addLayout(self.playback_layout)  # Add the playback_layout to the layout
+        # self.stage_layout.addWidget(self.layer_control)  # Add the layer_control to the layout
 
         self.setLayout(self.stage_layout)  # Set the layout on the widget
 

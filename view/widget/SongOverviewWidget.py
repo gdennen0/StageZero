@@ -14,17 +14,19 @@ An instance of SongOverviewWidget, which can be added to a layout in a PyQt5 app
 """
 
 import pyqtgraph as pg  # For plotting
-from pyqtgraph import InfiniteLine, mkPen  # For customizing plots
+from pyqtgraph import InfiniteLine, mkPen, PlotWidget  # For customizing plots
 from PyQt5.QtWidgets import (
     QWidget,  # Base class for all user interface objects
     QLabel,  # For displaying text or images
     QVBoxLayout,  # Box layout with a vertical direction
 )
+from PyQt5.QtCore import pyqtSignal
 
 Y_AXIS_OFFSET = 100
 
 
 class SongOverviewWidget(QWidget):  # Widget for displaying song overview
+    sigPlayheadPositionChange = pyqtSignal(float)  # Define a new signal for playhead position changes
     def __init__(self):
         super().__init__()  # Call the constructor of the parent class
         self.initWidget()  # Initialize the widget
@@ -38,91 +40,62 @@ class SongOverviewWidget(QWidget):  # Widget for displaying song overview
         self.layout = QVBoxLayout(self)  # Set the layout to vertical box layout
         self.layout.setContentsMargins(0, 0, 12, 0)  # Set the margins for the layout
         self.label = QLabel(f"Song Overview")  # Label for the song overview
+        self.song_plot = SongPlotItem()
+        self.layout.addWidget(self.song_plot)  # Add the song plot to the layout
 
-        self.song_plot = pg.PlotWidget()  # Create a plot widget for the song
+    def set_plot_x_max(self, x_max):
+        self.song_plot.setLimits(xMax=x_max)
+        self.song_plot.autoRange(padding=0)
 
-        self.song_plot.setFixedHeight(100)  # Set the fixed height of the song plot
-        self.song_plot.setContentsMargins(
-            0, 0, 0, 0
-        )  # Set the margins for the song plot
+    def add_waveform_data(self, waveform_item):
+        print(f"[SongOverviewWidget][add_waveform_data] | {waveform_item}")
+        self.song_plot.addItem(waveform_item)
 
-        self.song_plot.showGrid(
-            x=True, y=False, alpha=1
-        )  # Show the grid for the song plot
+    def remove_waveform_data(self, waveform_item):
+        print(f"[SongOverviewWidget][remove_waveform_data] | {waveform_item}")
+        self.song_plot.removeItem(waveform_item)
 
-        y_axis = self.song_plot.getAxis("left")  # Get the y-axis
+    def add_playhead(self, playhead):
+        print(f"[SongOverviewWidget][add_playhead] | {playhead}")
+        self.song_plot.addItem(playhead)  # Add the line to the song plot
+
+    def emit_playhead_position(self):
+        # print(f"emit playhead pos")
+        x_position = self.playhead.getXPos()
+        self.sigPlayheadPositionChange.emit(x_position)
+
+    def add_line(self, frame_number, name):
+        line_specs = mkPen(color="b", width=1)  # Define the specifications for the line
+        line = InfiniteLine(angle=90, movable=False, pen=line_specs)  # Create an infinite line for beat
+        line.name = name
+        line.setPos(frame_number)  # Set the position of the line at specific tick number
+        self.song_plot.addItem(line)
+
+    def reload_plot(self, x_ticks, waveform_plot_item):
+        self.song_plot.addItem(waveform_plot_item)
+        self.set_plot_x_max(x_ticks[-1])
+        
+class SongPlotItem(PlotWidget):
+    def __init__(self, parent=None, **kwargs):
+        super().__init__(parent, **kwargs)  # Properly initialize the superclass
+        self.setFixedHeight(100)  # Set the fixed height of the song plot
+        self.setContentsMargins(0, 0, 0, 0)  # Set the margins for the song plot
+        self.showGrid(x=True, y=False, alpha=1)  
+
+        y_axis = self.getAxis("left")
         y_axis.setWidth(100)
         y_axis.setTicks([])  # Set the ticks for the y-axis
 
-        x_axis = self.song_plot.getAxis("bottom")  # Get the y-axis
-        x_axis.setTicks([])  # Set the ticks for the y-axis
-
-        # self.layout.addWidget(self.label)  # Add the label to the layout
-        self.layout.addWidget(self.song_plot)  # Add the song plot to the layout
-
-    def init_playhead(self):
-        line_specs = mkPen(color="w", width=2)  # Define the specifications for the line
-        self.playhead = InfiniteLine(
-            angle=90, movable=True, pen=line_specs
-        )  # Create an infinite line
-        self.song_plot.addItem(self.playhead)  # Add the line to the song plot
-        self.playhead.setPos(0)
-
-    def reset_playhead(self):
-        self.song_plot.removeItem(self.playhead)  # Remove the playhead from the song plot
-        self.init_playhead()
-
-    def paint_beat_line(self, frame_number):
-        line_specs = mkPen(color="b", width=1)  # Define the specifications for the line
-        beat_line = InfiniteLine(angle=90, movable=False, pen=line_specs)  # Create an infinite line for beat
-        beat_line.setPos(frame_number)  # Set the position of the line at specific tick number
-        beat_line.beat = True  # Mark this line as a beat line
-        self.song_plot.addItem(beat_line)  # Add the beat line to the song plot
-
-    def remove_beat_lines(self):
-        for item in self.song_plot.items():
-            if isinstance(item, InfiniteLine) and getattr(item, "beat", False):
-                self.song_plot.removeItem(item)  # Remove the beat line from the song plot
-
-    def paint_onset_line(self, frame_number, onset_type, color):
-        line_specs = mkPen(color=color, width=1)  # Define the specifications for the line
-
-    def remove_onset_lines(self, onset_type):
-        for item in self.song_plot.items():
-            if isinstance(item, InfiniteLine):
-                if item.type == onset_type:
-                    self.song_plot.removeItem(item)  # Remove the beat line from the song plot
-
-    def plot_events(self, ticks, song_data):
-        self.song_plot.setLimits(  # Set the limits for the song plot
+        x_axis = self.getAxis("bottom")
+        x_axis.setTicks([])  # Set the ticks for the x-axis
+        
+        self.setLimits(  # Set the limits for the song plot
             xMin=0,
-            xMax=ticks[-1],
+            xMax=1,
             yMin=0,
             yMax=1,
             minYRange=1,
             maxYRange=1,
         )
-        self.song_plot.plot(ticks, song_data)  # Plot the song data
 
-        y_axis = self.song_plot.getAxis("left")  # Get the y-axis
-        y_axis.setTicks([])  # Set the ticks for the y-axis
-        self.offset_y_axis_ticks()  # Call the method to format the Y-axis ticks
-
-    def offset_y_axis_ticks(self):
-        # Define a function to format the tick labels
-        def tick_spacing(tick_values, scale, spacing=10):
-            formatted_ticks = []
-            for value in tick_values:
-                formatted_value = "".center(10, " ")  # Ensure 10 empty space characters
-                formatted_ticks.append((value, formatted_value))
-            return formatted_ticks
-
-        y_axis = self.song_plot.getAxis("left")  # Get the y-axis
-        y_axis.setWidth(Y_AXIS_OFFSET)
-        y_axis.setTicks([tick_spacing(range(-10, 11), 1)])  # Apply the custom tick formatting
-
-    def update_plot(self, ticks, song_data):
-        # logic to update plot
-        self.song_plot.clear()  # Clear the song plot
-        self.plot_events(ticks, song_data)  # Plot the events
-        self.reset_playhead()
+        

@@ -29,17 +29,13 @@ class SongController:
         self.view = main_controller.view  # View reference
 
     def initialize(self):
-        self.main_controller.audio_playback_controller.load_song(
-            self.model.loaded_song
-        )  # Load the song into audio playback
+        self.main_controller.audio_playback_controller.load_song(self.model.loaded_song)  # Load the song into audio playback
 
     def print(self, function_type, string):
         print(f"[CONTROLLER][{function_type}] | {string}")
 
     def add_song(self):
-        file_path = DialogWindow.open_file(
-            "Select Song", "", "Audio Files (*.mp3 *.wav);;All Files (*)"
-        )
+        file_path = DialogWindow.open_file("Select Song", "", "Audio Files (*.mp3 *.wav);;All Files (*)")
         if not file_path:
             PopupManager.show_error("Error", "No file selected. Please select a file.")
             return
@@ -50,16 +46,21 @@ class SongController:
                 "Invalid song name. Please use only letters, numbers, spaces, hyphens, and underscores.",
             )
             return
-        song_object = self.model.song.build_song_object(file_path, song_name)
-        print(f"built song object with name {song_name}")
-        self.model.song.add_song_object_to_model(song_object)
+        self.model.song.add_new_song(file_path, song_name)
         self.main_controller.stack_controller.create_stack(song_name)
+
         if self.model.song.loaded_song == None:
             self.load_song(song_name)
         else:
             self.main_controller.song_select_controller.refresh()
 
     def load_song(self, song_name):
+        print(f"[SongController][load_plot]| song_name: {song_name}")
+        print(f"loading song {song_name}".center(100,"*"))
+        # Clear existing data
+        self.main_controller.song_overview_controller.clear_plot_waveforms()
+        self.main_controller.event_controller.clear_plot_events()
+        # Switch loaded song to new selected song
         self.model.song.loaded_song = song_name
         self.model.stack.loaded_stack = song_name
         self.main_controller.song_overview_controller.refresh()
@@ -68,7 +69,4 @@ class SongController:
         self.main_controller.song_select_controller.refresh()
 
     def add_filter_to_loaded_song(self, filter_type, filtered_data, sample_rate):
-        # (filter_type, filtered_data, sample_rate)
-        self.model.loaded_song.add_filtered_data(
-            filter_type, filtered_data, sample_rate
-        )
+        self.model.loaded_song.add_filtered_data(filter_type, filtered_data, sample_rate)

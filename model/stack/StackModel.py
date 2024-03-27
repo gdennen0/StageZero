@@ -14,9 +14,8 @@ get_loaded_stack - This method returns the currently loaded stack.
 """
 
 from .LayerModel import LayerModel
-from view import LayerPlotItem
-from pyqtgraph import GraphicsObject, PlotDataItem
-
+from pyqtgraph import InfiniteLine, mkPen  # For customizing plots
+from view.PlayheadItem import PlayheadItem
 
 class StackModel:
     def __init__(self):
@@ -24,24 +23,23 @@ class StackModel:
         self.objects = {}  # Dictionary to store stack objects
         self.loaded_stack = None  # The loaded stack
         self.loaded_plot_data_group = {}
+        self.playhead = PlayheadItem()
 
     # add a new stack
     def create_stack(self, stack_name):
-        self.objects[stack_name] = (
-            LayerModel()
-        )  # Create a new layer model and add it to the dictionary
+        self.objects[stack_name] = LayerModel()  # Create a new layer model and add it to the dictionary
 
     def get_layer_items(self, layer_name):
         return self.objects[layer_name].event.items
 
     def set_loaded_stack(self, name):
-        print(f"set loaded stack to: {name}")
+        print(f"[StackModel][set_loaded_stack] | Set loaded stack to '{name}'")
         self.loaded_stack = name
 
     def load_data_from_dict(self, stack_data):
         for stack in stack_data:
             name = stack
-            print(f"load_data_from_dict | layer: {name}")
+            print(f"[StackModel][load_data_from_dict] | load_data_from_dict | layer: {name}")
             self.create_stack(name)
 
     def generate_plot_data_items(self):
@@ -49,17 +47,17 @@ class StackModel:
             stack_item.generate_plot_data_items()
 
     def deserialize_stack(self, serialized_stacks):
-        print(f"deserializeing stacks!")
+        print(f"[StackModel][deserialize_stack] | *Begin deserializing stacks*")
         self.objects.clear()  # Clear existing data
         for stack_name, stack_info in serialized_stacks.items():
             print(f"    deserializing stack: {stack_name}")
             stack = LayerModel()  # Assuming LayerModel is used to represent each stack
             stack.frame_qty = stack_info.get("frame_qty", 0)
             for layer_name, layer_info in stack_info["layers"].items():
-                print(f"deserializing layer {layer_name}")
+                print(f"[StackModel][deserialize_stack] | deserializing layer '{layer_name}'")
                 stack.create_layer(layer_name)
                 for event_key, event_info in layer_info["events"].items():
-                    print(f"deserializing event {event_key}, {event_info}")
+                    print(f"[StackModel][deserialize_stack] | deserializing event '{event_key}', '{event_info}'")
                     stack.layers[layer_name].add(event_info["frame_number"])
                     event = stack.layers[layer_name].objects[
                         event_info["frame_number"]

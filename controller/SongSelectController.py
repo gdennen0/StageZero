@@ -16,8 +16,6 @@ Arguments:
 Returns:
     None
 """
-
-
 class SongSelectController:
     def __init__(self, main_controller):
         self.main_controller = main_controller  # Assigning main controller reference
@@ -29,54 +27,35 @@ class SongSelectController:
         self.connect_signals()  # Connecting the UI signals to slots in this controller
 
     def connect_signals(self):
-        self.view.main_window.stage_widget.song_select_menu.song_selector.currentIndexChanged.connect(
-            self.on_song_selected
-        )  # Connecting the song_selector currentIndexChanged signal to the on_song_selected method
-        self.view.main_window.stage_widget.song_select_menu.add_new_song.clicked.connect(
-            self.main_controller.song_controller.add_song
-        )  # Connecting the add_new_song clicked signal to the add_song method in the song controller
+        self.view.main_window.stage_widget.song_select_menu.song_selector.currentIndexChanged.connect(self.on_song_selected)  # Connecting the song_selector currentIndexChanged signal to the on_song_selected method
+        self.view.main_window.stage_widget.song_select_menu.add_new_song.clicked.connect(self.main_controller.song_controller.add_song)  # Connecting the add_new_song clicked signal to the add_song method in the song controller
 
     def generate_dropdown_items(self):
         # Ensure this method is only run once during initialization
         if not self.initialized:
             self.initialized = True
             return
-
         song_selector = self.view.main_window.stage_widget.song_select_menu.song_selector
-        loaded_song_name = (
-            self.model.loaded_song.name if self.model.loaded_song else None
-        )
-
+        loaded_song_name = (self.model.loaded_song.name if self.model.loaded_song else None)
         # Add the loaded song to the dropdown menu if it exists
         if loaded_song_name:
             song_selector.addItem(loaded_song_name)
-
         # Add the remaining songs to the dropdown menu
         for song in self.model.song.objects:
             if song != loaded_song_name:
                 song_selector.addItem(song)
 
+    def refresh(self):
+        self.view.main_window.stage_widget.song_select_menu.song_selector.clear() # Clear dropdown
+        self.generate_dropdown_items() # Generate the items 
+
     def on_song_selected(self, index):
         # Handle what happens when a song is selected
-        if (
-            index == -1
-        ):  # Checking if the index is -1 (if the song_selector does not have any items in it)
+        if (index == -1):  # Checking if the index is -1 (if the song_selector does not have any items in it)
             return
-        selected_song = self.view.main_window.stage_widget.song_select_menu.song_selector.itemText(
-            index
-        )  # Getting the selected songs name from the song_selector dropdown menu given the song_selector index
+        selected_song = self.view.main_window.stage_widget.song_select_menu.song_selector.itemText(index)  # Getting the selected songs name from the song_selector dropdown menu given the song_selector index
         if selected_song == self.model.loaded_song.name:
             return
         else:
-            print(
-                f"Selected song: {selected_song} index: {index}"
-            )  # Printing the selected song and index
-            self.main_controller.song_controller.load_song(
-                selected_song
-            )  # Loading the selected song with the song_controller
-
-    def refresh(self):
-        # Clear the dropdown
-        self.view.main_window.stage_widget.song_select_menu.song_selector.clear()
-        # Generate and place the dropdown Items
-        self.generate_dropdown_items()
+            print(f"[SongSelectController][on_song_selected] | Selected song: {selected_song} index: {index}")  # Printing the selected song and index
+            self.main_controller.song_controller.load_song(selected_song)  # Loading the selected song with the song_controller

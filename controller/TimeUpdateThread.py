@@ -59,7 +59,7 @@ class TimeUpdateThread(QThread):
         # This function starts the clock
         with self.condition:
             if self.state == self.STOPPED:
-                print(f"starting clock")
+                print(f"[TimeUpdateThread][start_clock] | Starting clock")
                 self.start_time = time.perf_counter()
                 self.state = self.RUNNING
                 self.condition.notify_all()  # Wakes up all threads waiting on this condition
@@ -69,6 +69,7 @@ class TimeUpdateThread(QThread):
         # This function pauses the clock
         with self.condition:
             if self.state == self.RUNNING:
+                print(f"[TimeUpdateThread][pause_clock] | Pausing clock")
                 self.paused_time = time.perf_counter()
                 current_time = time.perf_counter()
                 self.elapsed_time += (
@@ -80,6 +81,7 @@ class TimeUpdateThread(QThread):
         # This function resumes the clock
         with self.condition:
             if self.state == self.PAUSED:  # get the elapsed time
+                print(f"[TimeUpdateThread][resume_clock] | Resuming clock")
                 self.start_time = time.perf_counter()
                 self.state = self.RUNNING
                 self.condition.notify_all()
@@ -114,3 +116,33 @@ class TimeUpdateThread(QThread):
 
         if self.state == self.PAUSED:
             self.state = self.STOPPED
+
+    def set_clock_time(self, frame_number):
+        """
+        Sets the clock to a specific time based on the frame number.
+        
+        :param frame_number: The target frame number to set the clock to.
+        """
+        with self.condition:
+            # Convert frame number to elapsed time in seconds
+            target_elapsed_time = frame_number / constants.PROJECT_FPS
+            
+            # Update the start_time based on the new target_elapsed_time
+            # This calculation assumes the clock is being set while running or paused.
+            # If the clock is stopped, it simply sets the elapsed_time without altering start_time.
+            if self.state == self.RUNNING or self.state == self.PAUSED:
+                current_time = time.perf_counter()
+                self.start_time = current_time - target_elapsed_time
+            
+            # Update the elapsed_time to reflect the new frame_number
+            self.elapsed_time = target_elapsed_time
+            
+            # If the clock is paused or stopped, we don't need to adjust start_time
+            # since it will be recalculated when the clock is resumed or started.
+            
+            # Notify all waiting threads in case the clock is paused; this will not resume the clock,
+            # but ensures that if it is resumed, it starts with the correct time.
+            self.condition.notify_all()
+            
+            # Emit the time_updated signal with the new frame number
+            self.time_updated.emit(frame_number)

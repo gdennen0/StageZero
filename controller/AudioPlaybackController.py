@@ -34,6 +34,7 @@ class AudioPlaybackController:
         self.audio_playback_engine.load_song(self.model.loaded_song)
         self.audio_playback_engine.reload_audio()
         self.connect_playhead()
+        self.reset()
 
     def load_song(self, song_object):
         self.audio_playback_engine.load_song(song_object)
@@ -42,18 +43,27 @@ class AudioPlaybackController:
     def play(self):
         if self.model.loaded_song:
             self.audio_playback_engine.play()
+            self.model.song.playhead.setMovable(False)
+            self.model.stack.playhead.setMovable(False)
 
     def pause(self):
         if self.model.loaded_song:
             self.audio_playback_engine.pause()
+            self.model.song.playhead.setMovable(True)
+            self.model.stack.playhead.setMovable(True)
 
     def reset(self):
         if self.model.loaded_song:
             self.audio_playback_engine.reset()
+            self.goto(0)
 
     def stop(self):
         if self.model.loaded_song:
             self.audio_playback_engine.stop()
+
+    def goto(self, frame_number):
+        if self.model.loaded_song:
+            self.audio_playback_engine.goto(frame_number)
 
     def init_connections(self):
         # connect the buttons
@@ -67,13 +77,6 @@ class AudioPlaybackController:
         self.apc.time_label.setText(frame_label_string)
 
     def connect_playhead(self):
-        self.audio_playback_engine.playback_clock_thread.time_updated.connect(
-            self.main.song_overview_controller.update_playhead_position
-        )
-        self.audio_playback_engine.playback_clock_thread.time_updated.connect(
-            self.update_time_label
-        )
-        self.audio_playback_engine.playback_clock_thread.time_updated.connect(
-            self.main.layer_controller.update_playhead_position
-        )
-        print(f"Connecting playhead in APC")
+        self.audio_playback_engine.playback_clock_thread.time_updated.connect(self.main.playhead_controller.update_playhead_location)
+        self.audio_playback_engine.playback_clock_thread.time_updated.connect(self.update_time_label)
+        

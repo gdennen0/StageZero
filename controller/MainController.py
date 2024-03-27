@@ -28,6 +28,7 @@ from .EventController import EventController
 from .PlaybackModeController import PlaybackModeController
 from .AudioPlaybackController import AudioPlaybackController
 from .MainMenuController import MainMenuController
+from .PlayheadController import PlayheadController
 from .depriciated.GraphWindowController import GraphWindowController
 from .depriciated.ToolWindowController import (
     BpmToolController,
@@ -37,7 +38,6 @@ from .depriciated.ToolWindowController import (
 from .FilterEditorController import FilterEditorController
 from .FilterAudioController import FilterAudioController
 from .PluginWindowController import PluginWindowController
-from .EventPropertiesController import EventPropertiesController
 from click.ActionEngine import Action
 
 
@@ -54,17 +54,13 @@ class MainController:
         self.song_overview_controller = SongOverviewController(self)  # Creating an instance of SongOverviewController
         self.song_select_controller = SongSelectController(self)  # Creating an instance of SongSelectController
         self.event_controller = EventController(self)  # Creating an instance of EventController
-        self.audio_playback_controller = AudioPlaybackController(self)  # Creating an instance of AudioPlaybackController
         self.playback_mode_controller = PlaybackModeController(self)  # Creating an instance of PlaybackModeController
         self.main_menu_controller = MainMenuController(self)
-        self.bpm_tool_controller = BpmToolController(self)
-        self.onset_detection_tool_controller = OnsetDetectionToolController(self)
-        self.graph_window_controller = GraphWindowController(self)
-        self.kicks_tool_controller = KicksToolController(self)
+        self.playhead_controller = PlayheadController(self)
+        self.audio_playback_controller = AudioPlaybackController(self)  # Creating an instance of AudioPlaybackController
         self.filter_editor_controller = FilterEditorController()
         self.filter_audio_controller = FilterAudioController(self)
         self.plugin_window_controller = PluginWindowController(self)
-        self.event_properties_controller = EventPropertiesController(self)
         self.action = Action(self)
 
     def initialize_app(self):

@@ -24,10 +24,7 @@ class StackController:
         # Create a new stack with the given name
         print(f"Creating stack {stack_name}")
         self.model.stack.create_stack(stack_name)
-        # Set the number of frames for the stack
         self.set_stack_frame_qty(stack_name)
-        # Initialize the plot for the new stack
-        # self.main_controller.layer_controller.init_plot(stack_name)
 
     def change_stack(self, stack_name):
         # Change the selected stack to the one with the given name

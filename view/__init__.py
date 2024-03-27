@@ -3,6 +3,7 @@ from .widget.BPMToolWidget import *
 from .CustomAxis import *
 from .window.DialogWindow import *
 from .widget.EventEditorWidget import *
+from .widget.EventCreatorWidget import *
 from .window.GraphsWindow import *
 from .window.LaunchWindow import *
 from .widget.LayerControlWidget import *

@@ -56,30 +56,16 @@ class StackWidget(QWidget):  # Widget for displaying the stack of layers
         self.layout.addWidget(self.scroll_area)  # Add the scroll area to the layout
 
         self.stack_content = QWidget()  # Widget for the stack content
-        self.stack_content.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Expanding
-        )  # Set the size policy for the stack content
-        self.stack_content_layout = QVBoxLayout(
-            self.stack_content
-        )  # Set the layout for the stack content to vertical box layout
-        self.stack_content_layout.setContentsMargins(
-            0, 0, 0, 0
-        )  # Set the margins for the stack content layout to zero
-        self.stack_content_layout.setSpacing(
-            0
-        )  # Set the spacing for the stack content layout to zero
-        self.stack_content_layout.setAlignment(
-            Qt.AlignTop
-        )  # Align the stack content layout to the top
+        self.stack_content.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Set the size policy for the stack content
+        self.stack_content_layout = QVBoxLayout(self.stack_content)  # Set the layout for the stack content to vertical box layout
+        self.stack_content_layout.setContentsMargins(0, 0, 0, 0)  # Set the margins for the stack content layout to zero
+        self.stack_content_layout.setSpacing(0)  # Set the spacing for the stack content layout to zero
+        self.stack_content_layout.setAlignment(Qt.AlignTop)  # Align the stack content layout to the top
 
-        self.scroll_area.setWidget(
-            self.stack_content
-        )  # Set the widget for the scroll area to the stack content
+        self.scroll_area.setWidget(self.stack_content)  # Set the widget for the scroll area to the stack content
 
         self.layer_widget = LayerWidget()  # Widget for the layer
-        self.stack_content_layout.addWidget(
-            self.layer_widget, alignment=Qt.AlignTop
-        )  # Add the layer widget to the stack content layout
+        self.stack_content_layout.addWidget(self.layer_widget, alignment=Qt.AlignTop)  # Add the layer widget to the stack content layout
 
         self.stack_content_layout.update()  # Update the stack content layout
         self.scroll_area.update()  # Update the scroll area

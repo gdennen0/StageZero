@@ -12,12 +12,12 @@ class SongDataPreviewController:
     def open(self, song_object, filter_data_name):
         self.song_data_preview_window = SongDataPreviewWindow()
         self.song_data = song_object.filter[filter_data_name].filtered_data
-        self.original_sample_rate = song_object.original_sample_rate
-        self.resampled_song_data = resample(
-            self.song_data, orig_sr=self.original_sample_rate, target_sr=2000
-        )
+        self.sample_rate = song_object.sample_rate
+        # self.resampled_song_data = resample(
+        #     self.song_data, orig_sr=self.sample_rate, target_sr=2000
+        # )
         self.song_axis = song_object.x_axis
-        self.song_data_preview_window.open(self.resampled_song_data, self.song_axis)
+        self.song_data_preview_window.open(self.song_data, self.song_axis)
 
         self.audio_playback_engine = AudioPlaybackEngine()
         self.audio_playback_engine.load_song(song_object)

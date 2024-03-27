@@ -19,9 +19,8 @@ class EventActionWidget(QDockWidget):
         self.create_delete_button()
         self.create_nudge_buttons()
         self.create_change_layer_button()
-
-        # Add a stretch below the last element
-        self.main_layout.addStretch(1)
+        self.main_layout.addStretch(1) # add a space so add event is at the bottom
+        self.create_add_event_button()
 
     def create_delete_button(self):
         # Create a button for the action
@@ -45,3 +44,7 @@ class EventActionWidget(QDockWidget):
 
         # Add the nudge layout to the main layout
         self.main_layout.addLayout(self.nudge_layout)
+
+    def create_add_event_button(self):
+        self.create_event_button = QPushButton("Add")
+        self.main_layout.addWidget(self.create_event_button)

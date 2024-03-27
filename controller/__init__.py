@@ -4,7 +4,6 @@ from .LayerController import *
 from .MainController import *
 from .MainMenuController import *
 from .PlaybackModeController import *
-from .PlotClickHandler import *
 from .ProjectController import *
 from .SongController import *
 from .SongOverviewController import *
