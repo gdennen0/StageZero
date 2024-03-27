@@ -4,7 +4,6 @@ from PluginInterface import PluginInterface
 import sys
 import inspect  # Add this import at the top of your file
 
-
 class PluginModel:
     def __init__(self):
         self.plugins = {}
@@ -32,8 +31,6 @@ class PluginModel:
 
     def init_plugins(self, main_controller):
         self.main_controller = main_controller
-
-
 class PluginLoader:
     def __init__(self, plugin_directory):
         self.plugins = {}

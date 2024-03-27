@@ -1,10 +1,5 @@
 from view.window.SongDataPreviewWindow import SongDataPreviewWindow
-import vlc
 from librosa import resample
-import numpy as np
-import soundfile as sf
-import tempfile
-import os
 from .AudioPlaybackEngine import AudioPlaybackEngine
 
 

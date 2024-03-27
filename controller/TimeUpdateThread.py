@@ -77,9 +77,8 @@ class TimeUpdateThread(QThread):
                 )  # This line calculates the total elapsed time by adding the current time since the clock started to the previously elapsed time before the pause
                 self.state = self.PAUSED
 
-    def resume_clock(self):
-        # This function resumes the clock
-        with self.condition:
+    def resume_clock(self): # This function resumes the clock
+        with self.condition: 
             if self.state == self.PAUSED:  # get the elapsed time
                 print(f"[TimeUpdateThread][resume_clock] | Resuming clock")
                 self.start_time = time.perf_counter()
@@ -87,8 +86,7 @@ class TimeUpdateThread(QThread):
                 self.condition.notify_all()
                 # print(f"resuming clock at start time {self.start_time}")
 
-    def reset_clock(self):
-        # This function resets the clock
+    def reset_clock(self): # This function resets the clock
         with self.condition:
             if self.state == self.PAUSED:
                 # print(f"resetting clock")
@@ -109,8 +107,7 @@ class TimeUpdateThread(QThread):
                 self.elapsed_time = 0
                 self.start_time = None
 
-    def stop_clock(self):
-        # This function stops the clock
+    def stop_clock(self): # This function stops the clock
         if self.state == self.RUNNING:
             self.state = self.STOPPED
 

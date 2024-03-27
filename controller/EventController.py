@@ -199,20 +199,14 @@ class EventController:
             new_frame_x = int(data[0][0])
             # new_frame_y = int(data[1][0])
             print(f"[EventController][update_event_model] | Moving frame: {current_frame} ---> {new_frame_x}")
-            self.model.loaded_stack.move_event(
-                layer_name, current_frame, new_frame_x
-            )  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
+            self.model.loaded_stack.move_event(layer_name, current_frame, new_frame_x)  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
             event.frame_num = new_frame_x
 
     def handle_position_change(self, current_frame, event):
         new_frame_x = int(event.x())
         layer_name = event.parent_layer_name
-        print(
-            f"[EventController][handle_pos_change] | start position: {current_frame} | new x position: {new_frame_x}"
-        )
-        self.model.loaded_stack.move_event(
-            layer_name, current_frame, new_frame_x
-        )  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
+        print(f"[EventController][handle_pos_change] | start position: {current_frame} | new x position: {new_frame_x}")
+        self.model.loaded_stack.move_event(layer_name, current_frame, new_frame_x)  # new_frame_y=layer index | current_frame=current index | new_frame_x =new index
 
     def clear_selection(self):
         for selected_event in self.selected_events:

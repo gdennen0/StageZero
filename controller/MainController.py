@@ -29,12 +29,6 @@ from .PlaybackModeController import PlaybackModeController
 from .AudioPlaybackController import AudioPlaybackController
 from .MainMenuController import MainMenuController
 from .PlayheadController import PlayheadController
-from .depriciated.GraphWindowController import GraphWindowController
-from .depriciated.ToolWindowController import (
-    BpmToolController,
-    OnsetDetectionToolController,
-    KicksToolController,
-)
 from .FilterEditorController import FilterEditorController
 from .FilterAudioController import FilterAudioController
 from .PluginWindowController import PluginWindowController

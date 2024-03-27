@@ -11,8 +11,6 @@ Returns:
 
 The StackController class is initialized with a reference to the main controller. It uses this reference to access the model and view components of the application. The class provides methods to create a new stack, change the selected stack, get the currently loaded stack, and set the number of frames for a stack. These methods manipulate the stack state in the model and update the view accordingly.
 """
-
-
 class StackController:
     def __init__(self, main_controller):
         # Initialize with references to main controller, model, and view

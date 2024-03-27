@@ -6,12 +6,9 @@ from .TimeUpdateThread import TimeUpdateThread
 from view.window.SongDataPreviewWindow import SongDataPreviewWindow
 import vlc
 from librosa import resample
-import numpy as np
 import soundfile as sf
 import tempfile
-import os
 from constants import PROJECT_FPS
-
 
 class AudioPlaybackEngine:
     STOPPED, RUNNING, PAUSED = range(3)  # Define states for the audio playback

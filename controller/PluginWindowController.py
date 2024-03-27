@@ -1,6 +1,6 @@
 import os
 
-
+# TODO: menu to toggle plugins on/off in the launch window
 class PluginWindowController:
     def __init__(self, main_controller):
         self.view = main_controller.view.plugins_window
@@ -22,11 +22,8 @@ class PluginWindowController:
             print("No plugin selected.")
 
     def refresh_plugins(self):
-        # Clear the current list
-        self.view.plugin_list.clear()
-
-        # Fetch and list the plugins
-        plugin_dir = os.path.join(os.getcwd(), "plugins")
+        self.view.plugin_list.clear() # Clear the current list
+        plugin_dir = os.path.join(os.getcwd(), "plugins") # Fetch and list the plugins
         if not os.path.exists(plugin_dir):
             os.makedirs(plugin_dir)  # Create the plugins directory if it doesn't exist
         plugins = [
@@ -35,13 +32,11 @@ class PluginWindowController:
             if not plugin.startswith(".") and plugin != "__pycache__"
         ]  # Filter out hidden folders and __pycache__
 
-        # Populate the QListWidget with plugin names
-        for plugin in plugins:
+        for plugin in plugins: # Populate the QListWidget with plugin names
             self.view.plugin_list.addItem(plugin)
 
     def open_plugin(self):
-        # Get the selected plugin
-        selected_items = self.view.plugin_list.selectedItems()
+        selected_items = self.view.plugin_list.selectedItems() # Get the selected plugin
         if selected_items:
             plugin_name = selected_items[0].text().replace(".py", "")
             print(f"Opening plugin: {plugin_name}")

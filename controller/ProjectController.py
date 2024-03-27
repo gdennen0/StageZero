@@ -15,10 +15,7 @@ Returns:
 from view import DialogWindow
 from PopupManager import PopupManager
 import os
-
-
 class ProjectController:
-    # Implement functionality to save, load and create projects
     def __init__(self, main_controller):
         self.model = main_controller.model  # Assign model reference
         self.main_controller = main_controller  # Assign main_controller reference
@@ -26,12 +23,8 @@ class ProjectController:
         self.connect_signals()
 
     def connect_signals(self):
-        self.view.launch_window.new_project_button.clicked.connect(
-            self.new_project
-        )  # Connecting the new_project_button click signal to the new_project method
-        self.view.launch_window.load_project_button.clicked.connect(
-            self.load_project
-        )  # Connecting the load_project_button click signal to the load_project method
+        self.view.launch_window.new_project_button.clicked.connect(self.new_project)  # Connecting the new_project_button click signal to the new_project method
+        self.view.launch_window.load_project_button.clicked.connect(self.load_project)  # Connecting the load_project_button click signal to the load_project method
 
     def new_project(self):
         self.model.project_name = "Untitled"  # Setting the project name in the model

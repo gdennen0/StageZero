@@ -30,6 +30,11 @@ class AudioPlaybackController:
         self.init_connections()  # Initialize connections
         self.connect_playhead()
 
+    def init_connections(self): # connect the buttons 
+        self.apc.play_button.clicked.connect(self.play)
+        self.apc.pause_button.clicked.connect(self.pause)
+        self.apc.reset_button.clicked.connect(self.reset)
+
     def refresh(self):
         self.audio_playback_engine.load_song(self.model.loaded_song)
         self.audio_playback_engine.reload_audio()
@@ -64,12 +69,6 @@ class AudioPlaybackController:
     def goto(self, frame_number):
         if self.model.loaded_song:
             self.audio_playback_engine.goto(frame_number)
-
-    def init_connections(self):
-        # connect the buttons
-        self.apc.play_button.clicked.connect(self.play)
-        self.apc.pause_button.clicked.connect(self.pause)
-        self.apc.reset_button.clicked.connect(self.reset)
 
     def update_time_label(self, frame_number):
         # Update the time label

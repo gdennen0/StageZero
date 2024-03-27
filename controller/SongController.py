@@ -57,12 +57,10 @@ class SongController:
     def load_song(self, song_name):
         print(f"[SongController][load_plot]| song_name: {song_name}")
         print(f"loading song {song_name}".center(100,"*"))
-        # Clear existing data
-        self.main_controller.song_overview_controller.clear_plot_waveforms()
+        self.main_controller.song_overview_controller.clear_plot_waveforms() # Clear existing data
         self.main_controller.event_controller.clear_plot_events()
-        # Switch loaded song to new selected song
-        self.model.song.loaded_song = song_name
-        self.model.stack.loaded_stack = song_name
+        self.model.song.loaded_song = song_name # Switch loaded song to new selected song
+        self.model.stack.loaded_stack = song_name # Switch loaded stack to new selected song
         self.main_controller.song_overview_controller.refresh()
         self.main_controller.layer_controller.refresh()
         self.main_controller.audio_playback_controller.refresh()
