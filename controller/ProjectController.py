@@ -15,6 +15,7 @@ Returns:
 from view import DialogWindow
 from PopupManager import PopupManager
 import os
+
 class ProjectController:
     def __init__(self, main_controller):
         self.model = main_controller.model  # Assign model reference

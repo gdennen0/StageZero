@@ -91,10 +91,8 @@ class MainModel:
         return serialized_stacks
 
     def save(self):
-        print(
-            f"saving loaded stack {self.stack.loaded_stack} type {type(self.loaded_stack)}"
-        )
-        # self.prepare_stack_data_for_saving()
+        print(f"saving loaded stack {self.stack.loaded_stack} type {type(self.loaded_stack)}")
+        
         model_data = {
             "song_model": {
                 "objects": self.serialize_songs(),

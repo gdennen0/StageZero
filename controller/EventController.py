@@ -244,10 +244,11 @@ class EventController:
         self.editor.exec_()
 
     def clear_plot_events(self):
-        for layer_name, layer in self.model.loaded_stack.layers.items():
-            # print(f"[EventController][clear_all_events] | iterating thru layer '{layer_name}'")
-            for event_number, event in layer.objects.items():
-                print(f"[EventController][clear_plot_events] | Clearing layer '{layer_name}' event '{event.frame_number}'")
-                self.layer_widget.remove_item(event.plot_data_item)
-        pass
+        if self.model.loaded_stack:
+            for layer_name, layer in self.model.loaded_stack.layers.items():
+                # print(f"[EventController][clear_all_events] | iterating thru layer '{layer_name}'")
+                for event_number, event in layer.objects.items():
+                    print(f"[EventController][clear_plot_events] | Clearing layer '{layer_name}' event '{event.frame_number}'")
+                    self.layer_widget.remove_item(event.plot_data_item)
+            pass
 

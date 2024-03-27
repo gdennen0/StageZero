@@ -40,7 +40,8 @@ class SongOverviewController:
         self.song_overview_widget.reload_plot(x_axis, waveform_plot_item)
         
     def clear_plot_waveforms(self):
-        self.song_overview_widget.remove_waveform_data(self.model.loaded_song.waveform_plot_item)
+        if self.model.loaded_song:
+            self.song_overview_widget.remove_waveform_data(self.model.loaded_song.waveform_plot_item)
 
     def show_lines(self, type):
         for line in self.model.loaded_song.lines:

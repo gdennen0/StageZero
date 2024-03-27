@@ -24,9 +24,7 @@ class PlaybackModeController:
 
     def connect_signals(self):
         # Connect the signal for when the user selects an item in playback_mode_selector 
-        self.view.main_window.stage_widget.playback_mode.playback_mode_selector.currentIndexChanged.connect(
-            self.on_playback_mode_changed
-        )
+        self.view.main_window.stage_widget.playback_mode.playback_mode_selector.currentIndexChanged.connect(self.on_playback_mode_changed)
 
     def get_current_mode(self):
         # Get the current playback mode
